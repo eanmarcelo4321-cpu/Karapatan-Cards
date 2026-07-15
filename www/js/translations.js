@@ -73,7 +73,10 @@ var translations = {
     soundOff: "Sound off",
     howToTitle: "How to Play",
     howToBody: "Draw a situation card and choose the best response before time runs out. Fully correct answers earn 2 points, partially-right answers earn 1, and wrong answers earn 0 — with a chance for the other team to steal 1 point. First team to the target score wins, or the highest score wins once the 20-card deck runs out. A tie triggers sudden death!",
-    closeBtn: "Got it"
+    closeBtn: "Got it",
+    handoffTitle: "Pass the phone to",
+    handoffSub: "Make sure no other team can see the screen.",
+    handoffBtn: "We're Ready"
   },
   fil: {
     tagline: "\"Alamin ang karapatan, tara laro na!\"",
@@ -144,7 +147,10 @@ var translations = {
     soundOff: "Naka-off ang tunog",
     howToTitle: "Paano Maglaro",
     howToBody: "Bumunot ng situation card at piliin ang pinakamahusay na sagot bago maubos ang oras. Ang tamang-tama ay 2 puntos, ang bahagyang tama ay 1, at ang mali ay 0 — may pagkakataong maka-steal ang kabilang team ng 1 puntos. Ang unang umabot sa target score ang panalo, o ang may pinakamataas na score kapag naubos ang 20 kard. Sudden death kapag pantay!",
-    closeBtn: "Sige"
+    closeBtn: "Sige",
+    handoffTitle: "Ipasa ang telepono kay",
+    handoffSub: "Siguraduhing walang ibang team ang nakakakita sa screen.",
+    handoffBtn: "Handa Na Kami"
   }
 };
 

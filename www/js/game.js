@@ -77,6 +77,13 @@ function timerForDifficulty(diff){
   return diff === 'easy' ? 20 : diff === 'hard' ? 45 : 30;
 }
 
+/* Returns a copy of a card with its choice order shuffled, so the correct
+   answer's on-screen position is randomized every time it's drawn/retried.
+   The original CARD_POOL entry (and match.deck) is never mutated. */
+function shuffledCard(card){
+  return Object.assign({}, card, { choices: shuffle(card.choices) });
+}
+
 function buildDeck(length){
   let pool = CARD_POOL.slice();
   if(length === 'challenge'){
@@ -95,6 +102,7 @@ function render(){
   if(state === "splash") return;
   if(state === "home") renderHome();
   else if(state === "draw") renderDraw();
+  else if(state === "handoff") renderHandoff();
   else if(state === "card") renderCard();
   else if(state === "reveal") renderReveal();
   else if(state === "score") renderScore();
@@ -231,6 +239,26 @@ function startMatch(){
   goto('draw');
 }
 
+/* ================= HANDOFF SCREEN (pass-and-play transition) ================= */
+/* Shown only in local multiplayer, between one human team's turn ending and
+   the next human team's turn starting. It (a) blanks the previous team's
+   answer off screen so it can't be seen while the phone is being passed,
+   and (b) makes it unambiguous whose turn is starting next. */
+function renderHandoff(){
+  const t = T();
+  const team = match.teams[match.currentTeam];
+  screenEl.innerHTML = `
+    <div class="screen-body" style="justify-content:center;align-items:center;text-align:center;">
+      <div class="handoff-dot" style="background:${team.dot};width:64px;height:64px;border-radius:50%;margin-bottom:18px;"></div>
+      <div style="font-size:13px;color:#8a9a94;margin-bottom:4px;">${t.handoffTitle}</div>
+      <div style="font-size:26px;font-weight:800;color:var(--navy);margin-bottom:10px;">${team.name}</div>
+      <div style="font-size:12px;color:#8a9a94;max-width:220px;margin-bottom:26px;">${t.handoffSub}</div>
+      <button class="btn btn-primary" onclick="goto('draw')">${t.handoffBtn}</button>
+    </div>
+  `;
+  setControls('');
+}
+
 /* ================= DRAW SCREEN ================= */
 function renderDraw(){
   const t = T();
@@ -244,7 +272,7 @@ function renderDraw(){
       ${match.suddenDeath ? `<div class="toast danger" style="margin-bottom:14px;">${t.suddenDeathToast}</div>` : ''}
       ${match.stealActive ? `<div class="toast" style="margin-bottom:14px;">${t.stealToast}</div>` : ''}
       <div class="rounded" style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:6px;">
-        ${team.isAI ? t.aiTurnLabel(team.name) : t.turnLabel(team.name)}
+        <span class="team-dot" style="background:${team.dot};"></span>${team.isAI ? t.aiTurnLabel(team.name) : t.turnLabel(team.name)}
       </div>
       <div class="cards-remaining">${t.cardsLeft(left, total)}</div>
       <div class="deck-progress"><div class="deck-progress-fill" style="width:${pct}%;"></div></div>
@@ -267,7 +295,8 @@ function drawCard(){
     const extra = match.suddenPool.length ? match.suddenPool.pop() : shuffle(CARD_POOL)[0];
     match.deck.push(extra);
   }
-  currentCard = match.deck[match.cardIndex];
+  match.currentOriginalCard = match.deck[match.cardIndex];
+  currentCard = shuffledCard(match.currentOriginalCard);
   match.cardIndex++;
   timerVal = timerForDifficulty(currentCard.difficulty);
   chosenIndex = null;
@@ -287,9 +316,9 @@ function renderCard(){
   const twoCls = currentCard.choices.length === 2 ? 'two' : '';
 
   screenEl.innerHTML = `
-    <div class="screen-body">
+    <div class="screen-body" style="border-top:4px solid ${team.dot};padding-top:10px;">
       <div class="card-topline">
-        <div class="card-label">${t.situationCardLabel}</div>
+        <div class="card-label"><span class="team-dot" style="background:${team.dot};"></span>${t.situationCardLabel}</div>
         <div class="badge-row">
           <span class="badge diff-${currentCard.difficulty}">${DIFF_LABEL[currentCard.difficulty]}</span>
           <span class="badge cat">${currentCard.category}</span>
@@ -423,6 +452,7 @@ function retryCard(){
   retryMode = true;
   retryUsed = true;
   chosenIndex = null;
+  currentCard = shuffledCard(match.currentOriginalCard);
   timerVal = timerForDifficulty(currentCard.difficulty);
   goto('card');
 }
@@ -449,6 +479,15 @@ function burstConfetti(){
 }
 
 /* ================= SCORING / WIN CONDITIONS ================= */
+/* Decides whether the next team needs a "pass the phone" handoff screen
+   (local pass-and-play, human team up next) or can go straight to the
+   draw screen (solo mode / AI's turn). */
+function goToNextTurn(){
+  const team = match.teams[match.currentTeam];
+  if(match.mode === 'multiplayer' && !team.isAI) goto('handoff');
+  else goto('draw');
+}
+
 function nextTeam(){ match.currentTeam = (match.currentTeam + 1) % match.teams.length; }
 
 function applyScore(pts){
@@ -467,7 +506,7 @@ function applyScore(pts){
     match.stealActive = true;
     nextTeam();
     chosenIndex = null;
-    goto('draw');
+    goToNextTurn();
     return;
   }
   match.stealActive = false;
@@ -475,7 +514,7 @@ function applyScore(pts){
   if(match.cardIndex >= match.deck.length) return handleDeckExhausted();
 
   nextTeam();
-  goto('draw');
+  goToNextTurn();
 }
 
 function handleDeckExhausted(){
@@ -488,7 +527,7 @@ function handleDeckExhausted(){
   match.currentTeam = match.teams.indexOf(leaders[0]);
   if(match.suddenPool.length) match.deck.push(match.suddenPool.pop());
   chosenIndex = null;
-  goto('draw');
+  goToNextTurn();
 }
 
 function advanceSuddenDeath(){
@@ -500,7 +539,7 @@ function advanceSuddenDeath(){
     match.deck.push(match.suddenPool.pop());
   }
   chosenIndex = null;
-  goto('draw');
+  goToNextTurn();
 }
 
 function endMatch(winnerTeam, reason){
