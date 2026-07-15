@@ -1,0 +1,40 @@
+<svg viewBox="0 0 2732 2732" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="18%" cy="12%" r="90%">
+      <stop offset="0%" stop-color="#123c37"/>
+      <stop offset="55%" stop-color="#0D3B36"/>
+      <stop offset="100%" stop-color="#082622"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="85%" cy="90%" r="45%">
+      <stop offset="0%" stop-color="#7FA684" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#7FA684" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cardBack" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#123c37"/>
+      <stop offset="100%" stop-color="#0a2622"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="2732" height="2732" fill="url(#bg)"/>
+  <rect width="2732" height="2732" fill="url(#glow2)"/>
+
+  <!-- back card -->
+  <g transform="translate(1366 1240) rotate(-9) translate(-255 -320)">
+    <rect x="0" y="0" width="510" height="640" rx="46" fill="url(#cardBack)" stroke="#D9A441" stroke-width="8" stroke-opacity="0.55"/>
+  </g>
+  <!-- front card -->
+  <g transform="translate(1366 1240) rotate(6) translate(-255 -320)">
+    <rect x="0" y="0" width="510" height="640" rx="46" fill="#F7F1E1" stroke="#D9A441" stroke-width="13"/>
+    <g transform="translate(255 320)">
+      <path d="M0 -144 L42 -44.6 L149.3 -36 L67.3 32 L92 137.3 L0 80 L-92 137.3 L-67.3 32 L-149.3 -36 L-42 -44.6 Z" fill="#D9A441"/>
+    </g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="1366" y="1780" text-anchor="middle"
+        font-family="'DejaVu Sans', Arial, sans-serif" font-weight="bold"
+        font-size="126" fill="#F7F1E1" letter-spacing="2">Karapatan Cards</text>
+  <text x="1366" y="1850" text-anchor="middle"
+        font-family="'DejaVu Sans', Arial, sans-serif" font-weight="bold"
+        font-size="40" fill="#EFC978" letter-spacing="6">KNOW YOUR RIGHTS</text>
+</svg>
