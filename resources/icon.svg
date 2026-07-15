@@ -1,36 +1,32 @@
-<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <radialGradient id="bg" cx="30%" cy="22%" r="85%">
-      <stop offset="0%" stop-color="#123c37"/>
-      <stop offset="60%" stop-color="#0D3B36"/>
-      <stop offset="100%" stop-color="#082622"/>
-    </radialGradient>
-    <linearGradient id="cardBack" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#123c37"/>
-      <stop offset="100%" stop-color="#0a2622"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123c37"/>
+      <stop offset="1" stop-color="#082622"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0D3B36"/>
+      <stop offset="1" stop-color="#0a2622"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EFC978"/>
+      <stop offset="1" stop-color="#D9A441"/>
     </linearGradient>
   </defs>
 
-  <!-- background -->
-  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="130" cy="96" r="120" fill="#D9A441" opacity="0.10"/>
+  <circle cx="410" cy="430" r="140" fill="#7FA684" opacity="0.10"/>
 
-  <!-- back card (tilted, navy) -->
-  <g transform="translate(512 540) rotate(-9) translate(-190 -240)">
-    <rect x="0" y="0" width="380" height="480" rx="36" fill="url(#cardBack)" stroke="#D9A441" stroke-width="7" stroke-opacity="0.55"/>
-  </g>
+  <!-- playing-card pair behind the shield for the "game" cue -->
+  <rect x="150" y="150" width="150" height="204" rx="16" fill="#7FA684" opacity="0.35" transform="rotate(-10 225 252)"/>
+  <rect x="212" y="150" width="150" height="204" rx="16" fill="#EFC978" opacity="0.35" transform="rotate(9 287 252)"/>
 
-  <!-- front card (cream) -->
-  <g transform="translate(512 540) rotate(6) translate(-190 -240)">
-    <rect x="0" y="0" width="380" height="480" rx="36" fill="#F7F1E1" stroke="#D9A441" stroke-width="10"/>
-    <!-- gold star centered on the card -->
-    <g transform="translate(190 240)">
-      <path d="M0 -108 L31.5 -33.5 L112 -27 L50.5 24 L69 103 L0 60 L-69 103 L-50.5 24 L-112 -27 L-31.5 -33.5 Z"
-            fill="#D9A441"/>
-    </g>
-    <!-- small corner suit marks -->
-    <g fill="#D2574B" opacity="0.9">
-      <text x="34" y="70" font-family="Georgia, 'DejaVu Serif', serif" font-size="46" font-weight="bold">♦</text>
-      <text x="346" y="450" font-family="Georgia, 'DejaVu Serif', serif" font-size="46" font-weight="bold" transform="rotate(180 346 450)">♦</text>
-    </g>
-  </g>
+  <!-- shield -->
+  <path d="M256 88 L368 126 V254 C368 336 320 392 256 424 C192 392 144 336 144 254 V126 Z"
+        fill="url(#shield)" stroke="url(#gold)" stroke-width="10"/>
+
+  <!-- checkmark -->
+  <path d="M202 254 L240 292 L318 206" fill="none" stroke="url(#gold)" stroke-width="26"
+        stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

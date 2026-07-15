@@ -1,0 +1,668 @@
+/* ===== Karapatan Cards — Game Engine ===== */
+
+/* ---------- Home / setup state (persists between matches) ---------- */
+var homeSettings = {
+  mode: 'multiplayer',      // 'multiplayer' | 'solo'
+  length: 'standard',       // 'quick' | 'standard' | 'challenge'
+  teamCount: 2,
+  aiDifficulty: 'medium',
+  learningAids: true
+};
+
+var TEAM_POOL = [
+  { name: "Team Mabini",    dot: "#D2574B" },
+  { name: "Team Bonifacio", dot: "#7FA684" },
+  { name: "Team Rizal",     dot: "#D9A441" },
+  { name: "Team Silang",    dot: "#4E8FA6" }
+];
+
+/* ---------- Live match / round state ---------- */
+var state = "splash";
+var match = null;
+var currentCard = null;
+var chosenIndex = null;
+var timerVal = 30;
+var timerHandle = null;
+var retryMode = false;
+var retryUsed = false;
+var prevScores = {};
+var paused = false;
+var cameFromPause = null;
+var aiTimeout = null;
+
+/* ---------- DOM refs (bound after DOMContentLoaded) ---------- */
+var screenEl, controlsEl, pauseBtnEl, pauseOverlayEl, pauseSubEl,
+    langOverlayEl, langListEl, langPickerTitleEl, langPickerSubEl,
+    howtoOverlayEl, splashEl;
+
+document.addEventListener('DOMContentLoaded', () => {
+  screenEl = document.getElementById('screen');
+  controlsEl = document.getElementById('controls');
+  pauseBtnEl = document.getElementById('pauseBtn');
+  pauseOverlayEl = document.getElementById('pauseOverlay');
+  pauseSubEl = document.getElementById('pauseSub');
+  langOverlayEl = document.getElementById('langOverlay');
+  langListEl = document.getElementById('langList');
+  langPickerTitleEl = document.getElementById('langPickerTitle');
+  langPickerSubEl = document.getElementById('langPickerSub');
+  howtoOverlayEl = document.getElementById('howtoOverlay');
+  splashEl = document.getElementById('splash');
+
+  document.body.addEventListener('pointerdown', () => AudioEngine.unlock(), { once: true });
+
+  setTimeout(hideSplash, 2200);
+  splashEl.addEventListener('click', hideSplash);
+
+  render();
+});
+
+function hideSplash(){
+  if(!splashEl || splashEl.classList.contains('hide')) return;
+  splashEl.classList.add('hide');
+  AudioEngine.unlock();
+  if(state === 'splash') goto('home');
+}
+
+/* ================= Utility ================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function timerForDifficulty(diff){
+  return diff === 'easy' ? 20 : diff === 'hard' ? 45 : 30;
+}
+
+function buildDeck(length){
+  let pool = CARD_POOL.slice();
+  if(length === 'challenge'){
+    const easy = shuffle(pool.filter(c => c.difficulty === 'easy')).slice(0, 4);
+    const rest = pool.filter(c => c.difficulty !== 'easy');
+    pool = rest.concat(easy);
+  }
+  const n = length === 'quick' ? 10 : 20;
+  return shuffle(pool).slice(0, n);
+}
+
+/* ================= Render dispatcher ================= */
+function render(){
+  clearInterval(timerHandle);
+  clearTimeout(aiTimeout);
+  if(state === "splash") return;
+  if(state === "home") renderHome();
+  else if(state === "draw") renderDraw();
+  else if(state === "card") renderCard();
+  else if(state === "reveal") renderReveal();
+  else if(state === "score") renderScore();
+  else if(state === "matchEnd") renderMatchEnd();
+  pauseOverlayEl.classList.remove('open');
+  paused = false;
+  pauseBtnEl.style.display = (state === "draw" || state === "card" || state === "reveal") ? "flex" : "none";
+}
+
+function goto(next){ state = next; render(); }
+function setControls(html){ controlsEl.innerHTML = html; }
+
+/* ================= HOME SCREEN ================= */
+function renderHome(){
+  const t = T();
+  const h = t.home;
+  const soundIcon = AudioEngine.isOn()
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m17 9 4 4M21 9l-4 4"/></svg>`;
+
+  screenEl.innerHTML = `
+    <button class="sound-chip" onclick="toggleSound()">${soundIcon}</button>
+    <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
+    <div class="screen-body">
+      <div class="home-logo">Karapatan Cards</div>
+      <div class="home-tagline">${t.tagline}</div>
+
+      <div class="section-title">${h.modeTitle}</div>
+      <div class="mode-grid">
+        <div class="mode-card ${homeSettings.mode==='multiplayer'?'active':''}" onclick="setHomeMode('multiplayer')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div class="mc-title">${h.modeMultiplayer}</div>
+          <div class="mc-sub">${h.modeMultiplayerSub}</div>
+        </div>
+        <div class="mode-card ${homeSettings.mode==='solo'?'active':''}" onclick="setHomeMode('solo')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><circle cx="9" cy="9" r="1.2" fill="var(--navy)"/><circle cx="15" cy="9" r="1.2" fill="var(--navy)"/></svg>
+          <div class="mc-title">${h.modeSolo}</div>
+          <div class="mc-sub">${h.modeSoloSub}</div>
+        </div>
+      </div>
+
+      ${homeSettings.mode === 'multiplayer' ? `
+        <div class="section-title">${h.teamsTitle}</div>
+        <div class="stepper" style="margin-bottom:10px;">
+          <button onclick="stepTeamCount(-1)">−</button>
+          <span class="val">${homeSettings.teamCount}</span>
+          <button onclick="stepTeamCount(1)">+</button>
+        </div>
+        ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
+          <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
+        `).join('')}
+      ` : `
+        <div class="section-title">${h.aiDifficultyTitle}</div>
+        <div class="pill-row" style="margin-bottom:10px;">
+          <div class="pill ${homeSettings.aiDifficulty==='easy'?'active':''}" onclick="setAiDifficulty('easy')">${h.easy}</div>
+          <div class="pill ${homeSettings.aiDifficulty==='medium'?'active':''}" onclick="setAiDifficulty('medium')">${h.medium}</div>
+          <div class="pill ${homeSettings.aiDifficulty==='hard'?'active':''}" onclick="setAiDifficulty('hard')">${h.hard}</div>
+        </div>
+        <div class="team-row" style="cursor:pointer;" onclick="toggleLearningAids()">
+          <span>${h.learningToggleTitle}</span>
+          <span style="color:${homeSettings.learningAids?'var(--sage)':'#c2c2c2'};font-weight:800;">${homeSettings.learningAids ? '●  ON' : '○  OFF'}</span>
+        </div>
+        <div style="font-size:10.5px;color:#8a9a94;margin:2px 2px 10px;line-height:1.4;">${h.learningToggleSub}</div>
+      `}
+
+      <div class="section-title">${h.lengthTitle}</div>
+      <div class="pill-row" style="margin-bottom:6px;">
+        <div class="pill ${homeSettings.length==='quick'?'active':''}" onclick="setLength('quick')">${h.quick}<span class="pill-sub">${h.quickSub}</span></div>
+        <div class="pill ${homeSettings.length==='standard'?'active':''}" onclick="setLength('standard')">${h.standard}<span class="pill-sub">${h.standardSub}</span></div>
+        <div class="pill ${homeSettings.length==='challenge'?'active':''}" onclick="setLength('challenge')">${h.challenge}<span class="pill-sub">${h.challengeSub}</span></div>
+      </div>
+
+      <div class="grow"></div>
+      <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openHowTo()">${h.howToPlay}</button>
+      <button class="btn btn-primary" onclick="startMatch()">${h.startGame}</button>
+    </div>
+  `;
+  setControls('');
+}
+
+function setHomeMode(m){ homeSettings.mode = m; renderHome(); }
+function setLength(l){ homeSettings.length = l; renderHome(); }
+function setAiDifficulty(d){ homeSettings.aiDifficulty = d; renderHome(); }
+function toggleLearningAids(){ homeSettings.learningAids = !homeSettings.learningAids; renderHome(); }
+function stepTeamCount(delta){
+  homeSettings.teamCount = Math.max(2, Math.min(4, homeSettings.teamCount + delta));
+  renderHome();
+}
+function toggleSound(){
+  AudioEngine.toggle();
+  if(state === 'home') renderHome();
+}
+
+function openHowTo(){
+  const t = T();
+  howtoOverlayEl.querySelector('.pause-title').textContent = t.howToTitle;
+  howtoOverlayEl.querySelector('.pause-sub').textContent = t.howToBody;
+  howtoOverlayEl.querySelector('.btn-primary').textContent = t.closeBtn;
+  howtoOverlayEl.classList.add('open');
+}
+function closeHowTo(){ howtoOverlayEl.classList.remove('open'); }
+
+/* ================= START MATCH ================= */
+function startMatch(){
+  const deck = buildDeck(homeSettings.length);
+  let teams;
+  if(homeSettings.mode === 'solo'){
+    teams = [
+      { name: "You", dot: "#D2574B", score: 0, isAI: false },
+      { name: "AI Opponent", dot: "#4E8FA6", score: 0, isAI: true, aiDifficulty: homeSettings.aiDifficulty }
+    ];
+  } else {
+    teams = TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => ({ ...tm, score: 0, isAI: false }));
+  }
+  match = {
+    mode: homeSettings.mode,
+    length: homeSettings.length,
+    deck,
+    cardIndex: 0,
+    teams,
+    currentTeam: 0,
+    target: homeSettings.length === 'quick' ? 8 : 15,
+    stealActive: false,
+    suddenDeath: false,
+    suddenDeathTeams: [],
+    suddenPool: shuffle(CARD_POOL.filter(c => !deck.find(d => d.id === c.id))),
+    learningAids: homeSettings.mode === 'solo' && homeSettings.learningAids,
+    pendingScore: 0,
+    stats: {}
+  };
+  teams.forEach(tm => { match.stats[tm.name] = { attempts: 0, correct: 0 }; });
+  prevScores = {};
+  cameFromPause = null;
+  goto('draw');
+}
+
+/* ================= DRAW SCREEN ================= */
+function renderDraw(){
+  const t = T();
+  const team = match.teams[match.currentTeam];
+  const total = match.deck.length;
+  const left = total - match.cardIndex;
+  const pct = Math.max(0, Math.min(100, (match.cardIndex / total) * 100));
+
+  screenEl.innerHTML = `
+    <div class="screen-body" style="justify-content:center;align-items:center;text-align:center;">
+      ${match.suddenDeath ? `<div class="toast danger" style="margin-bottom:14px;">${t.suddenDeathToast}</div>` : ''}
+      ${match.stealActive ? `<div class="toast" style="margin-bottom:14px;">${t.stealToast}</div>` : ''}
+      <div class="rounded" style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:6px;">
+        ${team.isAI ? t.aiTurnLabel(team.name) : t.turnLabel(team.name)}
+      </div>
+      <div class="cards-remaining">${t.cardsLeft(left, total)}</div>
+      <div class="deck-progress"><div class="deck-progress-fill" style="width:${pct}%;"></div></div>
+      <div class="deck-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="52" height="52"><rect x="4" y="3" width="12" height="17" rx="2" transform="rotate(-8 10 11.5)"/><rect x="8" y="4" width="12" height="17" rx="2" fill="var(--cream)"/><path d="M14 8v6M11 11h6" stroke="var(--coral)"/></svg></div>
+      ${team.isAI
+        ? `<div class="ai-indicator"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div>`
+        : `<button class="btn btn-primary" onclick="drawCard()">${t.drawBtn}</button>`}
+    </div>
+  `;
+  setControls(`<button class="btn btn-outline" style="width:auto;padding:10px 18px;" onclick="goto('score')">${t.viewScoreboardBtn}</button>`);
+
+  if(team.isAI){
+    aiTimeout = setTimeout(() => { if(state === 'draw') drawCard(); }, 900 + Math.random() * 600);
+  }
+}
+
+function drawCard(){
+  if(match.cardIndex >= match.deck.length){
+    // Safety net: extend the deck if a draw is requested with nothing queued
+    const extra = match.suddenPool.length ? match.suddenPool.pop() : shuffle(CARD_POOL)[0];
+    match.deck.push(extra);
+  }
+  currentCard = match.deck[match.cardIndex];
+  match.cardIndex++;
+  timerVal = timerForDifficulty(currentCard.difficulty);
+  chosenIndex = null;
+  retryMode = false;
+  retryUsed = false;
+  AudioEngine.playDraw();
+  goto('card');
+}
+
+/* ================= CARD SCREEN ================= */
+const DIFF_LABEL = { easy: "Easy", medium: "Medium", hard: "Hard" };
+
+function renderCard(){
+  const t = T();
+  const team = match.teams[match.currentTeam];
+  const letters = ["A", "B", "C"];
+  const twoCls = currentCard.choices.length === 2 ? 'two' : '';
+
+  screenEl.innerHTML = `
+    <div class="screen-body">
+      <div class="card-topline">
+        <div class="card-label">${t.situationCardLabel}</div>
+        <div class="badge-row">
+          <span class="badge diff-${currentCard.difficulty}">${DIFF_LABEL[currentCard.difficulty]}</span>
+          <span class="badge cat">${currentCard.category}</span>
+        </div>
+      </div>
+      <div class="situation-card">
+        <div class="scenario">${currentCard.scenario}</div>
+      </div>
+      <div class="timer-wrap"><span class="timer" id="timerNum">${timerVal}s</span></div>
+      <div class="timer-track"><div class="timer-fill" id="timerFill" style="width:100%;"></div></div>
+      ${team.isAI ? `<div class="ai-indicator"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>&nbsp;${t.aiTurnLabel(team.name)}</div>` : ''}
+      <div class="choice-list ${twoCls}">
+        ${currentCard.choices.map((c, i) => `
+          <button class="choice-card ${team.isAI ? 'disabled' : ''}" onclick="pickChoice(${i})">
+            <span class="idx idx-tl">${letters[i]}<i>♦</i></span>
+            <span class="idx idx-br">${letters[i]}<i>♦</i></span>
+            <span class="choice-text">${c.text}</span>
+          </button>`).join("")}
+      </div>
+    </div>
+  `;
+  startTimer();
+  setControls('');
+
+  if(team.isAI){
+    const idx = AIOpponent.chooseIndex(currentCard, team.aiDifficulty);
+    const delay = Math.min(AIOpponent.thinkTime(team.aiDifficulty), (timerVal - 1) * 1000);
+    aiTimeout = setTimeout(() => { if(state === 'card') pickChoice(idx); }, Math.max(600, delay));
+  }
+}
+
+function startTimer(){
+  clearInterval(timerHandle);
+  const fill = document.getElementById('timerFill');
+  const num = document.getElementById('timerNum');
+  const urgentAt = Math.min(10, Math.round(timerVal / 3));
+  if(num) num.classList.toggle('urgent', timerVal <= urgentAt && timerVal > 0);
+  const initial = timerVal;
+  if(fill) fill.style.width = "100%";
+  timerHandle = setInterval(() => {
+    timerVal--;
+    const f = document.getElementById('timerFill');
+    const n = document.getElementById('timerNum');
+    if(n){ n.textContent = timerVal + "s"; n.classList.toggle('urgent', timerVal <= urgentAt && timerVal > 0); }
+    if(f){ f.style.width = Math.max(0, (timerVal / initial) * 100) + "%"; f.classList.toggle('urgent', timerVal <= urgentAt && timerVal > 0); }
+    if(timerVal <= 0){ clearInterval(timerHandle); pickChoice(null); }
+  }, 1000);
+}
+
+function pickChoice(index){
+  clearInterval(timerHandle);
+  clearTimeout(aiTimeout);
+  chosenIndex = index;
+  goto('reveal');
+}
+
+/* ================= REVEAL SCREEN ================= */
+function recordStat(team, rawPts){
+  const s = match.stats[team.name];
+  s.attempts++;
+  if(rawPts === 2) s.correct++;
+}
+
+function renderReveal(){
+  const t = T();
+  const team = match.teams[match.currentTeam];
+  const letters = ["A", "B", "C"];
+  const rawPts = chosenIndex === null ? 0 : currentCard.choices[chosenIndex].pts;
+  let pts = rawPts;
+  if(match.stealActive) pts = Math.min(pts, 1);
+
+  if(!retryMode){
+    match.pendingScore = pts;
+    recordStat(team, rawPts);
+  }
+
+  if(rawPts === 2) AudioEngine.playCorrect();
+  else if(rawPts === 1) AudioEngine.playPartial();
+  else AudioEngine.playWrong();
+
+  const resultLabel = chosenIndex === null
+    ? t.resultTimesUp
+    : rawPts === 2 ? t.resultFullyCorrect : rawPts === 1 ? t.resultRightIdea : t.resultNotQuite;
+
+  const canRetry = match.learningAids && !team.isAI && rawPts < 2 && !retryUsed;
+  const twoCls = currentCard.choices.length === 2 ? 'two' : '';
+
+  screenEl.innerHTML = `
+    <div class="screen-body">
+      <div class="choice-list flat ${twoCls}" style="margin-top:6px;margin-bottom:12px;">
+        ${currentCard.choices.map((c, i) => {
+          let cls = "dim";
+          let mark = "";
+          if(chosenIndex === i){
+            cls = c.pts === 2 ? "correct" : c.pts === 1 ? "partial" : "wrong";
+            mark = `<span class="choice-mark" style="background:${c.pts===2?'var(--sage)':c.pts===1?'var(--gold)':'var(--coral)'};">${c.pts===2?'✓':c.pts===1?'~':'✗'}</span>`;
+          } else if(c.pts === 2){
+            cls = "correct dim";
+          }
+          return `<div class="choice-card ${cls}">
+                    <span class="idx idx-tl">${letters[i]}<i>♦</i></span>
+                    <span class="idx idx-br">${letters[i]}<i>♦</i></span>
+                    ${mark}
+                    <span class="choice-text">${c.text}</span>
+                  </div>`;
+        }).join("")}
+      </div>
+      <div class="answer-card${rawPts===0 && chosenIndex!==null ? ' shake' : ''}">
+        <div class="answer-tag" style="background:${rawPts===2?'var(--sage)':rawPts===1?'var(--gold)':'var(--coral)'};">${resultLabel}</div>
+        <div class="answer-text">${currentCard.answer}</div>
+        <div class="legal-basis"><strong>${t.legalBasisLabel}</strong> ${currentCard.legal}</div>
+      </div>
+      <div style="font-size:11.5px;color:#5b6f68;text-align:center;margin:10px 0 2px;">${t.earnsText(team.name, match.pendingScore)}</div>
+      ${match.stealActive ? `<div class="toast">${t.stealToast}</div>` : ''}
+      ${retryMode ? `<div class="toast info">Practice attempt — your original score for this turn stays the same.</div>` : ''}
+      <div class="sticky-cta">
+        ${canRetry ? `<button class="btn btn-outline" onclick="retryCard()">${t.tryAgainBtn}</button>` : ''}
+        <button class="btn btn-primary" onclick="continueAfterReveal()">${t.continueBtn}</button>
+      </div>
+    </div>
+  `;
+  setControls('');
+  if(rawPts === 2) burstConfetti();
+
+  if(team.isAI){
+    aiTimeout = setTimeout(() => { if(state === 'reveal') continueAfterReveal(); }, 1700);
+  }
+}
+
+function retryCard(){
+  retryMode = true;
+  retryUsed = true;
+  chosenIndex = null;
+  timerVal = timerForDifficulty(currentCard.difficulty);
+  goto('card');
+}
+
+function continueAfterReveal(){
+  clearTimeout(aiTimeout);
+  applyScore(match.pendingScore);
+}
+
+function burstConfetti(){
+  const phone = document.querySelector('.phone');
+  if(!phone) return;
+  const colors = ['#D9A441', '#7FA684', '#F7F1E1', '#D2574B', '#EFC978'];
+  for(let i = 0; i < 18; i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = (8 + Math.random() * 84) + '%';
+    p.style.top = (26 + Math.random() * 8) + '%';
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = (Math.random() * 180) + 'ms';
+    phone.appendChild(p);
+    setTimeout(() => p.remove(), 1300);
+  }
+}
+
+/* ================= SCORING / WIN CONDITIONS ================= */
+function nextTeam(){ match.currentTeam = (match.currentTeam + 1) % match.teams.length; }
+
+function applyScore(pts){
+  const team = match.teams[match.currentTeam];
+  team.score += pts;
+
+  if(match.suddenDeath){
+    if(pts === 2) return endMatch(team, 'sudden');
+    advanceSuddenDeath();
+    return;
+  }
+
+  if(team.score >= match.target) return endMatch(team, 'target');
+
+  if(pts === 0 && !match.stealActive){
+    match.stealActive = true;
+    nextTeam();
+    chosenIndex = null;
+    goto('draw');
+    return;
+  }
+  match.stealActive = false;
+
+  if(match.cardIndex >= match.deck.length) return handleDeckExhausted();
+
+  nextTeam();
+  goto('draw');
+}
+
+function handleDeckExhausted(){
+  const max = Math.max(...match.teams.map(t => t.score));
+  const leaders = match.teams.filter(t => t.score === max);
+  if(leaders.length === 1) return endMatch(leaders[0], 'cards');
+
+  match.suddenDeath = true;
+  match.suddenDeathTeams = leaders;
+  match.currentTeam = match.teams.indexOf(leaders[0]);
+  if(match.suddenPool.length) match.deck.push(match.suddenPool.pop());
+  chosenIndex = null;
+  goto('draw');
+}
+
+function advanceSuddenDeath(){
+  const teams = match.suddenDeathTeams;
+  const idx = teams.indexOf(match.teams[match.currentTeam]);
+  const next = teams[(idx + 1) % teams.length];
+  match.currentTeam = match.teams.indexOf(next);
+  if(match.cardIndex >= match.deck.length && match.suddenPool.length){
+    match.deck.push(match.suddenPool.pop());
+  }
+  chosenIndex = null;
+  goto('draw');
+}
+
+function endMatch(winnerTeam, reason){
+  match.winner = winnerTeam;
+  match.winReason = reason;
+  AudioEngine.playWin();
+  goto('matchEnd');
+}
+
+/* ================= SCOREBOARD (mid-match) ================= */
+function renderScore(){
+  const t = T();
+  const sorted = [...match.teams].sort((a, b) => b.score - a.score);
+  const topScore = sorted[0].score;
+  const tied = sorted.filter(tm => tm.score === topScore).length > 1;
+  screenEl.innerHTML = `
+    <div class="screen-body">
+      <div class="app-header">${t.scoreboardTitle}</div>
+      <div class="target-note">Target: ${match.target} pts &nbsp;•&nbsp; Cards Left: ${match.deck.length - match.cardIndex} / ${match.deck.length}</div>
+      ${sorted.map((tm, i) => `
+        <div class="scoreboard-row ${i===0 && topScore>0 && !tied ? 'leader' : ''}">
+          <span class="name">${i===0 && topScore>0 && !tied ? '<svg class="menu-icon crown" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1" stroke-linejoin="round"><path d="M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8z"/></svg>' : ''}<span class="team-dot" style="background:${tm.dot}"></span>${tm.name}${tm.isAI ? ' 🤖' : ''}</span>
+          <span class="pts" id="pts-${tm.name.replace(/\s+/g,'')}">${prevScores[tm.name] || 0} pts</span>
+        </div>`).join("")}
+      <div style="font-size:11.5px;color:#5b6f68;text-align:center;margin-top:4px;">${t.upNext(match.teams[match.currentTeam].name)}</div>
+      <div class="grow"></div>
+      <button class="btn btn-primary" onclick="backFromScoreboard()">${t.backToGameBtn}</button>
+    </div>
+  `;
+  setControls(`<button class="btn btn-outline" style="width:auto;padding:10px 18px;display:inline-flex;align-items:center;gap:6px;" onclick="quitToHome()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>${t.quitGameBtn}</button>`);
+  match.teams.forEach(tm => {
+    const el = document.getElementById('pts-' + tm.name.replace(/\s+/g,''));
+    animateNumber(el, prevScores[tm.name] || 0, tm.score);
+    prevScores[tm.name] = tm.score;
+  });
+}
+
+function animateNumber(el, from, to){
+  if(!el || from === to){ if(el) el.textContent = to + " pts"; return; }
+  const duration = 500;
+  const start = performance.now();
+  function step(now){
+    const progress = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const val = Math.round(from + (to - from) * eased);
+    el.textContent = val + " pts";
+    if(progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ================= MATCH END SCREEN ================= */
+function renderMatchEnd(){
+  const t = T();
+  const sorted = [...match.teams].sort((a, b) => b.score - a.score);
+  const winner = match.winner;
+  const subText = match.winReason === 'target' ? t.winSubTarget(match.target)
+    : match.winReason === 'sudden' ? t.winSubSudden
+    : t.winSubCards;
+
+  const humanTeams = match.teams.filter(tm => !tm.isAI);
+  const statBlocks = match.mode === 'solo' ? (() => {
+    const s = match.stats["You"];
+    const acc = s.attempts ? Math.round((s.correct / s.attempts) * 100) : 0;
+    return `
+      <div class="stat-row">
+        <div class="stat-box"><div class="num">${match.teams[0].score}</div><div class="lbl">${t.scoreLabel}</div></div>
+        <div class="stat-box"><div class="num">${acc}%</div><div class="lbl">${t.accuracyLabel}</div></div>
+        <div class="stat-box"><div class="num">${s.attempts}</div><div class="lbl">${t.attemptsLabel}</div></div>
+      </div>`;
+  })() : '';
+
+  screenEl.innerHTML = `
+    <div class="screen-body">
+      <div class="win-trophy"><svg viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold-soft)" stroke-width="0.5"><path d="M7 4h10v3a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round"/><rect x="10" y="15" width="4" height="3" fill="var(--gold)"/><rect x="7" y="19" width="10" height="2.4" rx="1" fill="var(--gold)"/></svg></div>
+      <div class="win-title">${t.winTitle(winner.name)}</div>
+      <div class="win-sub">${subText}</div>
+      ${statBlocks}
+      <div class="app-header" style="margin-top:6px;">${t.scoreboardTitle}</div>
+      ${sorted.map(tm => `
+        <div class="scoreboard-row ${tm===winner?'leader':''}">
+          <span class="name">${tm===winner ? '<svg class="menu-icon crown" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1" stroke-linejoin="round"><path d="M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8z"/></svg>' : ''}<span class="team-dot" style="background:${tm.dot}"></span>${tm.name}${tm.isAI ? ' 🤖' : ''}</span>
+          <span class="pts">${tm.score} pts</span>
+        </div>`).join("")}
+      <div class="grow"></div>
+      <button class="btn btn-outline" style="margin-bottom:8px;" onclick="goto('home')">${t.homeBtn}</button>
+      <button class="btn btn-primary" onclick="startMatch()">${t.playAgainBtn}</button>
+    </div>
+  `;
+  setControls('');
+  burstConfetti();
+}
+
+/* ================= PAUSE / QUIT ================= */
+function quitToHome(){
+  clearInterval(timerHandle);
+  clearTimeout(aiTimeout);
+  match = null;
+  goto('home');
+}
+
+function openPause(){
+  const t = T();
+  paused = true;
+  clearInterval(timerHandle);
+  clearTimeout(aiTimeout);
+  const team = match.teams[match.currentTeam];
+  const subText = state === "card" ? t.timerOnHold(timerVal) : t.turnOnHold(team.name);
+  pauseSubEl.textContent = subText;
+  pauseOverlayEl.classList.add('open');
+}
+
+function closePause(){
+  paused = false;
+  pauseOverlayEl.classList.remove('open');
+  if(state === "card" && timerVal > 0){
+    const team = match.teams[match.currentTeam];
+    startTimer();
+    if(team.isAI){
+      const idx = AIOpponent.chooseIndex(currentCard, team.aiDifficulty);
+      const delay = Math.min(AIOpponent.thinkTime(team.aiDifficulty), (timerVal - 1) * 1000);
+      aiTimeout = setTimeout(() => { if(state === 'card') pickChoice(idx); }, Math.max(600, delay));
+    }
+  }
+}
+
+function pauseGoScoreboard(){
+  paused = false;
+  pauseOverlayEl.classList.remove('open');
+  cameFromPause = (state === "card" || state === "reveal") ? state : null;
+  goto('score');
+}
+
+function backFromScoreboard(){
+  if(cameFromPause === "card" || cameFromPause === "reveal"){
+    const from = cameFromPause;
+    cameFromPause = null;
+    goto(from);
+  } else {
+    goto('draw');
+  }
+}
+
+function pauseQuit(){
+  paused = false;
+  pauseOverlayEl.classList.remove('open');
+  quitToHome();
+}
+
+/* ================= LANGUAGE PICKER ================= */
+function openLangPicker(){
+  const t = T();
+  langPickerTitleEl.textContent = t.langPickerTitle;
+  langPickerSubEl.textContent = t.langPickerSub;
+  langListEl.innerHTML = Object.keys(langNames).map(code => `
+    <button class="btn ${code===currentLang ? 'btn-primary' : 'btn-outline'} pause-item" onclick="selectLang('${code}')">${langNames[code]}</button>
+  `).join("");
+  langOverlayEl.classList.add('open');
+}
+function closeLangPicker(){ langOverlayEl.classList.remove('open'); }
+function selectLang(code){
+  currentLang = code;
+  closeLangPicker();
+  render();
+}
