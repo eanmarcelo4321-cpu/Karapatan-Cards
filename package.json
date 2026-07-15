@@ -1,0 +1,14 @@
+{
+  "name": "karapatan-cards",
+  "version": "1.0.0",
+  "description": "Karapatan Cards - a team-based rights education card game",
+  "scripts": {
+    "sync": "cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/cli": "^8.4.2",
+    "@capacitor/core": "^8.4.2",
+    "@capacitor/ios": "^8.4.2"
+  }
+}

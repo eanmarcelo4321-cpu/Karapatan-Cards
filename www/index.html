@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Karapatan Cards</title>
+<style>
+  :root{
+    --navy:#0D3B36;
+    --navy-deep:#082622;
+    --gold:#D9A441;
+    --gold-soft:#EFC978;
+    --cream:#F7F1E1;
+    --coral:#D2574B;
+    --sage:#7FA684;
+    --ink:#20302C;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none;}
+  html,body{margin:0;padding:0; height:100%; overscroll-behavior:none;}
+  body{
+    height:100dvh;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(217,164,65,0.12), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(127,166,132,0.10), transparent 40%),
+      var(--navy-deep);
+    font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color:var(--cream);
+    overflow:hidden;
+  }
+
+  /* APP SHELL (fills the real device screen) */
+  .phone{
+    width:100%;
+    height:100dvh;
+    background:linear-gradient(155deg,#123c37,#0a2622);
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .screen{
+    flex:1;
+    background:var(--cream);
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    padding:18px 18px 14px;
+    position:relative;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scrollbar-width:none;
+  }
+  .screen::-webkit-scrollbar{display:none;}
+  .app-header{
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:700;
+    font-size:13px;
+    color:var(--navy);
+    text-align:center;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+    opacity:0.65;
+  }
+
+  /* SCREEN CONTENT SHARED */
+  .screen-body{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  .grow{flex:1;}
+
+  /* HOME SCREEN */
+  .home-logo{
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:800;
+    font-size:26px;
+    color:var(--navy);
+    text-align:center;
+    margin-top:18px;
+  }
+  .home-tagline{
+    text-align:center;
+    font-size:12px;
+    color:#5b6f68;
+    margin-top:4px;
+    margin-bottom:24px;
+  }
+  .team-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#fff;
+    border:1.5px solid #E4DCC5;
+    border-radius:12px;
+    padding:10px 14px;
+    margin-bottom:10px;
+    font-weight:600;
+    font-size:14px;
+  }
+  .team-dot{width:10px;height:10px;border-radius:50%;margin-right:10px;display:inline-block;}
+
+  .lang-chip{
+    position:absolute;
+    top:8px; right:16px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-weight:600;
+    font-size:10.5px;
+    color:var(--navy);
+    background:#fff;
+    border:1.5px solid #E4DCC5;
+    border-radius:999px;
+    padding:5px 10px;
+    cursor:pointer;
+    z-index:10;
+    transition:transform 0.12s ease, border-color 0.12s ease;
+  }
+  .lang-chip svg{ width:13px; height:13px; flex-shrink:0; }
+  .lang-chip:hover{ border-color:var(--gold); }
+  .lang-chip:active{ transform:scale(0.95); }
+
+  /* CARD DISPLAY */
+  .card-label{
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--coral);
+    text-align:center;
+    margin-bottom:10px;
+  }
+  .card-label.star{color:var(--gold);}
+  .situation-card{
+    background:var(--navy);
+    color:var(--cream);
+    border-radius:16px;
+    padding:20px 18px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    box-shadow:0 8px 18px rgba(13,59,54,0.25);
+    border:1.5px solid rgba(217,164,65,0.4);
+    animation:cardDraw 0.45s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .situation-card .scenario{
+    font-size:15px;
+    line-height:1.5;
+    font-weight:500;
+  }
+  .timer-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin:16px 0 6px;
+  }
+  .timer{
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--navy);
+    display:inline-block;
+    transition:color 0.2s ease;
+  }
+  .timer.urgent{ color:var(--coral); animation:pulseText 0.6s ease-in-out infinite; }
+  .timer-track{
+    width:100%;
+    height:6px;
+    background:#E4DCC5;
+    border-radius:4px;
+    overflow:hidden;
+    margin-bottom:16px;
+  }
+  .timer-fill{
+    height:100%;
+    background:var(--coral);
+    border-radius:4px;
+    transition:width 1s linear, filter 0.2s ease;
+  }
+  .timer-fill.urgent{ animation:pulseBar 0.6s ease-in-out infinite; }
+
+  /* ANSWER SCREEN */
+  .answer-card{
+    background:#fff;
+    border-radius:16px;
+    padding:18px;
+    border:1.5px solid var(--sage);
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    animation:popIn 0.4s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay:0.15s;
+    opacity:0;
+  }
+  .answer-card.shake{ animation:popIn 0.4s cubic-bezier(.2,.8,.2,1) 0.15s both, shake 0.4s ease 0.55s; }
+  .answer-tag{
+    display:inline-block;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:#fff;
+    background:var(--sage);
+    padding:3px 8px;
+    border-radius:6px;
+    margin-bottom:10px;
+    width:fit-content;
+  }
+  .answer-text{font-size:14px; line-height:1.5; font-weight:500; margin-bottom:10px;}
+  .legal-basis{
+    font-size:11.5px;
+    color:#5b6f68;
+    line-height:1.5;
+    border-top:1px dashed #cfc6a8;
+    padding-top:8px;
+  }
+
+  /* BUTTONS */
+  .btn{
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:700;
+    font-size:14px;
+    border:none;
+    border-radius:12px;
+    padding:13px 16px;
+    cursor:pointer;
+    width:100%;
+    text-align:center;
+    transition:transform 0.12s ease, filter 0.12s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--gold); color:var(--navy-deep);}
+  .btn-primary:hover{filter:brightness(1.06);}
+  .btn-outline{
+    background:transparent;
+    border:1.5px solid var(--navy);
+    color:var(--navy);
+  }
+  .choice-list{
+    display:flex;
+    flex-direction:column;
+    margin-top:22px;
+    padding:0 6px;
+  }
+  .choice-card{
+    position:relative;
+    background:
+      radial-gradient(circle at 28% 18%, rgba(217,164,65,0.16), transparent 55%),
+      linear-gradient(160deg, #123c37 0%, #0a2622 75%);
+    border:1.5px solid var(--gold);
+    border-radius:16px;
+    padding:16px 14px 14px;
+    cursor:pointer;
+    box-shadow:0 10px 20px rgba(0,0,0,0.35);
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
+    transform-origin:center bottom;
+    text-align:left;
+    opacity:0;
+  }
+  .choice-list .choice-card:nth-child(1){ animation:dealIn1 0.5s cubic-bezier(.2,.8,.2,1) both; animation-delay:0.05s; z-index:1; }
+  .choice-list .choice-card:nth-child(2){ animation:dealIn2 0.5s cubic-bezier(.2,.8,.2,1) both; animation-delay:0.16s; margin-top:-14px; z-index:2; }
+  .choice-list .choice-card:nth-child(3){ animation:dealIn3 0.5s cubic-bezier(.2,.8,.2,1) both; animation-delay:0.27s; margin-top:-14px; z-index:3; }
+  .choice-list .choice-card:hover{
+    transform:rotate(0deg) translateY(-5px) scale(1.02) !important;
+    box-shadow:0 16px 30px rgba(0,0,0,0.48);
+    z-index:10;
+  }
+  .choice-list .choice-card:active{
+    transform:rotate(0deg) translateY(-2px) scale(0.98) !important;
+  }
+  .choice-list.flat .choice-card{
+    margin-top:10px !important;
+    z-index:1 !important;
+  }
+  .choice-list.flat .choice-card:nth-child(1){ animation:flatIn 0.4s ease both; animation-delay:0.05s; }
+  .choice-list.flat .choice-card:nth-child(2){ animation:flatIn 0.4s ease both; animation-delay:0.15s; }
+  .choice-list.flat .choice-card:nth-child(3){ animation:flatIn 0.4s ease both; animation-delay:0.25s; }
+  .choice-list.flat .choice-card:first-child{ margin-top:0 !important; }
+  .idx{
+    position:absolute;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1px;
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:700;
+    font-size:12px;
+    color:var(--gold-soft);
+    line-height:1;
+  }
+  .idx i{font-style:normal; font-size:9px; opacity:0.85;}
+  .idx-tl{top:10px; left:12px;}
+  .idx-br{bottom:10px; right:12px; transform:rotate(180deg);}
+  .choice-text{
+    display:block;
+    margin:24px 4px 6px;
+    font-size:12.5px;
+    line-height:1.5;
+    font-weight:500;
+    color:var(--cream);
+    text-align:center;
+  }
+  .choice-mark{
+    position:absolute;
+    top:9px; right:11px;
+    width:22px;height:22px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;
+    font-weight:700;
+    color:#fff;
+    box-shadow:0 2px 5px rgba(0,0,0,0.3);
+  }
+  .choice-card.correct{ border-color:var(--sage); box-shadow:0 0 0 3px rgba(127,166,132,0.28), 0 10px 20px rgba(0,0,0,0.35); }
+  .choice-card.correct .idx{ color:#bfe3c6; }
+  .choice-card.partial{ border-color:var(--gold-soft); box-shadow:0 0 0 3px rgba(217,164,65,0.28), 0 10px 20px rgba(0,0,0,0.35); }
+  .choice-card.wrong{ border-color:var(--coral); box-shadow:0 0 0 3px rgba(210,87,75,0.28), 0 10px 20px rgba(0,0,0,0.35); }
+  .choice-card.wrong .idx{ color:#f0b5ae; }
+  .choice-card.dim{ opacity:0.4; }
+  .score-row{display:flex; gap:8px; margin-top:12px;}
+  .score-btn{
+    flex:1;
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:700;
+    font-size:16px;
+    padding:12px 0;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    color:#fff;
+  }
+  .score-2{background:var(--sage);}
+  .score-1{background:var(--gold);}
+  .score-0{background:var(--coral);}
+
+  /* SCOREBOARD */
+  .scoreboard-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#fff;
+    border:1.5px solid #E4DCC5;
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .scoreboard-row .name{font-weight:700; font-size:14px;}
+  .scoreboard-row .pts{
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:800;
+    font-size:18px;
+    color:var(--navy);
+  }
+  .toast{
+    font-size:12px;
+    text-align:center;
+    color:#5b6f68;
+    background:#fff8e8;
+    border:1px dashed var(--gold);
+    border-radius:10px;
+    padding:8px 10px;
+    margin-top:10px;
+  }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    padding:0 18px calc(14px + env(safe-area-inset-bottom));
+    background:var(--cream);
+  }
+  .controls:empty{ display:none; }
+  .sticky-cta{
+    position:sticky;
+    bottom:-14px;
+    background:linear-gradient(to top, var(--cream) 60%, rgba(247,241,225,0));
+    padding:14px 0 14px;
+    margin-top:8px;
+  }
+  .crown{width:15px;height:15px;margin-right:4px; display:inline-block; animation:crownBounce 1.1s ease-in-out infinite;}
+  .deck-icon{display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+  .scoreboard-row.leader{border-color:var(--gold); background:#fdf8ec;}
+  .scoreboard-row{animation:fadeSlideIn 0.35s ease both;}
+  .scoreboard-row:nth-child(2){animation-delay:0.08s;}
+  .scoreboard-row:nth-child(3){animation-delay:0.16s;}
+
+  /* ANIMATIONS */
+  .screen-body{ animation:fadeSlideIn 0.3s ease both; }
+  .choice-mark{ animation:markPop 0.35s cubic-bezier(.34,1.56,.64,1) both; animation-delay:0.3s; opacity:0; }
+  .btn{ transition:transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease; }
+  .btn-primary:hover{ filter:brightness(1.06); box-shadow:0 6px 14px rgba(217,164,65,0.35); transform:translateY(-1px); }
+  .team-row{ animation:fadeSlideIn 0.35s ease both; }
+  .team-row:nth-child(2){ animation-delay:0.08s; }
+
+  .confetti-piece{
+    position:absolute;
+    width:6px; height:11px;
+    border-radius:2px;
+    pointer-events:none;
+    animation:confettiFall 1000ms ease-in forwards;
+    z-index:60;
+  }
+
+  .pause-btn{
+    position:absolute;
+    top:calc(14px + env(safe-area-inset-top)); left:14px;
+    width:32px; height:32px;
+    border-radius:50%;
+    border:1.5px solid rgba(217,164,65,0.5);
+    background:rgba(8,38,34,0.55);
+    backdrop-filter:blur(2px);
+    display:flex;align-items:center;justify-content:center;
+    gap:3px;
+    padding:0;
+    cursor:pointer;
+    z-index:45;
+    transition:transform 0.12s ease, background 0.12s ease;
+  }
+  .pause-btn:hover{background:rgba(8,38,34,0.8); transform:scale(1.06);}
+  .pause-btn:active{transform:scale(0.94);}
+  .pause-btn .bar{
+    width:3px; height:11px;
+    border-radius:1px;
+    background:var(--gold-soft);
+  }
+  .play-tri{
+    display:inline-block;
+    width:0; height:0;
+    border-top:6px solid transparent;
+    border-bottom:6px solid transparent;
+    border-left:9px solid var(--navy-deep);
+    margin-right:2px;
+    vertical-align:middle;
+  }
+
+  .pause-overlay{
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(5,20,18,0.72);
+    backdrop-filter:blur(1.5px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:70;
+    padding:20px;
+  }
+  .pause-overlay.open{ display:flex; animation:fadeSlideIn 0.22s ease both; }
+  .pause-menu{
+    background:var(--cream);
+    border-radius:18px;
+    padding:22px 20px 18px;
+    width:100%;
+    max-width:250px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.45);
+    animation:popIn 0.28s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .pause-title{
+    font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+    font-weight:800;
+    font-size:18px;
+    color:var(--navy);
+    text-align:center;
+  }
+  .pause-sub{
+    font-size:11.5px;
+    color:#5b6f68;
+    text-align:center;
+    margin-bottom:6px;
+    line-height:1.4;
+  }
+  .pause-item{ font-size:13px; padding:11px 14px; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .menu-icon{ width:16px; height:16px; flex-shrink:0; }
+  .pause-item.danger{ border-color:var(--coral); color:var(--coral); }
+  .pause-item.danger:hover{ background:rgba(210,87,75,0.08); }
+
+  @keyframes fadeSlideIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes cardDraw{
+    from{ opacity:0; transform:scale(0.92) rotate(-2deg); }
+    to{ opacity:1; transform:scale(1) rotate(0deg); }
+  }
+  @keyframes popIn{
+    from{ opacity:0; transform:scale(0.94) translateY(8px); }
+    to{ opacity:1; transform:scale(1) translateY(0); }
+  }
+  @keyframes shake{
+    10%,90%{ transform:translateX(-2px); }
+    20%,80%{ transform:translateX(3px); }
+    30%,50%,70%{ transform:translateX(-5px); }
+    40%,60%{ transform:translateX(5px); }
+  }
+  @keyframes pulseText{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.15); }
+  }
+  @keyframes pulseBar{
+    0%,100%{ filter:brightness(1); }
+    50%{ filter:brightness(1.4); }
+  }
+  @keyframes markPop{
+    0%{ opacity:0; transform:scale(0.3) rotate(-20deg); }
+    70%{ opacity:1; transform:scale(1.15) rotate(4deg); }
+    100%{ opacity:1; transform:scale(1) rotate(0deg); }
+  }
+  @keyframes crownBounce{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-3px) rotate(-4deg); }
+  }
+  @keyframes dealIn1{
+    from{ opacity:0; transform:translateY(26px) scale(0.9) rotate(0deg); }
+    to{ opacity:1; transform:translateY(0) scale(1) rotate(-3.5deg) translateX(-5px); }
+  }
+  @keyframes dealIn2{
+    from{ opacity:0; transform:translateY(26px) scale(0.9) rotate(0deg); }
+    to{ opacity:1; transform:translateY(0) scale(1) rotate(1.5deg) translateX(4px); }
+  }
+  @keyframes dealIn3{
+    from{ opacity:0; transform:translateY(26px) scale(0.9) rotate(0deg); }
+    to{ opacity:1; transform:translateY(0) scale(1) rotate(-1.5deg) translateX(-3px); }
+  }
+  @keyframes flatIn{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes confettiFall{
+    0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform:translateY(150px) rotate(360deg); opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="phone">
+    <button class="pause-btn" id="pauseBtn" onclick="openPause()" aria-label="Pause menu"><span class="bar"></span><span class="bar"></span></button>
+    <div class="screen" id="screen"></div>
+    <div class="controls" id="controls"></div>
+    <div class="pause-overlay" id="pauseOverlay">
+      <div class="pause-menu">
+        <div class="pause-title">Paused</div>
+        <div class="pause-sub" id="pauseSub"></div>
+        <button class="btn btn-primary" onclick="closePause()"><span class="play-tri"></span> Resume</button>
+        <button class="btn btn-outline pause-item" onclick="pauseGoScoreboard()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"/></svg> View Scoreboard</button>
+        <button class="btn btn-outline pause-item" onclick="pauseGoHome()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg> Back to Home</button>
+        <button class="btn btn-outline pause-item danger" onclick="pauseRestart()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg> Restart Game</button>
+      </div>
+    </div>
+    <div class="pause-overlay" id="langOverlay">
+      <div class="pause-menu">
+        <div class="pause-title" id="langPickerTitle">Choose Language</div>
+        <div class="pause-sub" id="langPickerSub">Switches every card and menu instantly.</div>
+        <div id="langList" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <button class="btn btn-outline pause-item" style="margin-top:2px;" onclick="closeLangPicker()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const langNames = { en: "English", fil: "Filipino", ceb: "Bisaya (Cebuano)", pam: "Kapampangan" };
+
+const translations = {
+  en: {
+    ui: {
+      tagline: "\"Alamin ang karapatan, tara laro na!\"",
+      ready: "Ready",
+      startGame: "Start Game",
+      langBtn: (name) => `Language: ${name}`,
+      langPickerTitle: "Choose Language",
+      langPickerSub: "Switches every card and menu instantly.",
+      turnLabel: (team) => `${team}'s turn`,
+      cardsLeft: (n) => `${n} card${n===1?'':'s'} left in the deck`,
+      drawBtn: "Draw Situation Card",
+      viewScoreboardBtn: "View scoreboard",
+      situationCardLabel: "Situation Card",
+      realTalkCardLabel: "Real Talk Card",
+      openDiscussionBtn: "Open Discussion",
+      resultFullyCorrect: "Fully correct!",
+      resultRightIdea: "Right idea, missed a detail",
+      resultNotQuite: "Not quite",
+      resultTimesUp: "Time's up — no answer picked",
+      continueBtn: "Continue",
+      earnsText: (team, pts) => `${team} earns <strong>${pts} point${pts===1?'':'s'}</strong>`,
+      stealToast: "Steal rule active: this attempt was capped at 1 point.",
+      discussionTag: "Discussion",
+      discussionText: "This card has no fixed answer. Talk it through as a team, then continue.",
+      legalBasisLabel: "Legal basis:",
+      scoreboardTitle: "Scoreboard",
+      upNext: (team) => `${team} is up next`,
+      backToGameBtn: "Back to Game",
+      restartDemoBtn: "Restart demo",
+      pausedTitle: "Paused",
+      turnOnHold: (team) => `${team}'s turn is on hold.`,
+      timerOnHold: (s) => `Timer's on hold at ${s}s. Resume to keep going.`,
+      resumeBtn: "Resume",
+      viewScoreboardPauseBtn: "View Scoreboard",
+      backToHomeBtn: "Back to Home",
+      restartGameBtn: "Restart Game"
+    },
+    cards: [
+      {
+        id: 1, star: false,
+        scenario: "Maya, 15, sees a classmate's edited photo being shared in a group chat with insulting captions. She's asked to forward it too. What should she do?",
+        answer: "Do not forward it — sharing it makes you part of the harm. Screenshot the messages, report the group chat, and tell a trusted adult or guidance counselor.",
+        legal: "Under RA 10627 (Anti-Bullying Act) and the Safe Spaces Act, cyberbullying and online harassment involving minors must be reported to the school; platforms are also required to have reporting tools.",
+        choices: [
+          { text: "Forward it too so she doesn't seem rude, then report it later.", pts: 0 },
+          { text: "Quietly leave the group chat and say nothing to anyone.", pts: 1 },
+          { text: "Don't forward it — screenshot it, report the chat, tell a trusted adult.", pts: 2 }
+        ]
+      },
+      {
+        id: 2, star: false,
+        scenario: "Jun, 16, works after school stocking shelves at a sari-sari store. After a month, the owner says there's \"no budget\" this week and pays him nothing.",
+        answer: "Jun is entitled to be paid for all hours worked. Keep a log of hours, ask for pay in writing, and if unpaid, this can be reported to DOLE.",
+        legal: "Under the Labor Code and RA 9231, working minors 15–18 must receive at least the minimum wage for non-hazardous work, and withholding wages is illegal regardless of the employer's finances.",
+        choices: [
+          { text: "Accept it — the owner is a family friend, it's just one week.", pts: 0 },
+          { text: "Quit right away without asking for the unpaid wages.", pts: 1 },
+          { text: "Log his hours, ask for pay in writing, report to DOLE if unpaid.", pts: 2 }
+        ]
+      },
+      {
+        id: 3, star: false,
+        scenario: "Two neighbors argue loudly over a fence built slightly onto one family's lot. One threatens to tear it down himself that night.",
+        answer: "Neither neighbor should act alone. The dispute should go to the Barangay Justice System (Lupong Tagapamayapa) for mediation before any court case or self-help action.",
+        legal: "Under the Katarungang Pambarangay Law (PD 1508 / Local Government Code), most disputes between residents of the same barangay must first go through barangay conciliation.",
+        choices: [
+          { text: "Tear the fence down that same night to settle it.", pts: 0 },
+          { text: "Call the police right away to report a property crime.", pts: 1 },
+          { text: "Bring it to the Barangay Justice System (Lupon) for mediation.", pts: 2 }
+        ]
+      },
+      {
+        id: 4, star: false,
+        scenario: "Ana, 10, is asked by her uncle to skip school every day this week to help sell goods at the market.",
+        answer: "Ana has a right to education, and work should never interfere with schooling. An adult should raise this with the family or report it to the barangay or DSWD if she's being forced.",
+        legal: "PD 603 (Child and Youth Welfare Code) protects a child's right to education, and RA 9231 prohibits child labor arrangements that interfere with schooling.",
+        choices: [
+          { text: "Just let her skip — family and income come first.", pts: 0 },
+          { text: "Skip only this week, then return to school after.", pts: 1 },
+          { text: "Explain her right to education; report to the barangay or DSWD if she's forced.", pts: 2 }
+        ]
+      },
+      {
+        id: 5, star: false,
+        scenario: "A landlord tells a family they must leave their rented room in 2 days with no written notice, even though rent is fully paid.",
+        answer: "A family cannot be evicted without proper written notice and legal process. They should not leave immediately and can seek help from the barangay or local housing office.",
+        legal: "Under the Rent Control Act and general tenant-protection rules, landlords must follow a valid notice period and legal eviction process, even when rent is current.",
+        choices: [
+          { text: "Leave right away — it's the landlord's property, after all.", pts: 0 },
+          { text: "Ignore the landlord completely and refuse to talk at all.", pts: 1 },
+          { text: "Explain that proper written notice is required, and ask the barangay for help.", pts: 2 }
+        ]
+      },
+      {
+        id: 6, star: true,
+        scenario: "Real Talk: Your team has all agreed a rule feels unfair in your barangay. Is it ever okay to just ignore a rule you disagree with? Discuss as a team — no fixed answer.",
+        answer: "", legal: "", choices: []
+      }
+    ]
+  },
+
+  fil: {
+    ui: {
+      tagline: "\"Alamin ang karapatan, tara laro na!\"",
+      ready: "Handa",
+      startGame: "Simulan ang Laro",
+      langBtn: (name) => `Wika: ${name}`,
+      langPickerTitle: "Pumili ng Wika",
+      langPickerSub: "Agad magbabago ang lahat ng kard at menu.",
+      turnLabel: (team) => `Turn ni ${team}`,
+      cardsLeft: (n) => `${n} kard na natitira sa deck`,
+      drawBtn: "Bunutin ang Situation Card",
+      viewScoreboardBtn: "Tingnan ang Scoreboard",
+      situationCardLabel: "Situation Card",
+      realTalkCardLabel: "Tapatang Usapan",
+      openDiscussionBtn: "Simulan ang Talakayan",
+      resultFullyCorrect: "Tamang-tama!",
+      resultRightIdea: "Tamang Ideya, May Nakaligtaan",
+      resultNotQuite: "Hindi Gaanong Tama",
+      resultTimesUp: "Naubos ang Oras — Walang Napiling Sagot",
+      continueBtn: "Magpatuloy",
+      earnsText: (team, pts) => `Nakakuha si ${team} ng <strong>${pts} puntos</strong>`,
+      stealToast: "Aktibo ang Steal Rule: ang pagsubok na ito ay limitado sa 1 puntos lamang.",
+      discussionTag: "Talakayan",
+      discussionText: "Walang tiyak na sagot ang kard na ito. Pag-usapan ito bilang team, pagkatapos ay magpatuloy.",
+      legalBasisLabel: "Legal na basehan:",
+      scoreboardTitle: "Scoreboard",
+      upNext: (team) => `Susunod si ${team}`,
+      backToGameBtn: "Bumalik sa Laro",
+      restartDemoBtn: "Ulitin ang Demo",
+      pausedTitle: "Naka-pause",
+      turnOnHold: (team) => `Naka-hold ang turn ni ${team}.`,
+      timerOnHold: (s) => `Naka-pause ang timer sa ${s}s. I-resume para magpatuloy.`,
+      resumeBtn: "Ipagpatuloy",
+      viewScoreboardPauseBtn: "Tingnan ang Scoreboard",
+      backToHomeBtn: "Bumalik sa Home",
+      restartGameBtn: "Ulitin ang Laro"
+    },
+    cards: [
+      {
+        id: 1, star: false,
+        scenario: "Nakita ni Maya, 15, ang edited na larawan ng kaklase niya na ibinabahagi sa isang group chat kasama ang nakakainsultong mga caption. Hiniling sa kanya na i-forward din ito. Ano ang dapat niyang gawin?",
+        answer: "Huwag itong i-forward — kapag ibinahagi mo ito, nagiging bahagi ka na ng pananakit. Mag-screenshot ng mga mensahe, i-report ang group chat, at sabihin sa isang mapagkakatiwalaang matanda o guidance counselor.",
+        legal: "Ayon sa RA 10627 (Anti-Bullying Act) at Safe Spaces Act, dapat iulat sa paaralan ang cyberbullying at online harassment na kinasasangkutan ng menor de edad; kailangan ding magkaroon ng reporting tools ang mga platform.",
+        choices: [
+          { text: "I-forward din niya ito para hindi siya mukhang bastos, tapos i-report na lang mamaya.", pts: 0 },
+          { text: "Tahimik na lalabas sa group chat at hindi magsasabi kahit kanino.", pts: 1 },
+          { text: "Huwag i-forward — mag-screenshot, i-report ang chat, sabihin sa isang mapagkakatiwalaang matanda.", pts: 2 }
+        ]
+      },
+      {
+        id: 2, star: false,
+        scenario: "Si Jun, 16, ay nagtatrabaho pagkatapos ng klase sa pag-aayos ng paninda sa isang sari-sari store. Pagkalipas ng isang buwan, sinabi ng may-ari na \"walang budget\" ngayong linggo at hindi siya binayaran.",
+        answer: "May karapatan si Jun na mabayaran para sa lahat ng oras na nagtrabaho siya. Mag-log ng mga oras, humingi ng bayad nang nakasulat, at kung hindi pa rin binabayaran, maaari itong iulat sa DOLE.",
+        legal: "Ayon sa Labor Code at RA 9231, ang mga menor de edad na nagtatrabaho, 15–18 anyos, ay dapat makatanggap ng hindi bababa sa minimum wage para sa hindi mapanganib na trabaho, at ilegal ang hindi pagbabayad kahit anuman ang dahilan ng employer.",
+        choices: [
+          { text: "Tanggapin na lang — kaibigan naman ng pamilya ang may-ari, isang linggo lang naman.", pts: 0 },
+          { text: "Mag-resign agad nang hindi humihingi ng hindi pa bayad na sahod.", pts: 1 },
+          { text: "I-log ang oras, humingi ng bayad nang nakasulat, iulat sa DOLE kung hindi pa rin bayad.", pts: 2 }
+        ]
+      },
+      {
+        id: 3, star: false,
+        scenario: "Dalawang kapitbahay ang malakas na nagtatalo tungkol sa isang bakod na medyo nakalampas sa lote ng isang pamilya. Nagbanta ang isa na sila na mismo ang guguba nito ngayong gabi.",
+        answer: "Wala sa dalawang kapitbahay ang dapat kumilos nang mag-isa. Dapat dalhin ang alitan sa Barangay Justice System (Lupong Tagapamayapa) para sa mediation bago pumunta sa korte o gumawa ng sariling hakbang.",
+        legal: "Ayon sa Katarungang Pambarangay Law (PD 1508 / Local Government Code), karamihan sa mga alitan sa pagitan ng mga residente ng iisang barangay ay dapat munang dumaan sa barangay conciliation.",
+        choices: [
+          { text: "Gubain agad ang bakod ngayong gabi para maayos kaagad.", pts: 0 },
+          { text: "Tawagan agad ang pulis para iulat ang krimen sa ari-arian.", pts: 1 },
+          { text: "Dalhin ito sa Barangay Justice System (Lupon) para sa mediation.", pts: 2 }
+        ]
+      },
+      {
+        id: 4, star: false,
+        scenario: "Hiniling ng tiyuhin ni Ana, 10, na mag-absent siya sa eskwela araw-araw ngayong linggo para tumulong magbenta ng paninda sa palengke.",
+        answer: "May karapatan si Ana sa edukasyon, at hindi dapat makaabala ang trabaho sa kanyang pag-aaral. Dapat itong ipaalam ng isang matanda sa pamilya o iulat sa barangay o DSWD kung talagang pinipilit siya.",
+        legal: "Pinoprotektahan ng PD 603 (Child and Youth Welfare Code) ang karapatan ng bata sa edukasyon, at ipinagbabawal ng RA 9231 ang mga kasunduan sa child labor na nakakaabala sa pag-aaral.",
+        choices: [
+          { text: "Hayaan na lang siyang mag-absent — mauuna ang pamilya at kita.", pts: 0 },
+          { text: "Mag-absent lang ngayong linggo, babalik sa eskwela pagkatapos.", pts: 1 },
+          { text: "Ipaliwanag ang karapatan niya sa edukasyon; iulat sa barangay o DSWD kung pinipilit.", pts: 2 }
+        ]
+      },
+      {
+        id: 5, star: false,
+        scenario: "Sinabihan ng may-ari ng bahay ang isang pamilya na kailangan nilang umalis sa kanilang inuupahang kwarto sa loob ng 2 araw, walang nakasulat na abiso, kahit bayad na nang buo ang upa.",
+        answer: "Hindi maaaring paalisin ang isang pamilya nang walang tamang nakasulat na abiso at legal na proseso. Hindi sila dapat umalis kaagad at maaaring humingi ng tulong sa barangay o lokal na housing office.",
+        legal: "Ayon sa Rent Control Act at pangkalahatang mga panuntunin sa proteksyon ng nangungupahan, dapat sundin ng mga may-ari ng bahay ang wastong panahon ng abiso at legal na proseso ng eviction, kahit updated ang bayad sa upa.",
+        choices: [
+          { text: "Umalis agad — pag-aari naman ng may-ari ang bahay.", pts: 0 },
+          { text: "Buong-buong hindi pansinin ang may-ari at ayaw makipag-usap.", pts: 1 },
+          { text: "Ipaliwanag na kailangan ng tamang nakasulat na abiso, at humingi ng tulong sa barangay.", pts: 2 }
+        ]
+      },
+      {
+        id: 6, star: true,
+        scenario: "Tapatang Usapan: Sumang-ayon ang buong team ninyo na parang hindi makatarungan ang isang alituntunin sa inyong barangay. Okay lang bang balewalain na lang ang alituntuning hindi mo sinasang-ayunan? Pag-usapan ito bilang team — walang tiyak na sagot.",
+        answer: "", legal: "", choices: []
+      }
+    ]
+  },
+
+  ceb: {
+    ui: {
+      tagline: "\"Hibaloi ang imong katungod, dali ta na maglaro!\"",
+      ready: "Andam",
+      startGame: "Sugdi ang Dula",
+      langBtn: (name) => `Pinulongan: ${name}`,
+      langPickerTitle: "Pilia ang Pinulongan",
+      langPickerSub: "Mausab dayon ang tanang kard ug menu.",
+      turnLabel: (team) => `Turno ni ${team}`,
+      cardsLeft: (n) => `${n} ka kard ang nabilin sa deck`,
+      drawBtn: "Kuha og Situation Card",
+      viewScoreboardBtn: "Tan-awa ang Scoreboard",
+      situationCardLabel: "Situation Card",
+      realTalkCardLabel: "Tinuod nga Sultihanay",
+      openDiscussionBtn: "Sugdi ang Panaghisgot",
+      resultFullyCorrect: "Husto Gyud!",
+      resultRightIdea: "Sakto ang Ideya, Adunay Nawala",
+      resultNotQuite: "Dili Kaayo Sakto",
+      resultTimesUp: "Nahurot ang Oras — Walay Napili nga Tubag",
+      continueBtn: "Padayon",
+      earnsText: (team, pts) => `Nakadawat si ${team} og <strong>${pts} puntos</strong>`,
+      stealToast: "Aktibo ang Steal Rule: kini nga pagsulay limitado ra sa 1 puntos.",
+      discussionTag: "Panaghisgot",
+      discussionText: "Kini nga kard walay piho nga tubag. Hisguti kini isip team, unya padayon.",
+      legalBasisLabel: "Batakang balaod:",
+      scoreboardTitle: "Scoreboard",
+      upNext: (team) => `${team} ang sunod`,
+      backToGameBtn: "Balik sa Dula",
+      restartDemoBtn: "Sugdan Pag-usab ang Demo",
+      pausedTitle: "Gi-pause",
+      turnOnHold: (team) => `Gi-pause ang turno ni ${team}.`,
+      timerOnHold: (s) => `Gi-pause ang timer sa ${s}s. I-resume aron magpadayon.`,
+      resumeBtn: "Ipadayon",
+      viewScoreboardPauseBtn: "Tan-awa ang Scoreboard",
+      backToHomeBtn: "Balik sa Home",
+      restartGameBtn: "Sugdan Pag-usab ang Dula"
+    },
+    cards: [
+      {
+        id: 1, star: false,
+        scenario: "Si Maya, 15 anyos, nakakita nga gi-share sa group chat ang na-edit nga litrato sa iyang klasmeyt uban ang mga pang-insulto nga caption. Gipangayo nga i-forward niya usab kini. Unsa ang angay niyang buhaton?",
+        answer: "Ayaw kini i-forward — kon i-share nimo, mahimo ka nang bahin sa problema. Mag-screenshot sa mga mensahe, i-report ang group chat, ug sultihi ang kasaligang hamtong o guidance counselor.",
+        legal: "Ubos sa RA 10627 (Anti-Bullying Act) ug sa Safe Spaces Act, ang cyberbullying ug online harassment nga may kalabotan sa mga menor de edad kinahanglan i-report sa eskwelahan; ang mga platform usab kinahanglan adunay reporting tools.",
+        choices: [
+          { text: "I-forward usab aron dili siya makita nga bastos, unya i-report ra unya.", pts: 0 },
+          { text: "Hilom nga mo-gawas sa group chat ug wala magsulti kang bisan kinsa.", pts: 1 },
+          { text: "Ayaw i-forward — mag-screenshot, i-report ang chat, sultihi ang kasaligang hamtong.", pts: 2 }
+        ]
+      },
+      {
+        id: 2, star: false,
+        scenario: "Si Jun, 16 anyos, nagtrabaho human sa klase sa pag-areglo sa mga produkto sa usa ka sari-sari store. Human sa usa ka bulan, giingnan siya sa tag-iya nga 'walay budget' karong semanaha ug wala siya bayari.",
+        answer: "May katungod si Jun nga bayaran alang sa tanang oras nga iyang gitrabahoan. Mag-log sa mga oras, mangayo og bayad sa sinulat, ug kung wala pa gihapon bayri, mahimo kining i-report sa DOLE.",
+        legal: "Ubos sa Labor Code ug RA 9231, ang menor de edad nga nagtrabaho, 15–18 anyos, kinahanglan makadawat labing menos sa minimum wage alang sa dili peligrosong trabaho, ug ilegal ang dili pagbayad bisan unsa pay katarungan sa employer.",
+        choices: [
+          { text: "Dawaton na lang — higala man sa pamilya ang tag-iya, usa ra man ka semana.", pts: 0 },
+          { text: "Mohunong dayon sa trabaho nga wala mangayo sa wala pa bayaring suweldo.", pts: 1 },
+          { text: "I-log ang oras, mangayo og bayad sa sinulat, i-report sa DOLE kung wala pa gihapon bayri.", pts: 2 }
+        ]
+      },
+      {
+        id: 3, star: false,
+        scenario: "Duha ka silingan ang naglalis og kusog bahin sa usa ka koral nga na-install nga hilabihan ka duol sa yuta sa usa ka pamilya. Nanghulga ang usa nga iyaha na lang kining gub-on nianang gabhiona.",
+        answer: "Walay bisan kinsa sa duha ka silingan ang angay molihok nga nag-inusara. Kinahanglan dad-on ang problema sa Barangay Justice System (Lupong Tagapamayapa) alang sa mediation sa dili pa moabot sa korte o mohimo og kaugalingong lakang.",
+        legal: "Ubos sa Katarungang Pambarangay Law (PD 1508 / Local Government Code), kadaghanan sa mga panagbangi tali sa mga residente sa samang barangay kinahanglan una nga moagi sa barangay conciliation.",
+        choices: [
+          { text: "Gub-on dayon ang koral nianang gabhiona aron masulbad dayon.", pts: 0 },
+          { text: "Tawagon dayon ang pulis aron i-report ang krimen sa propiedad.", pts: 1 },
+          { text: "Dad-on kini sa Barangay Justice System (Lupon) alang sa mediation.", pts: 2 }
+        ]
+      },
+      {
+        id: 4, star: false,
+        scenario: "Si Ana, 10 anyos, gipangayo sa iyang uyoan nga mo-skip sa klase matag adlaw karong semanaha aron motabang mobaligya og mga produkto sa merkado.",
+        answer: "May katungod si Ana sa edukasyon, ug ang trabaho kinahanglan dili gayod makaapekto sa iyang pag-eskwela. Angay ipahibalo kini sa pamilya sa usa ka hamtong, o i-report sa barangay o DSWD kung pugson gyud siya.",
+        legal: "Gipanalipdan sa PD 603 (Child and Youth Welfare Code) ang katungod sa bata sa edukasyon, ug gidili sa RA 9231 ang mga kasabotan sa child labor nga makaapekto sa pag-eskwela.",
+        choices: [
+          { text: "Pasagdi lang siya nga mo-skip — mas importante una ang pamilya ug kita.", pts: 0 },
+          { text: "Mo-skip lang karong semanaha, unya mobalik sa eskwelahan human niini.", pts: 1 },
+          { text: "Ipasabot ang iyang katungod sa edukasyon; i-report sa barangay o DSWD kung pugson.", pts: 2 }
+        ]
+      },
+      {
+        id: 5, star: false,
+        scenario: "Gisultihan sa tag-iya sa balay ang usa ka pamilya nga kinahanglan mobiya sa ilang gi-abangan nga kwarto sa sulod sa 2 ka adlaw, walay sinulat nga pahibalo, bisan pa nga bayad na ang tanang abang.",
+        answer: "Dili mahimong papahawaon ang usa ka pamilya nga walay tukmang sinulat nga pahibalo ug legal nga proseso. Kinahanglan dili sila mobiya dayon ug mahimong mangayo og tabang sa barangay o lokal nga housing office.",
+        legal: "Ubos sa Rent Control Act ug sa kinatibuk-ang mga lagda sa proteksyon sa tenant, kinahanglan sundon sa mga tag-iya og balay ang balido nga panahon sa pahibalo ug legal nga proseso sa eviction, bisan updated ang bayad sa abang.",
+        choices: [
+          { text: "Mobiya dayon — kay propiedad man kini sa tag-iya.", pts: 0 },
+          { text: "Wala tagda sa hingpit ang tag-iya ug dili gayod makig-istorya.", pts: 1 },
+          { text: "Ipasabot nga gikinahanglan ang tukmang sinulat nga pahibalo, ug mangayo og tabang sa barangay.", pts: 2 }
+        ]
+      },
+      {
+        id: 6, star: true,
+        scenario: "Tinuod nga Sultihanay: Ang inyong tibuok team miuyon nga adunay lagda sa inyong barangay nga dili patas. Sakto ba nga balewalaon lang ang usa ka lagda nga wala nimo giuyonan? Hisgoti kini isip team — walay piho nga tubag.",
+        answer: "", legal: "", choices: []
+      }
+    ]
+  },
+
+  pam: {
+    ui: {
+      tagline: "\"Pamikilalanan ing karapatan mu, tara maglaru na!\"",
+      ready: "Handa",
+      startGame: "Umpisan ing Laru",
+      langBtn: (name) => `Amanu: ${name}`,
+      langPickerTitle: "Pili Amanu",
+      langPickerSub: "Mibabalulag agad ing anggang kard at menu.",
+      turnLabel: (team) => `Turno nang ${team}`,
+      cardsLeft: (n) => `${n} a kard a atilu pa king deck`,
+      drawBtn: "Kuanan Situation Card",
+      viewScoreboardBtn: "Lawan ing Scoreboard",
+      situationCardLabel: "Situation Card",
+      realTalkCardLabel: "Tune a Pamag-usap",
+      openDiscussionBtn: "Umpisan ing Pamag-usap",
+      resultFullyCorrect: "Lubus a Tama!",
+      resultRightIdea: "Tamang Ideya, Atin Milyaman",
+      resultNotQuite: "E Pa Tama",
+      resultTimesUp: "Yatas ne ing Oras — Alang Piniling Sagot",
+      continueBtn: "Mituloy",
+      earnsText: (team, pts) => `Mitanggap i ${team} na <strong>${pts} puntos</strong>`,
+      stealToast: "Aktibo ing Steal Rule: ining pamag-sikap makatakda mu king 1 puntos.",
+      discussionTag: "Pamag-usap",
+      discussionText: "Ining kard alang tiyak a sagot. Pag-usapan ya bilang team, kaybat mituloy.",
+      legalBasisLabel: "Batas a pasibayu:",
+      scoreboardTitle: "Scoreboard",
+      upNext: (team) => `Sunod na i ${team}`,
+      backToGameBtn: "Bumalik king Laru",
+      restartDemoBtn: "Umpisan Pasibayu ing Demo",
+      pausedTitle: "Mipara",
+      turnOnHold: (team) => `Mipara ing turno nang ${team}.`,
+      timerOnHold: (s) => `Mipara ing timer king ${s}s. I-resume ban mituloy.`,
+      resumeBtn: "Ituloy",
+      viewScoreboardPauseBtn: "Lawan ing Scoreboard",
+      backToHomeBtn: "Bumalik king Home",
+      restartGameBtn: "Umpisan Pasibayu ing Laru"
+    },
+    cards: [
+      {
+        id: 1, star: false,
+        scenario: "I Maya, 15 banua, ikit ne ing mekapamialag a edited a litratu ning kayang kalasi kabang atin yang mangalait a caption king group chat. Kikilaban yang i-forward yamu ini. Nanu ing dapat nang gawan?",
+        answer: "E mu ini i-forward — nung mialag mu, magin ka pang parti na ning sablang danas. Mag-screenshot ka karing mensahi, i-report me ing group chat, at sabian me king metung a matuang tao a agyang guidance counselor.",
+        legal: "Uli ning RA 10627 (Anti-Bullying Act) ampo ning Safe Spaces Act, ing cyberbullying ampo online harassment a atin lalam a menor de edad dapat i-report king eskuela; deng platform mu naman dapat atin lang reporting tools.",
+        choices: [
+          { text: "I-forward mu naman ban e ya mika masamang lawe, i-report ne mu naman kaybat.", pts: 0 },
+          { text: "Lulisan me ing group chat a mepipikuan at ala kang sasabian kanino man.", pts: 1 },
+          { text: "E me i-forward — mag-screenshot, i-report ing chat, sabian me king metung a matuang tao.", pts: 2 }
+        ]
+      },
+      {
+        id: 2, star: false,
+        scenario: "I Jun, 16 banua, mibibie yang tarabahu kaybat ning klase, mamibie karing paninda king metung a sari-sari store. Kaybat ning metung a bulan, sinabi ne ning tagari a 'alang budget' ngeni a semana at ala yang binayaran kaya.",
+        answer: "Kabiabiang bayaran i Jun para king anggang oras a pengtrabaho na. Mag-log ka karing oras, manyaman kang bayad king sulat, at nung ala pa murin bayad, mayayakit yang i-report king DOLE.",
+        legal: "Uli ning Labor Code ampo ning RA 9231, deng menor de edad a mitatrabahu, 15–18 banua, dapat mitanggap la king minimum wage bilang king trabahung e maku-peligru, at ilegal ing e pamibie bayad agyang nanung rason na ning tagari.",
+        choices: [
+          { text: "Tanggapan mu — kaluguran ne ning pamilya ing tagari, metung mu naman a semana.", pts: 0 },
+          { text: "Mag-quit yang bigla a ala munang manyaman king ala pang bayad.", pts: 1 },
+          { text: "Mag-log king oras, manyaman bayad king sulat, i-report king DOLE nung ala pa murin bayad.", pts: 2 }
+        ]
+      },
+      {
+        id: 3, star: false,
+        scenario: "Adua kapitbahay lang makipagbangayan a masikan uli ning metung a bakud a marapit king lupa ning metung a pamilya. Metung karela mangibalu yang balaan nayang mismu king bengi ita.",
+        answer: "Ala kareng adua kapitbahay ing dapat gawang balang sarili. Ing problema dapat me dala king Barangay Justice System (Lupong Tagapamayapa) para king mediation bayu mako king korte o mag-sarili balu.",
+        legal: "Uli ning Katarungang Pambarangay Law (PD 1508 / Local Government Code), maragul a bilang karing problema tabud kareng residente ning metung a barangay dapat mumuna la king barangay conciliation.",
+        choices: [
+          { text: "Balaan nala ing bakud king bengi ita ban maayus agad.", pts: 0 },
+          { text: "Tawagan nala agad deng pulis para i-report ing krimen king propriedad.", pts: 1 },
+          { text: "Dalan ini king Barangay Justice System (Lupon) para king mediation.", pts: 2 }
+        ]
+      },
+      {
+        id: 4, star: false,
+        scenario: "I Ana, 10 banua, kikilaban ning kayang tsong a e ya mako king eskuela balang aldo ngeni a semana ban tumulung mamaninda king pamalengke.",
+        answer: "Kabiabian nang Ana ing karapatan king edukasyon, at ing trabaju kaya e ya dapat mag-apektu king pamag-aral na. Metung a matuang tao dapat mangabildus kaniti king pamilya o i-report king barangay o DSWD nung pipilitan yang mika.",
+        legal: "Ing PD 603 (Child and Youth Welfare Code) mangalaga king karapatan ning anak king edukasyon, at ing RA 9231 mangubali karing kasunduan a child labor a mag-apektu king pamag-aral.",
+        choices: [
+          { text: "Pabayan mu yang e mako — mumuna la ing pamilya ampo ing pera.", pts: 0 },
+          { text: "E ya mako ngeni mung a semana, mibalik yang murin king eskuela kaybat.", pts: 1 },
+          { text: "Ipaliwanag ing karapatan na king edukasyon; i-report king barangay o DSWD nung pipilitan.", pts: 2 }
+        ]
+      },
+      {
+        id: 5, star: false,
+        scenario: "Sinabi ning pyari (landlord) king metung a pamilya a kailangan lang lumwal king kayang inabang a kwartu king lalam ning 2 aldo, alang sulat a abiso, agyang byaad la ngan king abang.",
+        answer: "E mayayakit patalan ing metung a pamilya nung alang tamang sulat a abiso ampo legal a proseso. E la dapat lumwal agad at mayayakit lang manyaman tulung king barangay o lokal a housing office.",
+        legal: "Uli ning Rent Control Act ampo karing pangkalahatan a tuntunin king proteksyon king umaabang, deng pyari dapat sundan da ing balidung panaun ning abiso ampo legal a proseso king eviction, agyang up-to-date ing bayad king abang.",
+        choices: [
+          { text: "Lumwal agad — propriedad ne ning pyari iti, pagkatapos man.", pts: 0 },
+          { text: "E paniwalan ing pyari at e la makipag-usap.", pts: 1 },
+          { text: "Ipaliwanag a kailangan ing tamang sulat a abiso, at manyaman tulung king barangay.", pts: 2 }
+        ]
+      },
+      {
+        id: 6, star: true,
+        scenario: "Tune a Pamag-usap: Yang buung team miyayaliwa lang a atin metung a tuntunin king barangay yu a e makatarungan. Ustu bang pabayan mu ing metung a tuntunin a e mu kaluguran? Pag-usapan ya bilang team — alang tiyak a sagot.",
+        answer: "", legal: "", choices: []
+      }
+    ]
+  }
+};
+
+let currentLang = "en";
+function T(){ return translations[currentLang].ui; }
+function getCards(){ return translations[currentLang].cards; }
+
+let state = "home";
+let teams = [ {name:"Team Mabini", score:0, dot:"#D2574B"}, {name:"Team Bonifacio", score:0, dot:"#7FA684"} ];
+let currentTeam = 0;
+let cardIndex = 0;
+let currentCard = null;
+let timerVal = 30;
+let timerHandle = null;
+let stealActive = false;
+let chosenIndex = null;
+let prevScores = {};
+let paused = false;
+let cameFromPause = null;
+
+const screenEl = document.getElementById('screen');
+const controlsEl = document.getElementById('controls');
+const pauseBtnEl = document.getElementById('pauseBtn');
+const pauseOverlayEl = document.getElementById('pauseOverlay');
+const pauseSubEl = document.getElementById('pauseSub');
+const langOverlayEl = document.getElementById('langOverlay');
+const langListEl = document.getElementById('langList');
+const langPickerTitleEl = document.getElementById('langPickerTitle');
+const langPickerSubEl = document.getElementById('langPickerSub');
+
+function render(){
+  clearInterval(timerHandle);
+  if(state === "home") renderHome();
+  else if(state === "draw") renderDraw();
+  else if(state === "card") renderCard();
+  else if(state === "reveal") renderReveal();
+  else if(state === "score") renderScore();
+  pauseOverlayEl.classList.remove('open');
+  paused = false;
+  pauseBtnEl.style.display = (state === "draw" || state === "card" || state === "reveal") ? "flex" : "none";
+}
+
+function setControls(html){ controlsEl.innerHTML = html; }
+
+function renderHome(){
+  const t = T();
+  screenEl.innerHTML = `
+    <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
+    <div class="screen-body">
+      <div class="home-logo">Karapatan Cards</div>
+      <div class="home-tagline">${t.tagline}</div>
+      <div>
+        ${teams.map(tm => `
+          <div class="team-row">
+            <span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span>
+            <span style="color:#8a9a94;font-size:12px;">${t.ready}</span>
+          </div>`).join("")}
+      </div>
+      <div class="grow"></div>
+      <button class="btn btn-primary" onclick="goto('draw')">${t.startGame}</button>
+    </div>
+  `;
+  setControls(``);
+}
+
+function renderDraw(){
+  const t = T();
+  const cards = getCards();
+  screenEl.innerHTML = `
+    <div class="screen-body" style="justify-content:center;align-items:center;text-align:center;">
+      ${stealActive ? `<div class="toast" style="margin-bottom:16px;">${t.stealToast}</div>` : ''}
+      <div style="font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:6px;">${t.turnLabel(teams[currentTeam].name)}</div>
+      <div style="font-size:12.5px;color:#5b6f68;margin-bottom:26px;">${t.cardsLeft(cards.length - cardIndex)}</div>
+      <div class="deck-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="52" height="52"><rect x="4" y="3" width="12" height="17" rx="2" transform="rotate(-8 10 11.5)"/><rect x="8" y="4" width="12" height="17" rx="2" fill="var(--cream)"/><path d="M14 8v6M11 11h6" stroke="var(--coral)"/></svg></div>
+      <button class="btn btn-primary" onclick="drawCard()">${t.drawBtn}</button>
+    </div>
+  `;
+  setControls(`<button class="btn btn-outline" style="width:auto;padding:10px 18px;" onclick="goto('score')">${t.viewScoreboardBtn}</button>`);
+}
+
+function drawCard(){
+  const cards = getCards();
+  if(cardIndex >= cards.length) cardIndex = 0;
+  currentCard = cards[cardIndex];
+  cardIndex++;
+  timerVal = 30;
+  stealActive = false;
+  chosenIndex = null;
+  goto('card');
+}
+
+function renderCard(){
+  const t = T();
+  const letters = ["A","B","C"];
+  screenEl.innerHTML = `
+    <div class="screen-body">
+      <div class="card-label ${currentCard.star ? 'star' : ''}">${currentCard.star ? '<svg class="menu-icon" style="vertical-align:-3px;margin-right:2px;" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1"><path d="M12 2l2.9 6.4 7 .7-5.3 4.7 1.6 6.9L12 17l-6.2 3.7 1.6-6.9L2.1 9.1l7-.7z"/></svg>' + t.realTalkCardLabel : t.situationCardLabel}</div>
+      <div class="situation-card">
+        <div class="scenario">${currentCard.scenario}</div>
+      </div>
+      ${currentCard.star ? '' : `
+        <div class="timer-wrap"><span class="timer" id="timerNum">${timerVal}s</span></div>
+        <div class="timer-track"><div class="timer-fill" id="timerFill" style="width:100%;"></div></div>
+      `}
+      ${currentCard.star
+        ? `<button class="btn btn-primary" onclick="goto('reveal')">${t.openDiscussionBtn}</button>`
+        : `<div class="choice-list">
+            ${currentCard.choices.map((c,i) => `
+              <button class="choice-card" onclick="pickChoice(${i})">
+                <span class="idx idx-tl">${letters[i]}<i>♦</i></span>
+                <span class="idx idx-br">${letters[i]}<i>♦</i></span>
+                <span class="choice-text">${c.text}</span>
+              </button>`).join("")}
+          </div>`
+      }
+    </div>
+  `;
+  if(!currentCard.star){
+    startTimer();
+  }
+  setControls(``);
+}
+
+function startTimer(){
+  clearInterval(timerHandle);
+  const fill = document.getElementById('timerFill');
+  const num = document.getElementById('timerNum');
+  if(num) num.classList.toggle('urgent', timerVal <= 10 && timerVal > 0);
+  if(fill){
+    fill.style.width = Math.max(0, (timerVal/30)*100) + "%";
+    fill.classList.toggle('urgent', timerVal <= 10 && timerVal > 0);
+  }
+  timerHandle = setInterval(() => {
+    timerVal--;
+    const f = document.getElementById('timerFill');
+    const n = document.getElementById('timerNum');
+    if(n){
+      n.textContent = timerVal + "s";
+      n.classList.toggle('urgent', timerVal <= 10 && timerVal > 0);
+    }
+    if(f){
+      f.style.width = Math.max(0, (timerVal/30)*100) + "%";
+      f.classList.toggle('urgent', timerVal <= 10 && timerVal > 0);
+    }
+    if(timerVal <= 0){
+      clearInterval(timerHandle);
+      pickChoice(null);
+    }
+  }, 1000);
+}
+
+function pickChoice(index){
+  clearInterval(timerHandle);
+  chosenIndex = index;
+  goto('reveal');
+}
+
+function renderReveal(){
+  const t = T();
+  if(currentCard.star){
+    screenEl.innerHTML = `
+      <div class="screen-body">
+        <div class="answer-card" style="border-color:var(--gold);">
+          <div class="answer-tag" style="background:var(--gold);">${t.discussionTag}</div>
+          <div class="answer-text">${t.discussionText}</div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:14px;" onclick="nextTurn()">${t.continueBtn}</button>
+      </div>
+    `;
+    setControls(``);
+    return;
+  }
+
+  const letters = ["A","B","C"];
+  let pts = chosenIndex === null ? 0 : currentCard.choices[chosenIndex].pts;
+  if(stealActive) pts = Math.min(pts, 1);
+
+  const resultLabel = chosenIndex === null
+    ? t.resultTimesUp
+    : pts === 2 ? t.resultFullyCorrect : pts === 1 ? t.resultRightIdea : t.resultNotQuite;
+
+  screenEl.innerHTML = `
+    <div class="screen-body">
+      <div class="choice-list flat" style="margin-top:6px;margin-bottom:12px;">
+        ${currentCard.choices.map((c,i) => {
+          let cls = "dim";
+          let mark = "";
+          if(chosenIndex === i){
+            cls = c.pts === 2 ? "correct" : c.pts === 1 ? "partial" : "wrong";
+            mark = `<span class="choice-mark" style="background:${c.pts===2?'var(--sage)':c.pts===1?'var(--gold)':'var(--coral)'};">${c.pts===2?'✓':c.pts===1?'~':'✗'}</span>`;
+          } else if(c.pts === 2){
+            cls = "correct dim";
+          }
+          return `<div class="choice-card ${cls}">
+                    <span class="idx idx-tl">${letters[i]}<i>♦</i></span>
+                    <span class="idx idx-br">${letters[i]}<i>♦</i></span>
+                    ${mark}
+                    <span class="choice-text">${c.text}</span>
+                  </div>`;
+        }).join("")}
+      </div>
+      <div class="answer-card${pts===0 && chosenIndex!==null ? ' shake' : ''}">
+        <div class="answer-tag" style="background:${pts===2?'var(--sage)':pts===1?'var(--gold)':'var(--coral)'};">${resultLabel}</div>
+        <div class="answer-text">${currentCard.answer}</div>
+        <div class="legal-basis"><strong>${t.legalBasisLabel}</strong> ${currentCard.legal}</div>
+      </div>
+      <div style="font-size:11.5px;color:#5b6f68;text-align:center;margin:10px 0 2px;">${t.earnsText(teams[currentTeam].name, pts)}</div>
+      ${stealActive ? `<div class="toast">${t.stealToast}</div>` : ''}
+      <div class="sticky-cta">
+        <button class="btn btn-primary" onclick="applyScore(${pts})">${t.continueBtn}</button>
+      </div>
+    </div>
+  `;
+  setControls(``);
+  if(pts === 2) burstConfetti();
+}
+
+function burstConfetti(){
+  const phone = document.querySelector('.phone');
+  if(!phone) return;
+  const colors = ['#D9A441','#7FA684','#F7F1E1','#D2574B','#EFC978'];
+  for(let i = 0; i < 18; i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = (8 + Math.random() * 84) + '%';
+    p.style.top = (26 + Math.random() * 8) + '%';
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = (Math.random() * 180) + 'ms';
+    p.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+    phone.appendChild(p);
+    setTimeout(() => p.remove(), 1300);
+  }
+}
+
+function applyScore(pts){
+  teams[currentTeam].score += pts;
+  if(pts === 0 && !stealActive){
+    stealActive = true;
+    currentTeam = (currentTeam + 1) % teams.length;
+    chosenIndex = null;
+    goto('draw');
+    return;
+  }
+  nextTurn();
+}
+
+function nextTurn(){
+  currentTeam = (currentTeam + 1) % teams.length;
+  goto('draw');
+}
+
+function renderScore(){
+  const t = T();
+  const sorted = [...teams].sort((a,b) => b.score - a.score);
+  const topScore = sorted[0].score;
+  const tied = sorted.filter(tm => tm.score === topScore).length > 1;
+  screenEl.innerHTML = `
+    <div class="screen-body">
+      <div class="app-header">${t.scoreboardTitle}</div>
+      ${sorted.map((tm,i) => `
+        <div class="scoreboard-row ${i===0 && topScore>0 && !tied ? 'leader' : ''}">
+          <span class="name">${i===0 && topScore>0 && !tied ? '<svg class="menu-icon crown" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1" stroke-linejoin="round"><path d="M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8z"/></svg>' : ''}<span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span>
+          <span class="pts" id="pts-${tm.name.replace(/\s+/g,'')}">${prevScores[tm.name] || 0} pts</span>
+        </div>`).join("")}
+      <div style="font-size:11.5px;color:#5b6f68;text-align:center;margin-top:4px;">${t.upNext(teams[currentTeam].name)}</div>
+      <div class="grow"></div>
+      <button class="btn btn-primary" onclick="backFromScoreboard()">${t.backToGameBtn}</button>
+    </div>
+  `;
+  setControls(`<button class="btn btn-outline" style="width:auto;padding:10px 18px;display:inline-flex;align-items:center;gap:6px;" onclick="resetGame()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>${t.restartDemoBtn}</button>`);
+  teams.forEach(tm => {
+    const el = document.getElementById('pts-' + tm.name.replace(/\s+/g,''));
+    animateNumber(el, prevScores[tm.name] || 0, tm.score);
+    prevScores[tm.name] = tm.score;
+  });
+}
+
+function animateNumber(el, from, to){
+  if(!el || from === to){ if(el) el.textContent = to + " pts"; return; }
+  const duration = 500;
+  const start = performance.now();
+  function step(now){
+    const progress = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const val = Math.round(from + (to - from) * eased);
+    el.textContent = val + " pts";
+    if(progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function resetGame(){
+  teams.forEach(t => t.score = 0);
+  currentTeam = 0; cardIndex = 0; stealActive = false; chosenIndex = null;
+  prevScores = {};
+  cameFromPause = null;
+  goto('home');
+}
+
+function goto(next){ state = next; render(); }
+
+function openPause(){
+  const t = T();
+  paused = true;
+  clearInterval(timerHandle);
+  const subText = state === "card" && !currentCard.star
+    ? t.timerOnHold(timerVal)
+    : t.turnOnHold(teams[currentTeam].name);
+  pauseSubEl.textContent = subText;
+  pauseOverlayEl.classList.add('open');
+}
+
+function closePause(){
+  paused = false;
+  pauseOverlayEl.classList.remove('open');
+  if(state === "card" && !currentCard.star && timerVal > 0){
+    startTimer();
+  }
+}
+
+function pauseGoScoreboard(){
+  paused = false;
+  pauseOverlayEl.classList.remove('open');
+  cameFromPause = (state === "card" || state === "reveal") ? state : null;
+  goto('score');
+}
+
+function backFromScoreboard(){
+  if(cameFromPause === "card" || cameFromPause === "reveal"){
+    const from = cameFromPause;
+    cameFromPause = null;
+    goto(from);
+  } else {
+    goto('draw');
+  }
+}
+
+function pauseGoHome(){
+  paused = false;
+  pauseOverlayEl.classList.remove('open');
+  goto('home');
+}
+
+function pauseRestart(){
+  paused = false;
+  pauseOverlayEl.classList.remove('open');
+  resetGame();
+}
+
+function openLangPicker(){
+  const t = T();
+  langPickerTitleEl.textContent = t.langPickerTitle;
+  langPickerSubEl.textContent = t.langPickerSub;
+  langListEl.innerHTML = Object.keys(langNames).map(code => `
+    <button class="btn ${code===currentLang ? 'btn-primary' : 'btn-outline'} pause-item" onclick="selectLang('${code}')">${langNames[code]}</button>
+  `).join("");
+  langOverlayEl.classList.add('open');
+}
+
+function closeLangPicker(){
+  langOverlayEl.classList.remove('open');
+}
+
+function selectLang(code){
+  currentLang = code;
+  closeLangPicker();
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
