@@ -105,7 +105,11 @@ public class LocalMultiplayerPlugin: CAPPlugin {
     @objc func startAdvertising(_ call: CAPPluginCall) {
         let serviceType = call.getString("serviceType") ?? "_karapatan._tcp."
         let port = Int32(call.getInt("port", 8787))
-        let svc = NetService(domain: "local.", type: normalizeType(serviceType), name: "KarapatanGame", port: port)
+        // Friendly, non-identifying name chosen by the JS side — deliberately
+        // not the device name or IP, so nothing that identifies the host or
+        // their network leaks to nearby scanners.
+        let displayName = call.getString("name") ?? "KarapatanGame"
+        let svc = NetService(domain: "local.", type: normalizeType(serviceType), name: displayName, port: port)
         svc.publish()
         netService = svc
         call.resolve()

@@ -22,6 +22,30 @@ var LP_NET = (function(){
   const DEFAULT_PORT = 8787;
   const SERVICE_TYPE = '_karapatan._tcp';
 
+  /* Turns an IPv4 + port into a short, non-obvious code (and back again),
+     entirely client-side — no lookup server involved. This is shown to
+     players instead of the raw dotted IP address, per the privacy
+     requirement: nobody needs to read someone's literal network address
+     off a screen to join a game. */
+  function encodeAddress(ip, port){
+    const parts = ip.split('.').map(n => parseInt(n, 10));
+    if(parts.length !== 4 || parts.some(n => isNaN(n) || n < 0 || n > 255)) return null;
+    const bytes = [...parts, (port >> 8) & 0xFF, port & 0xFF];
+    return bytes.map(b => b.toString(36).padStart(2, '0')).join('').toUpperCase();
+  }
+
+  function decodeAddress(code){
+    const clean = (code || '').replace(/[^A-Za-z0-9]/g, '');
+    if(clean.length !== 12) return null;
+    const bytes = [];
+    for(let i = 0; i < 12; i += 2){
+      const b = parseInt(clean.slice(i, i + 2), 36);
+      if(isNaN(b) || b > 255) return null;
+      bytes.push(b);
+    }
+    return { ip: bytes.slice(0, 4).join('.'), port: (bytes[4] << 8) | bytes[5] };
+  }
+
   function getPlugin(){
     return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalMultiplayer) || null;
   }
@@ -38,7 +62,7 @@ var LP_NET = (function(){
     let listenerHandles = [];
     let started = false;
 
-    async function start(port){
+    async function start(port, displayName){
       if(!Plugin) throw new Error('native_plugin_unavailable');
       const res = await Plugin.startServer({ port: port || DEFAULT_PORT });
       started = true;
@@ -54,8 +78,9 @@ var LP_NET = (function(){
 
       // Best-effort local-network advertising so joiners can auto-discover
       // this host (Phase 2). Failure here (e.g. NSD unsupported) is not
-      // fatal — manual IP entry (Phase 1) still works.
-      try { await Plugin.startAdvertising({ serviceType: SERVICE_TYPE, port: res.port }); }
+      // fatal — manual code entry (Phase 1) still works. The friendly
+      // display name (not the raw IP) is what shows up for joiners.
+      try { await Plugin.startAdvertising({ serviceType: SERVICE_TYPE, port: res.port, name: displayName }); }
       catch(e){ /* discovery is a nicety, not a requirement */ }
 
       return { ip: res.ip, port: res.port };
@@ -167,6 +192,8 @@ var LP_NET = (function(){
     createHostTransport,
     createClientTransport,
     startDiscovery,
-    getLocalIP
+    getLocalIP,
+    encodeAddress,
+    decodeAddress
   };
 })();

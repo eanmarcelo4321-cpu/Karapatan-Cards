@@ -19,6 +19,19 @@ var LP = (function(){
 
   const LETTERS = ['A', 'B', 'C'];
 
+  // Friendly, throwaway name for this hosting session — shown instead of
+  // the host's raw IP address, both in the discovery list and on the
+  // hosting screen itself. Regenerated fresh every time hosting starts;
+  // it identifies the GAME, never the device or its owner.
+  const NAME_ADJ = ["Matapang", "Masigla", "Tapat", "Malakas", "Masaya", "Matalino", "Mabilis", "Buoyant"];
+  const NAME_NOUN = ["Agila", "Falcon", "Tigre", "Bantay", "Diwata", "Sundalo", "Kalabaw", "Ipo-Ipo"];
+  function generateGameName(){
+    const a = NAME_ADJ[Math.floor(Math.random() * NAME_ADJ.length)];
+    const n = NAME_NOUN[Math.floor(Math.random() * NAME_NOUN.length)];
+    const num = Math.floor(Math.random() * 90) + 10;
+    return `${a} ${n} #${num}`;
+  }
+
   function lp(){ return T().localPlay; }
   function diffLabel(difficulty){
     const t = T();
@@ -32,6 +45,7 @@ var LP = (function(){
   let transport = null;
   let myPeerId = null;      // client's own peerId, set on JOIN_ACCEPTED
   let hostIp = null, hostPort = null;
+  let hostGameName = null, hostCode = null;
   let discoveredHosts = [];
   let discoveryHandle = null;
   let joinError = null;
@@ -77,7 +91,8 @@ var LP = (function(){
     }
     if(discoveryHandle){ discoveryHandle.stop(); discoveryHandle = null; }
     role = null; transport = null; clientSession = null; myPeerId = null;
-    hostIp = null; hostPort = null; discoveredHosts = []; joinError = null; hostError = null;
+    hostIp = null; hostPort = null; hostGameName = null; hostCode = null;
+    discoveredHosts = []; joinError = null; hostError = null;
     lastLobby = null; lastSync = null; lastRoundResult = null; lastGameEnd = null;
     chosenIndex = null; answered = false; teamNameDraft = ''; connecting = false;
   }
@@ -127,9 +142,11 @@ var LP = (function(){
     goto('localHost'); // show "starting..." immediately
     role = 'host';
     transport = LP_NET.createHostTransport();
+    hostGameName = generateGameName();
     try {
-      const { ip, port } = await transport.start(LP_NET.DEFAULT_PORT);
+      const { ip, port } = await transport.start(LP_NET.DEFAULT_PORT, hostGameName);
       hostIp = ip; hostPort = port;
+      hostCode = LP_NET.encodeAddress(ip, port);
       hostSession = NetProtocol.createHostSession(transport, { settings: {} });
       hostSession.on('lobbyChanged', (st) => { lastLobby = { teams: st.teams, settings: st.settings }; if(state === 'localLobby') renderLobby(); });
       render();
@@ -163,8 +180,11 @@ var LP = (function(){
       <div class="screen-body">
         <div class="section-title">${s.hostingTitle}</div>
         <div class="answer-card" style="text-align:center;">
-          <div style="font-size:11px;color:#8a9a94;">${s.hostAddressLabel}</div>
-          <div style="font-size:22px;font-weight:800;color:var(--navy);letter-spacing:0.5px;margin:6px 0;">${hostIp}:${hostPort}</div>
+          <div class="handoff-dot" style="background:var(--gold);width:14px;height:14px;margin:0 auto 10px;"></div>
+          <div style="font-size:11px;color:#8a9a94;">${s.yourGameLabel}</div>
+          <div style="font-size:20px;font-weight:800;color:var(--navy);margin:4px 0 10px;">${hostGameName || ''}</div>
+          <div style="font-size:11px;color:#8a9a94;">${s.hostCodeLabel}</div>
+          <div style="font-size:20px;font-weight:800;color:var(--navy);letter-spacing:2px;margin:6px 0;font-family:monospace;">${hostCode || '…'}</div>
           <div style="font-size:11px;color:#8a9a94;">${LP_NET.hasNativeHosting() ? s.hostWifiNoteDiscovery : s.hostWifiNote}</div>
         </div>
         <div class="section-title" style="margin-top:14px;">${s.playersLabel(teams.length)}</div>
@@ -203,12 +223,12 @@ var LP = (function(){
           <div style="font-size:11px;color:#8a9a94;margin-bottom:6px;">${s.foundNearbyLabel}</div>
           ${discoveredHosts.map(h => `
             <div class="team-row" style="cursor:pointer;" onclick="LP.connectTo('${h.ip}', ${h.port})">
-              <span>${h.name || s.defaultHostName} — ${h.ip}</span>
+              <span>${h.name || s.defaultHostName}</span>
               <span style="color:var(--sage);font-weight:800;">${s.joinTag}</span>
             </div>`).join('')}
           <div style="font-size:11px;color:#8a9a94;margin:12px 0 6px;">${s.manualEntryLabel}</div>
         ` : `<div style="font-size:12px;color:#8a9a94;margin-bottom:10px;">${s.manualEntryHelp}</div>`}
-        <input class="lp-input" id="lpIpInput" placeholder="${s.ipPlaceholder}" value="${lastManualIp||''}" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <input class="lp-input" id="lpIpInput" placeholder="${s.ipPlaceholder}" value="${lastManualIp||''}" autocapitalize="characters" autocorrect="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:1px;">
         ${joinError ? `<div class="toast" style="margin-top:10px;">${joinError}</div>` : ''}
         <div class="grow"></div>
         <button class="btn btn-outline" style="margin-bottom:8px;" onclick="LP.openMenu()">${s.backBtn}</button>
@@ -223,9 +243,17 @@ var LP = (function(){
     const raw = (el && el.value || '').trim();
     if(!raw){ joinError = lp().errEnterIp; renderJoin(); return; }
     lastManualIp = raw;
-    let ip = raw, port = LP_NET.DEFAULT_PORT;
-    if(raw.includes(':')){ const parts = raw.split(':'); ip = parts[0]; port = parseInt(parts[1], 10) || LP_NET.DEFAULT_PORT; }
-    connectTo(ip, port);
+    if(raw.includes('.')){
+      // Looks like a literal IP (power-user / debugging fallback) — still
+      // supported, just no longer the primary flow shown in the UI.
+      let ip = raw, port = LP_NET.DEFAULT_PORT;
+      if(raw.includes(':')){ const parts = raw.split(':'); ip = parts[0]; port = parseInt(parts[1], 10) || LP_NET.DEFAULT_PORT; }
+      connectTo(ip, port);
+      return;
+    }
+    const decoded = LP_NET.decodeAddress(raw);
+    if(!decoded){ joinError = lp().errInvalidCode; renderJoin(); return; }
+    connectTo(decoded.ip, decoded.port);
   }
 
   async function connectTo(ip, port){

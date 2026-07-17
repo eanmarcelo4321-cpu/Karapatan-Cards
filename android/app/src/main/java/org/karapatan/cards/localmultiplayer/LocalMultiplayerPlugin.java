@@ -150,10 +150,14 @@ public class LocalMultiplayerPlugin extends Plugin implements MiniWebSocketServe
     public void startAdvertising(PluginCall call) {
         String serviceType = call.getString("serviceType", "_karapatan._tcp");
         int port = call.getInt("port", 8787);
+        // Friendly, non-identifying name chosen by the JS side (e.g. "Brave
+        // Falcon Game") — deliberately NOT the device name or IP, so nothing
+        // that identifies the host or their network leaks to nearby scanners.
+        String displayName = call.getString("name", "KarapatanGame");
         try {
             nsdManager = (NsdManager) getContext().getSystemService(android.content.Context.NSD_SERVICE);
             NsdServiceInfo serviceInfo = new NsdServiceInfo();
-            serviceInfo.setServiceName("KarapatanGame");
+            serviceInfo.setServiceName(displayName);
             serviceInfo.setServiceType(serviceType);
             serviceInfo.setPort(port);
 
