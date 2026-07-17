@@ -21,6 +21,9 @@ var state = "splash";
 var match = null;
 var currentCard = null;
 var chosenIndex = null;
+var answerLocked = false; // guards against a choice firing twice for the same card
+                          // (e.g. countdown timeout + a click landing at the same moment,
+                          // or a stray/late tap landing on the next card's button after re-render)
 var timerVal = 30;
 var timerHandle = null;
 var retryMode = false;
@@ -107,6 +110,12 @@ function render(){
   else if(state === "reveal") renderReveal();
   else if(state === "score") renderScore();
   else if(state === "matchEnd") renderMatchEnd();
+  else if(state === "localMenu") LP.renderMenu();
+  else if(state === "localHost") LP.renderHost();
+  else if(state === "localJoin") LP.renderJoin();
+  else if(state === "localLobby") LP.renderLobby();
+  else if(state === "localGame") LP.renderGame();
+  else if(state === "localResults") LP.renderResults();
   pauseOverlayEl.classList.remove('open');
   paused = false;
   pauseBtnEl.style.display = (state === "draw" || state === "card" || state === "reveal") ? "flex" : "none";
@@ -143,6 +152,8 @@ function renderHome(){
           <div class="mc-sub">${h.modeSoloSub}</div>
         </div>
       </div>
+
+      <button class="btn btn-outline btn-sm" style="margin:2px 0 14px;" onclick="LP.openMenu()">${h.localPlayBtn}</button>
 
       ${homeSettings.mode === 'multiplayer' ? `
         <div class="section-title">${h.teamsTitle}</div>
@@ -300,6 +311,7 @@ function drawCard(){
   match.cardIndex++;
   timerVal = timerForDifficulty(currentCard.difficulty);
   chosenIndex = null;
+  answerLocked = false;
   retryMode = false;
   retryUsed = false;
   AudioEngine.playDraw();
@@ -307,7 +319,6 @@ function drawCard(){
 }
 
 /* ================= CARD SCREEN ================= */
-const DIFF_LABEL = { easy: "Easy", medium: "Medium", hard: "Hard" };
 
 function renderCard(){
   const t = T();
@@ -320,7 +331,7 @@ function renderCard(){
       <div class="card-topline">
         <div class="card-label"><span class="team-dot" style="background:${team.dot};"></span>${t.situationCardLabel}</div>
         <div class="badge-row">
-          <span class="badge diff-${currentCard.difficulty}">${DIFF_LABEL[currentCard.difficulty]}</span>
+          <span class="badge diff-${currentCard.difficulty}">${t["diff" + currentCard.difficulty[0].toUpperCase() + currentCard.difficulty.slice(1)]}</span>
           <span class="badge cat">${currentCard.category}</span>
         </div>
       </div>
@@ -369,6 +380,8 @@ function startTimer(){
 }
 
 function pickChoice(index){
+  if(answerLocked) return; // already resolved for this card — ignore late/duplicate triggers
+  answerLocked = true;
   clearInterval(timerHandle);
   clearTimeout(aiTimeout);
   chosenIndex = index;
@@ -452,6 +465,7 @@ function retryCard(){
   retryMode = true;
   retryUsed = true;
   chosenIndex = null;
+  answerLocked = false;
   currentCard = shuffledCard(match.currentOriginalCard);
   timerVal = timerForDifficulty(currentCard.difficulty);
   goto('card');

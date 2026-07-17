@@ -24,6 +24,12 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Karapatan Cards uses your local Wi-Fi network to connect nearby phones for Local Play — no internet connection is used or required.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_karapatan._tcp.</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
