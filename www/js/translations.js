@@ -25,7 +25,8 @@ var translations = {
       learningToggleSub: "See explanations & retry wrong answers before continuing.",
       startGame: "Start Match",
       howToPlay: "How to Play",
-      localPlayBtn: "📶 Local Play — no internet needed"
+      localPlayTitle: "Local Play",
+      localPlaySub: "No internet needed — separate phones over Wi-Fi"
     },
     langBtn: (name) => `Language: ${name}`,
     langPickerTitle: "Choose Language",
@@ -177,7 +178,8 @@ var translations = {
       learningToggleSub: "Makikita ang paliwanag at maaaring subukan ulit ang maling sagot.",
       startGame: "Simulan ang Laro",
       howToPlay: "Paano Maglaro",
-      localPlayBtn: "📶 Local Play — walang kailangang internet"
+      localPlayTitle: "Local Play",
+      localPlaySub: "Walang kailangang internet — hiwalay na telepono sa Wi-Fi"
     },
     langBtn: (name) => `Wika: ${name}`,
     langPickerTitle: "Pumili ng Wika",
