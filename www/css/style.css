@@ -247,6 +247,9 @@ body{
   font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
   font-weight:700; font-size:14px; border:none; border-radius:12px; padding:13px 16px;
   cursor:pointer; width:100%; text-align:center; transition:transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+  touch-action:manipulation; /* skip the browser's double-tap/zoom gesture delay, which otherwise
+                                 can delay click-target resolution until after we've already
+                                 swapped in the next screen's DOM */
 }
 .btn:active{transform:scale(0.97);}
 .btn-primary{background:var(--gold); color:var(--navy-deep);}
@@ -275,6 +278,7 @@ body{
   box-shadow:0 10px 20px rgba(0,0,0,0.35);
   transition:transform 0.18s ease, box-shadow 0.18s ease;
   transform-origin:center bottom; text-align:left; opacity:0;
+  touch-action:manipulation;
 }
 .choice-list .choice-card:nth-child(1){ animation:dealIn1 0.5s cubic-bezier(.2,.8,.2,1) both; animation-delay:0.05s; z-index:1; }
 .choice-list .choice-card:nth-child(2){ animation:dealIn2 0.5s cubic-bezier(.2,.8,.2,1) both; animation-delay:0.16s; margin-top:-14px; z-index:2; }

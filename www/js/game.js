@@ -33,6 +33,25 @@ var paused = false;
 var cameFromPause = null;
 var aiTimeout = null;
 
+/* ---------- Input guard against mistimed/"ghost" clicks ----------
+   Root cause of the recurring "auto-selected answer on the next card"
+   bug: it was never a state-management problem (chosenIndex/answerLocked
+   were already reset correctly on every new card). It's a WebView timing
+   issue — a tap's click event can resolve its target *after* the
+   handler that fired it has already swapped screenEl.innerHTML for the
+   next card, so the click lands on whatever new button now occupies
+   that screen position instead of the button the user actually saw.
+   Fix: any handler that can be reached from a screen transition ignores
+   input for a short window right after a new screen renders. AI-driven
+   auto-picks use longer delays (>=600ms) so they're never affected. */
+var lastRenderAt = 0;
+var INPUT_GUARD_MS = 350;
+function withinInputGuard(source){
+  const blocked = Date.now() - lastRenderAt < INPUT_GUARD_MS;
+  if(blocked) console.warn('[input-guard] Ignored a call to', source, '— arrived', Date.now() - lastRenderAt, 'ms after the last render (likely a stray tap carried over from the previous screen).');
+  return blocked;
+}
+
 /* ---------- DOM refs (bound after DOMContentLoaded) ---------- */
 var screenEl, controlsEl, pauseBtnEl, pauseOverlayEl, pauseSubEl,
     langOverlayEl, langListEl, langPickerTitleEl, langPickerSubEl,
@@ -100,6 +119,7 @@ function buildDeck(length){
 
 /* ================= Render dispatcher ================= */
 function render(){
+  lastRenderAt = Date.now();
   clearInterval(timerHandle);
   clearTimeout(aiTimeout);
   if(state === "splash") return;
@@ -315,6 +335,7 @@ function renderDraw(){
 }
 
 function drawCard(){
+  if(withinInputGuard('drawCard')) return;
   if(match.cardIndex >= match.deck.length){
     // Safety net: extend the deck if a draw is requested with nothing queued
     const extra = match.suddenPool.length ? match.suddenPool.pop() : shuffle(CARD_POOL)[0];
@@ -394,6 +415,7 @@ function startTimer(){
 }
 
 function pickChoice(index){
+  if(withinInputGuard('pickChoice')) return;
   if(answerLocked) return; // already resolved for this card — ignore late/duplicate triggers
   answerLocked = true;
   clearInterval(timerHandle);
@@ -476,6 +498,7 @@ function renderReveal(){
 }
 
 function retryCard(){
+  if(withinInputGuard('retryCard')) return;
   retryMode = true;
   retryUsed = true;
   chosenIndex = null;
@@ -486,6 +509,7 @@ function retryCard(){
 }
 
 function continueAfterReveal(){
+  if(withinInputGuard('continueAfterReveal')) return;
   clearTimeout(aiTimeout);
   applyScore(match.pendingScore);
 }
