@@ -17,6 +17,25 @@ var TEAM_POOL = [
   { name: "Team Silang",    dot: "#4E8FA6" }
 ];
 
+/* Laurel + scales crest, reused on the splash, home, and multiplayer-menu headers. */
+function crestSVG(){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v3M12 6 7 8v3c0 2.5 1.8 4.3 3.5 5M12 6l5 2v3c0 2.5-1.8 4.3-3.5 5"/>
+    <path d="M7 8 4.5 13.5a2.4 2.4 0 0 0 5 0Z"/>
+    <path d="M17 8l-2.5 5.5a2.4 2.4 0 0 0 5 0Z"/>
+    <path d="M12 16.5V20"/><path d="M9 20h6"/>
+    <path d="M5 12c-1 2-1 4.5 1 6M19 12c1 2 1 4.5-1 6" stroke="var(--gold-soft)" stroke-width="0.9"/>
+  </svg>`;
+}
+
+/* Bottom brand strip shown on the reveal screen (correct/wrong states). */
+function brandFooterHTML(){
+  return `<div class="brand-footer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h7v13H4zM20 6h-7v13h7z"/><path d="M4 6c2 -2 5 -2 7 0M20 6c-2 -2 -5 -2 -7 0"/></svg>
+    <span>KARAPATAN CARDS</span>
+  </div>`;
+}
+
 /* ---------- Live match / round state ---------- */
 var state = "splash";
 var match = null;
@@ -125,6 +144,8 @@ function render(){
   clearTimeout(aiTimeout);
   if(state === "splash") return;
   if(state === "home") renderHome();
+  else if(state === "multiplayerMenu") renderMultiplayerMenu();
+  else if(state === "passPlaySetup") renderPassPlaySetup();
   else if(state === "draw") renderDraw();
   else if(state === "handoff") renderHandoff();
   else if(state === "card") renderCard();
@@ -157,12 +178,13 @@ function renderHome(){
     <button class="sound-chip" onclick="toggleSound()">${soundIcon}</button>
     <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
     <div class="screen-body">
+      <div class="home-crest">${crestSVG()}</div>
       <div class="home-logo">Karapatan Cards</div>
       <div class="home-tagline">${t.tagline}</div>
 
-      <div class="section-title">${h.modeTitle}</div>
+      <div class="section-title flanked">${h.modeTitle}</div>
       <div class="mode-grid">
-        <div class="mode-card ${homeSettings.mode==='multiplayer'?'active':''}" onclick="setHomeMode('multiplayer')">
+        <div class="mode-card mc-multiplayer ${homeSettings.mode==='multiplayer'?'active':''}" onclick="goto('multiplayerMenu')">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           <div class="mc-title">${h.modeMultiplayer}</div>
           <div class="mc-sub">${h.modeMultiplayerSub}</div>
@@ -174,39 +196,7 @@ function renderHome(){
         </div>
       </div>
 
-      ${homeSettings.mode === 'multiplayer' ? `
-        <div class="pill-row" style="margin-bottom:10px;">
-          <div class="pill ${homeSettings.mpMode==='passplay'?'active':''}" onclick="setMpMode('passplay')">${h.passPlayLabel}</div>
-          <div class="pill ${homeSettings.mpMode==='local'?'active':''}" onclick="setMpMode('local')">${h.localPlayTitle}</div>
-        </div>
-        ${homeSettings.mpMode === 'passplay' ? `
-          <div class="section-title">${h.teamsTitle}</div>
-          <div class="stepper" style="margin-bottom:10px;">
-            <button onclick="stepTeamCount(-1)">−</button>
-            <span class="val">${homeSettings.teamCount}</span>
-            <button onclick="stepTeamCount(1)">+</button>
-          </div>
-          ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
-            <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
-          `).join('')}
-        ` : `
-          <div class="local-play-card" onclick="LP.openMenu()" style="margin-top:2px;">
-            <div class="lpc-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-                <circle cx="12" cy="20" r="1" fill="var(--navy)"/>
-              </svg>
-            </div>
-            <div>
-              <div class="lpc-title">${h.localPlayTitle}</div>
-              <div class="lpc-sub">${h.localPlaySub}</div>
-            </div>
-            <svg class="lpc-arrow" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-        `}
-      ` : `
+      ${homeSettings.mode === 'solo' ? `
         <div class="section-title">${h.aiDifficultyTitle}</div>
         <div class="pill-row" style="margin-bottom:10px;">
           <div class="pill ${homeSettings.aiDifficulty==='easy'?'active':''}" onclick="setAiDifficulty('easy')">${h.easy}</div>
@@ -218,7 +208,77 @@ function renderHome(){
           <span style="color:${homeSettings.learningAids?'var(--sage)':'#c2c2c2'};font-weight:800;">${homeSettings.learningAids ? '●  ON' : '○  OFF'}</span>
         </div>
         <div style="font-size:10.5px;color:#8a9a94;margin:2px 2px 10px;line-height:1.4;">${h.learningToggleSub}</div>
+
+        <div class="section-title">${h.lengthTitle}</div>
+        <div class="pill-row" style="margin-bottom:6px;">
+          <div class="pill ${homeSettings.length==='quick'?'active':''}" onclick="setLength('quick')">${h.quick}<span class="pill-sub">${h.quickSub}</span></div>
+          <div class="pill ${homeSettings.length==='standard'?'active':''}" onclick="setLength('standard')">${h.standard}<span class="pill-sub">${h.standardSub}</span></div>
+          <div class="pill ${homeSettings.length==='challenge'?'active':''}" onclick="setLength('challenge')">${h.challenge}<span class="pill-sub">${h.challengeSub}</span></div>
+        </div>
+
+        <div class="grow"></div>
+        <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openHowTo()">${h.howToPlay}</button>
+        <button class="btn btn-primary" onclick="startMatch()">${h.startGame}</button>
+      ` : `
+        <div class="grow"></div>
+        <button class="btn btn-outline" onclick="openHowTo()">${h.howToPlay}</button>
       `}
+    </div>
+  `;
+  setControls('');
+}
+
+function setHomeMode(m){ homeSettings.mode = m; renderHome(); }
+function setMpMode(m){ homeSettings.mpMode = m; }
+function setLength(l){ homeSettings.length = l; render(); }
+
+/* ================= MULTIPLAYER MENU ================= */
+function renderMultiplayerMenu(){
+  const t = T();
+  const h = t.home;
+  homeSettings.mode = 'multiplayer';
+  screenEl.innerHTML = `
+    <button class="back-btn" onclick="goto('home')" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
+    <div class="screen-body">
+      <div class="home-crest">${crestSVG()}</div>
+      <div class="home-logo">${h.modeMultiplayer}</div>
+      <div class="home-tagline">${h.mpMenuTagline}</div>
+
+      <div class="mp-menu-card filled" style="animation-delay:0.05s;" onclick="goto('passPlaySetup')">
+        <svg class="mpc-icon" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="2.5"/><circle cx="17" cy="8" r="2.5"/><path d="M4 18c0-2.5 1.5-4 3-4s3 1.5 3 4M14 18c0-2.5 1.5-4 3-4s3 1.5 3 4"/><path d="M9 14h6"/></svg>
+        <div class="mpc-divider"></div>
+        <div><div class="mpc-title">${h.passPlayCardTitle}</div><div class="mpc-sub">${h.passPlayCardSub}</div></div>
+        <svg class="mpc-arrow" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+
+      <div class="mp-menu-card outline" style="animation-delay:0.15s;" onclick="LP.openMenu()">
+        <svg class="mpc-icon" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="var(--navy)"/></svg>
+        <div class="mpc-divider"></div>
+        <div><div class="mpc-title">${h.localPlayTitle}</div><div class="mpc-sub">${h.localPlaySub}</div></div>
+        <svg class="mpc-arrow" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+    </div>
+  `;
+  setControls('');
+}
+
+/* ================= PASS & PLAY SETUP ================= */
+function renderPassPlaySetup(){
+  const t = T();
+  const h = t.home;
+  screenEl.innerHTML = `
+    <button class="back-btn" onclick="goto('multiplayerMenu')" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m15 18-6-6 6-6"/></svg></button>
+    <div class="screen-body">
+      <div class="section-title" style="margin-top:44px;">${h.teamsTitle}</div>
+      <div class="stepper" style="margin-bottom:10px;">
+        <button onclick="stepTeamCount(-1)">−</button>
+        <span class="val">${homeSettings.teamCount}</span>
+        <button onclick="stepTeamCount(1)">+</button>
+      </div>
+      ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
+        <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
+      `).join('')}
 
       <div class="section-title">${h.lengthTitle}</div>
       <div class="pill-row" style="margin-bottom:6px;">
@@ -229,22 +289,16 @@ function renderHome(){
 
       <div class="grow"></div>
       <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openHowTo()">${h.howToPlay}</button>
-      ${homeSettings.mode === 'multiplayer' && homeSettings.mpMode === 'local'
-        ? `<button class="btn btn-primary" onclick="LP.openMenu()">${h.continueLocalPlayBtn}</button>`
-        : `<button class="btn btn-primary" onclick="startMatch()">${h.startGame}</button>`}
+      <button class="btn btn-primary" onclick="startMatch()">${h.startGame}</button>
     </div>
   `;
   setControls('');
 }
-
-function setHomeMode(m){ homeSettings.mode = m; renderHome(); }
-function setMpMode(m){ homeSettings.mpMode = m; renderHome(); }
-function setLength(l){ homeSettings.length = l; renderHome(); }
 function setAiDifficulty(d){ homeSettings.aiDifficulty = d; renderHome(); }
 function toggleLearningAids(){ homeSettings.learningAids = !homeSettings.learningAids; renderHome(); }
 function stepTeamCount(delta){
   homeSettings.teamCount = Math.max(2, Math.min(4, homeSettings.teamCount + delta));
-  renderHome();
+  render();
 }
 function toggleSound(){
   AudioEngine.toggle();
@@ -497,6 +551,8 @@ function renderReveal(){
         ${canRetry ? `<button class="btn btn-outline" onclick="retryCard()">${t.tryAgainBtn}</button>` : ''}
         <button class="btn btn-primary" onclick="continueAfterReveal()">${t.continueBtn}</button>
       </div>
+      ${brandFooterHTML()}
+    </div>
     </div>
   `;
   setControls('');

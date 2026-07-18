@@ -99,7 +99,7 @@ var LP = (function(){
 
   function leaveToHome(){
     resetSession();
-    goto('home');
+    goto('multiplayerMenu'); // Local Play is now reached via the Multiplayer Menu, so back returns there
   }
 
   /* ================= MENU SCREEN ================= */

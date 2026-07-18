@@ -27,8 +27,9 @@ var translations = {
       howToPlay: "How to Play",
       localPlayTitle: "Local Play",
       localPlaySub: "No internet needed — separate phones over Wi-Fi",
-      passPlayLabel: "Pass & Play",
-      continueLocalPlayBtn: "Continue to Local Play"
+      mpMenuTagline: "Choose how you want to play",
+      passPlayCardTitle: "Pass & Play",
+      passPlayCardSub: "Play with friends on the same device"
     },
     langBtn: (name) => `Language: ${name}`,
     langPickerTitle: "Choose Language",
@@ -182,8 +183,9 @@ var translations = {
       howToPlay: "Paano Maglaro",
       localPlayTitle: "Local Play",
       localPlaySub: "Walang kailangang internet — hiwalay na telepono sa Wi-Fi",
-      passPlayLabel: "Palitan ang Telepono",
-      continueLocalPlayBtn: "Magpatuloy sa Local Play"
+      mpMenuTagline: "Piliin kung paano gusto mong maglaro",
+      passPlayCardTitle: "Palitan ang Telepono",
+      passPlayCardSub: "Maglaro kasama ang kaibigan sa iisang device"
     },
     langBtn: (name) => `Wika: ${name}`,
     langPickerTitle: "Pumili ng Wika",
