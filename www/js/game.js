@@ -3,6 +3,7 @@
 /* ---------- Home / setup state (persists between matches) ---------- */
 var homeSettings = {
   mode: 'multiplayer',      // 'multiplayer' | 'solo'
+  mpMode: 'passplay',       // 'passplay' | 'local' — only relevant when mode === 'multiplayer'
   length: 'standard',       // 'quick' | 'standard' | 'challenge'
   teamCount: 2,
   aiDifficulty: 'medium',
@@ -173,32 +174,38 @@ function renderHome(){
         </div>
       </div>
 
-      <div class="local-play-card" onclick="LP.openMenu()">
-        <div class="lpc-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-            <circle cx="12" cy="20" r="1" fill="var(--navy)"/>
-          </svg>
-        </div>
-        <div>
-          <div class="lpc-title">${h.localPlayTitle}</div>
-          <div class="lpc-sub">${h.localPlaySub}</div>
-        </div>
-        <svg class="lpc-arrow" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m9 18 6-6-6-6"/></svg>
-      </div>
-
       ${homeSettings.mode === 'multiplayer' ? `
-        <div class="section-title">${h.teamsTitle}</div>
-        <div class="stepper" style="margin-bottom:10px;">
-          <button onclick="stepTeamCount(-1)">−</button>
-          <span class="val">${homeSettings.teamCount}</span>
-          <button onclick="stepTeamCount(1)">+</button>
+        <div class="pill-row" style="margin-bottom:10px;">
+          <div class="pill ${homeSettings.mpMode==='passplay'?'active':''}" onclick="setMpMode('passplay')">${h.passPlayLabel}</div>
+          <div class="pill ${homeSettings.mpMode==='local'?'active':''}" onclick="setMpMode('local')">${h.localPlayTitle}</div>
         </div>
-        ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
-          <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
-        `).join('')}
+        ${homeSettings.mpMode === 'passplay' ? `
+          <div class="section-title">${h.teamsTitle}</div>
+          <div class="stepper" style="margin-bottom:10px;">
+            <button onclick="stepTeamCount(-1)">−</button>
+            <span class="val">${homeSettings.teamCount}</span>
+            <button onclick="stepTeamCount(1)">+</button>
+          </div>
+          ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
+            <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
+          `).join('')}
+        ` : `
+          <div class="local-play-card" onclick="LP.openMenu()" style="margin-top:2px;">
+            <div class="lpc-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                <circle cx="12" cy="20" r="1" fill="var(--navy)"/>
+              </svg>
+            </div>
+            <div>
+              <div class="lpc-title">${h.localPlayTitle}</div>
+              <div class="lpc-sub">${h.localPlaySub}</div>
+            </div>
+            <svg class="lpc-arrow" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        `}
       ` : `
         <div class="section-title">${h.aiDifficultyTitle}</div>
         <div class="pill-row" style="margin-bottom:10px;">
@@ -222,13 +229,16 @@ function renderHome(){
 
       <div class="grow"></div>
       <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openHowTo()">${h.howToPlay}</button>
-      <button class="btn btn-primary" onclick="startMatch()">${h.startGame}</button>
+      ${homeSettings.mode === 'multiplayer' && homeSettings.mpMode === 'local'
+        ? `<button class="btn btn-primary" onclick="LP.openMenu()">${h.continueLocalPlayBtn}</button>`
+        : `<button class="btn btn-primary" onclick="startMatch()">${h.startGame}</button>`}
     </div>
   `;
   setControls('');
 }
 
 function setHomeMode(m){ homeSettings.mode = m; renderHome(); }
+function setMpMode(m){ homeSettings.mpMode = m; renderHome(); }
 function setLength(l){ homeSettings.length = l; renderHome(); }
 function setAiDifficulty(d){ homeSettings.aiDifficulty = d; renderHome(); }
 function toggleLearningAids(){ homeSettings.learningAids = !homeSettings.learningAids; renderHome(); }
