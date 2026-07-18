@@ -45,15 +45,15 @@ var CARD_POOL = [
     "scenario": "A working student, 15, is told by their employer they cannot take time off to take final exams.",
     "choices": [
       {
-        "text": "Quit immediately without saying anything to the employer.",
+        "text": "Skip the exams this one time, then bring it up with DOLE afterward.",
         "pts": 0
       },
       {
-        "text": "Just skip the exams to keep the job, then complain about it later.",
+        "text": "Ask a co-worker to cover the shift instead of asking the employer directly.",
         "pts": 1
       },
       {
-        "text": "Remind the employer that education takes priority by law, and report to DOLE if the employer refuses.",
+        "text": "Tell the employer school comes first by law, and file with DOLE if refused.",
         "pts": 2
       }
     ],
@@ -68,15 +68,15 @@ var CARD_POOL = [
     "scenario": "A 14-year-old scavenger is injured by broken glass while working at a dumpsite with no protective gear or supervision.",
     "choices": [
       {
-        "text": "Ignore it since it's how the family earns income.",
+        "text": "Leave it alone since scavenging pays for the household's daily needs.",
         "pts": 0
       },
       {
-        "text": "Just tell the child to be more careful next time.",
+        "text": "Give the child gloves and tell them to be more careful next time.",
         "pts": 1
       },
       {
-        "text": "Report the hazardous child labor to the barangay or DSWD so the child can be pulled from danger and assisted.",
+        "text": "Report the hazardous work to the barangay or DSWD so the child is safe.",
         "pts": 2
       }
     ],
@@ -91,15 +91,15 @@ var CARD_POOL = [
     "scenario": "As a barangay official, you learn a child is being forced by a relative into hazardous scavenging work daily and is missing school.",
     "choices": [
       {
-        "text": "Publicly shame the relative at a barangay assembly without following any protocol.",
+        "text": "Call out the relative publicly at the next barangay assembly.",
         "pts": 0
       },
       {
-        "text": "Give the family a verbal warning only and take no further action.",
+        "text": "Give the family a private warning, then consider the matter closed.",
         "pts": 1
       },
       {
-        "text": "Document the situation, coordinate with DSWD and the school, and offer the family support while removing the child from hazard.",
+        "text": "Document the case with DSWD and the school, and remove the child from harm.",
         "pts": 2
       }
     ],
@@ -152,15 +152,15 @@ var CARD_POOL = [
     "scenario": "You receive threatening messages from an anonymous account after posting an opinion online.",
     "choices": [
       {
-        "text": "Delete your post and say nothing to anyone.",
+        "text": "Delete the post quietly and hope the messages stop on their own.",
         "pts": 0
       },
       {
-        "text": "Reply angrily to try to scare the account away.",
+        "text": "Reply and argue back with the account to make them back off.",
         "pts": 1
       },
       {
-        "text": "Screenshot everything, block the account, and report it to the platform and, if serious, to the PNP Anti-Cybercrime Group.",
+        "text": "Screenshot the messages, block the account, and report to the PNP.",
         "pts": 2
       }
     ],
@@ -175,15 +175,15 @@ var CARD_POOL = [
     "scenario": "A minor's private photos are posted online without consent by an ex-partner.",
     "choices": [
       {
-        "text": "Do nothing since the photos are already out there.",
+        "text": "Do nothing since the photos are already circulating anyway.",
         "pts": 0
       },
       {
-        "text": "Ask friends to mass-report the account without saving any evidence.",
+        "text": "Ask friends to spam-report the account first, skipping any evidence.",
         "pts": 1
       },
       {
-        "text": "Preserve evidence, report to the platform for takedown, and file a complaint under the anti-voyeurism and cybercrime laws.",
+        "text": "Save evidence, report for takedown, and file under the anti-voyeurism law.",
         "pts": 2
       }
     ],
@@ -198,15 +198,15 @@ var CARD_POOL = [
     "scenario": "As a school IT officer, you discover a viral chat group is coordinating harassment of a student, with some members claiming they were 'just joking.'",
     "choices": [
       {
-        "text": "Delete the chat evidence immediately to avoid controversy.",
+        "text": "Delete the chat logs quickly to avoid any controversy.",
         "pts": 0
       },
       {
-        "text": "Quietly ask the group to stop without informing the school administration.",
+        "text": "Ask the group privately to stop, without informing school administration.",
         "pts": 1
       },
       {
-        "text": "Escalate to the anti-bullying committee, preserve chat evidence, and ensure the targeted student gets support while the group is investigated.",
+        "text": "Escalate to the anti-bullying committee, keep the logs, and support the student.",
         "pts": 2
       }
     ],
@@ -259,15 +259,15 @@ var CARD_POOL = [
     "scenario": "An employee is told their overtime pay will just be 'added next payday' for the third month in a row.",
     "choices": [
       {
-        "text": "Resign immediately without documenting anything or filing a complaint.",
+        "text": "Bring it up verbally with the employer again next payday.",
         "pts": 0
       },
       {
-        "text": "Accept the excuse again and stay quiet to avoid conflict.",
+        "text": "Mention it to a co-worker and wait to see if it happens a fourth time.",
         "pts": 1
       },
       {
-        "text": "Keep a written log of hours worked and file a complaint with DOLE if the employer keeps delaying payment.",
+        "text": "Log the hours worked in writing and file with DOLE if delays continue.",
         "pts": 2
       }
     ],
@@ -282,15 +282,15 @@ var CARD_POOL = [
     "scenario": "A domestic worker (kasambahay) is not given a day off in over two months despite asking.",
     "choices": [
       {
-        "text": "Walk out immediately without discussing it or seeking help.",
+        "text": "Quit on the spot without discussing it or asking anyone for help.",
         "pts": 0
       },
       {
-        "text": "Just keep working without a rest day to avoid losing the job.",
+        "text": "Keep working without a rest day so the job isn't put at risk.",
         "pts": 1
       },
       {
-        "text": "Remind the employer that a weekly rest day is a legal right, and seek help from DOLE or barangay if refused.",
+        "text": "Remind the employer a rest day is required by law, and ask DOLE if refused.",
         "pts": 2
       }
     ],
@@ -305,15 +305,15 @@ var CARD_POOL = [
     "scenario": "As a shop supervisor, your manager instructs you to report fewer hours than employees actually worked to cut overtime costs.",
     "choices": [
       {
-        "text": "Say nothing and let another supervisor handle it instead.",
+        "text": "Stay quiet and hope another supervisor deals with it instead.",
         "pts": 0
       },
       {
-        "text": "Falsify the records this one time since it's just a small adjustment.",
+        "text": "Adjust the records this one time since it seems like a minor change.",
         "pts": 1
       },
       {
-        "text": "Refuse to falsify records, explain the legal risk to your manager, and report the instruction if it continues.",
+        "text": "Refuse to falsify the records, flag the risk, and report it if it continues.",
         "pts": 2
       }
     ],
@@ -366,15 +366,15 @@ var CARD_POOL = [
     "scenario": "A worker is injured on the job, and the employer suggests just resting at home without reporting or covering the medical costs.",
     "choices": [
       {
-        "text": "Quit right away without seeking compensation for the injury.",
+        "text": "Resign right away without ever filing for any compensation.",
         "pts": 0
       },
       {
-        "text": "Just accept the suggestion and pay for treatment out of pocket.",
+        "text": "Accept the suggestion and cover the treatment costs yourself.",
         "pts": 1
       },
       {
-        "text": "Insist that the injury be officially reported and file for SSS/Employees' Compensation benefits for work-related injuries.",
+        "text": "Insist the injury is reported and file for SSS compensation benefits.",
         "pts": 2
       }
     ],
@@ -389,15 +389,15 @@ var CARD_POOL = [
     "scenario": "Workers notice a scaffold at a construction site is visibly unstable, but the foreman insists work continue to meet a deadline.",
     "choices": [
       {
-        "text": "Say nothing since the foreman is in charge.",
+        "text": "Stay quiet since the foreman is the one fully in charge of this site.",
         "pts": 0
       },
       {
-        "text": "Work quickly and carefully to finish before anything happens.",
+        "text": "Work fast and carefully to finish before something goes wrong.",
         "pts": 1
       },
       {
-        "text": "Refuse to work on the unsafe scaffold and report the hazard, since workers have the right to refuse unsafe work.",
+        "text": "Refuse the unsafe scaffold and report it — workers may refuse unsafe work.",
         "pts": 2
       }
     ],
@@ -412,15 +412,15 @@ var CARD_POOL = [
     "scenario": "As a safety officer, you find repeated near-miss accidents on a site, but management wants to keep incidents unreported to avoid delays.",
     "choices": [
       {
-        "text": "Go along with management's wish to keep incidents unreported.",
+        "text": "Follow management's wish and leave every incident unreported for now.",
         "pts": 0
       },
       {
-        "text": "Log the incidents privately but don't tell DOLE or push management further.",
+        "text": "Log the incidents privately, but skip telling DOLE or management.",
         "pts": 1
       },
       {
-        "text": "Formally log the incidents, push for corrective measures, and escalate to DOLE if management continues to suppress reporting.",
+        "text": "Log the incidents formally, push for fixes, and escalate to DOLE if suppressed.",
         "pts": 2
       }
     ],
@@ -473,15 +473,15 @@ var CARD_POOL = [
     "scenario": "An informal settler family receives a demolition notice for next week with no relocation plan offered.",
     "choices": [
       {
-        "text": "Resist the demolition by force without seeking legal help.",
+        "text": "Resist the demolition physically, without seeking any legal help at all.",
         "pts": 0
       },
       {
-        "text": "Leave immediately without asking about relocation assistance.",
+        "text": "Leave the area right away without asking about relocation assistance.",
         "pts": 1
       },
       {
-        "text": "Seek help from the local housing office or NHA, since demolitions require adequate notice and, where applicable, relocation assistance.",
+        "text": "Seek help from the housing office — eligible families get notice and relocation.",
         "pts": 2
       }
     ],
@@ -496,15 +496,15 @@ var CARD_POOL = [
     "scenario": "A tenant's security deposit is not returned months after moving out, despite leaving the unit in good condition.",
     "choices": [
       {
-        "text": "Break into the unit to retrieve personal belongings as compensation.",
+        "text": "Break into the old unit to grab items as informal compensation.",
         "pts": 0
       },
       {
-        "text": "Let it go since it's a small amount of money.",
+        "text": "Let the deposit go since it is only a small amount of money.",
         "pts": 1
       },
       {
-        "text": "Send a written demand for the deposit and bring the matter to the barangay for mediation if ignored.",
+        "text": "Send a written demand and bring it to the barangay if ignored.",
         "pts": 2
       }
     ],
@@ -519,15 +519,15 @@ var CARD_POOL = [
     "scenario": "As a barangay housing officer, you're asked to approve a fast demolition of homes for a private project without a relocation plan.",
     "choices": [
       {
-        "text": "Delay indefinitely without explaining the legal requirement to anyone.",
+        "text": "Delay the approval indefinitely without explaining the reason.",
         "pts": 0
       },
       {
-        "text": "Approve it quickly since the project has investors waiting.",
+        "text": "Approve the demolition quickly since investors are waiting.",
         "pts": 1
       },
       {
-        "text": "Refuse to approve until affected families are properly consulted and a relocation plan is in place, as required by law.",
+        "text": "Refuse to approve until families are consulted and relocation is set.",
         "pts": 2
       }
     ],
@@ -580,15 +580,15 @@ var CARD_POOL = [
     "scenario": "A dispute over a shared water pump escalates, and one neighbor threatens to destroy it that night.",
     "choices": [
       {
-        "text": "Confront the neighbor alone late at night.",
+        "text": "Confront the neighbor alone, late at night, over the pump.",
         "pts": 0
       },
       {
-        "text": "Wait to see if the threat is serious before doing anything.",
+        "text": "Wait and see if the threat turns out to be serious first.",
         "pts": 1
       },
       {
-        "text": "Report the threat to barangay officials immediately so they can intervene and prevent damage or violence.",
+        "text": "Report the threat to barangay officials so they can step in.",
         "pts": 2
       }
     ],
@@ -603,15 +603,15 @@ var CARD_POOL = [
     "scenario": "A Lupon mediation results in an agreement, but one party later refuses to comply with it.",
     "choices": [
       {
-        "text": "Take matters into your own hands to force compliance.",
+        "text": "Take matters into your own hands to force the other side to comply.",
         "pts": 0
       },
       {
-        "text": "Just accept the non-compliance and drop the matter.",
+        "text": "Accept the non-compliance quietly and drop the matter entirely.",
         "pts": 1
       },
       {
-        "text": "Ask the barangay to have the agreement enforced, since a Lupon settlement has the force of a court judgment if unchallenged.",
+        "text": "Ask the barangay to enforce it — a Lupon deal binds like a judgment.",
         "pts": 2
       }
     ],
@@ -626,15 +626,15 @@ var CARD_POOL = [
     "scenario": "As a Lupon member, you notice one party is being pressured by the other's relatives to accept an unfair settlement.",
     "choices": [
       {
-        "text": "Side with whichever party has more relatives present.",
+        "text": "Side with whichever party brought more relatives along.",
         "pts": 0
       },
       {
-        "text": "Continue the mediation as scheduled without addressing the pressure.",
+        "text": "Continue the mediation on schedule, ignoring the pressure.",
         "pts": 1
       },
       {
-        "text": "Pause the mediation, address the pressure, and ensure both parties freely and fairly agree before proceeding.",
+        "text": "Pause the mediation and address the pressure before continuing.",
         "pts": 2
       }
     ],
@@ -710,7 +710,7 @@ var CARD_POOL = [
     "scenario": "Someone is detained by barangay tanods overnight for a minor argument without being brought before proper authority.",
     "choices": [
       {
-        "text": "Try to escape from custody without seeking legal help.",
+        "text": "Try to slip out of custody without asking for any legal help.",
         "pts": 0
       },
       {
@@ -718,7 +718,7 @@ var CARD_POOL = [
         "pts": 1
       },
       {
-        "text": "Point out that detention beyond the allowed period without charges violates the right to liberty, and seek help from a lawyer or PAO.",
+        "text": "Flag the illegal detention and seek help from a lawyer or PAO.",
         "pts": 2
       }
     ],
@@ -733,15 +733,15 @@ var CARD_POOL = [
     "scenario": "As a barangay captain, you're asked by police to let them question a suspect at your hall without informing the suspect of their rights.",
     "choices": [
       {
-        "text": "Refuse to allow police into the barangay hall at all.",
+        "text": "Refuse to let police into the barangay hall at all.",
         "pts": 0
       },
       {
-        "text": "Allow the questioning to proceed quickly without raising the issue.",
+        "text": "Let the questioning proceed quickly without raising it.",
         "pts": 1
       },
       {
-        "text": "Insist that the suspect be informed of their rights and have access to counsel before any questioning proceeds.",
+        "text": "Insist the suspect hears their rights and gets counsel first.",
         "pts": 2
       }
     ],
@@ -794,15 +794,15 @@ var CARD_POOL = [
     "scenario": "A person is stopped and frisked without any specific suspicious circumstance, just because of how they look.",
     "choices": [
       {
-        "text": "Physically resist the search on the spot.",
+        "text": "Physically resist the search right there on the spot.",
         "pts": 0
       },
       {
-        "text": "Immediately consent to any search to avoid trouble.",
+        "text": "Agree to any search right away just to avoid trouble.",
         "pts": 1
       },
       {
-        "text": "Politely ask for the legal basis of the search and note officer details, since baseless searches can be challenged.",
+        "text": "Ask for the legal basis and note the officer's details calmly.",
         "pts": 2
       }
     ],
@@ -817,15 +817,15 @@ var CARD_POOL = [
     "scenario": "A detainee reports being slapped by an officer during questioning to force a confession.",
     "choices": [
       {
-        "text": "Confess to whatever is asked just to stop the mistreatment.",
+        "text": "Confess to whatever is asked just to end the mistreatment quickly.",
         "pts": 0
       },
       {
-        "text": "Say nothing out of fear of retaliation.",
+        "text": "Stay silent through the questioning out of fear of retaliation.",
         "pts": 1
       },
       {
-        "text": "Document any injuries, seek medical examination, and file a complaint with the PNP Internal Affairs Service or the Ombudsman.",
+        "text": "Document injuries and file with PNP Internal Affairs or the Ombudsman.",
         "pts": 2
       }
     ],
@@ -840,15 +840,15 @@ var CARD_POOL = [
     "scenario": "As a human rights desk officer, a detainee shows you bruises and says they were coerced into signing a statement.",
     "choices": [
       {
-        "text": "Dismiss the complaint since the detainee already signed the statement.",
+        "text": "Dismiss it since the detainee already signed the statement.",
         "pts": 0
       },
       {
-        "text": "Advise the detainee to just accept the statement to avoid more trouble.",
+        "text": "Tell the detainee to accept the statement to avoid trouble.",
         "pts": 1
       },
       {
-        "text": "Document the injuries, refer the detainee for medical and legal assistance, and file the incident for investigation.",
+        "text": "Document injuries and refer for medical and legal assistance.",
         "pts": 2
       }
     ],
@@ -901,7 +901,7 @@ var CARD_POOL = [
     "scenario": "Organizers apply for a rally permit, but the mayor's office ignores the application without any response.",
     "choices": [
       {
-        "text": "Hold the rally without any notice or documentation of the application.",
+        "text": "Hold the rally anyway, without any notice or documentation.",
         "pts": 0
       },
       {
@@ -909,7 +909,7 @@ var CARD_POOL = [
         "pts": 1
       },
       {
-        "text": "Follow up formally and know that under the law, failure to act within the required period is treated as approval.",
+        "text": "Follow up formally — no response within the period counts as approval.",
         "pts": 2
       }
     ],
@@ -924,15 +924,15 @@ var CARD_POOL = [
     "scenario": "A columnist is sued for libel after writing a fact-based critical opinion piece about a public official's performance.",
     "choices": [
       {
-        "text": "Ignore the lawsuit completely.",
+        "text": "Set the lawsuit aside completely and prepare no defense at all.",
         "pts": 0
       },
       {
-        "text": "Immediately retract the article and apologize without seeking legal advice.",
+        "text": "Retract the article and apologize without seeking legal advice.",
         "pts": 1
       },
       {
-        "text": "Seek legal counsel to assert fair comment on matters of public interest as a defense.",
+        "text": "Get legal counsel and assert fair comment on public interest matters.",
         "pts": 2
       }
     ],
@@ -947,15 +947,15 @@ var CARD_POOL = [
     "scenario": "As a local official, you must decide whether to grant a rally permit for a group critical of your own administration.",
     "choices": [
       {
-        "text": "Grant it but assign excessive restrictions to discourage attendance.",
+        "text": "Grant it, but add heavy restrictions to discourage attendance.",
         "pts": 0
       },
       {
-        "text": "Deny the permit citing 'peace and order' without any specific factual basis.",
+        "text": "Deny the permit citing peace and order, with no factual basis given.",
         "pts": 1
       },
       {
-        "text": "Grant the permit if requirements are met, regardless of the group's viewpoint, since content-based denial is unconstitutional.",
+        "text": "Grant it if requirements are met, no matter the group's viewpoint.",
         "pts": 2
       }
     ],
@@ -1008,15 +1008,15 @@ var CARD_POOL = [
     "scenario": "A news outlet receives a cease-and-desist letter threatening a lawsuit over a critical but accurate investigative report.",
     "choices": [
       {
-        "text": "Ignore the letter and make no preparations at all.",
+        "text": "Set the letter aside and make no preparations at all.",
         "pts": 0
       },
       {
-        "text": "Take the story down immediately without checking the facts.",
+        "text": "Take the story down right away without rechecking the facts at all.",
         "pts": 1
       },
       {
-        "text": "Verify the facts are solid, keep sources and documentation ready, and consult legal counsel rather than retracting immediately.",
+        "text": "Verify the facts, keep documentation ready, and consult a lawyer first.",
         "pts": 2
       }
     ],
@@ -1031,15 +1031,15 @@ var CARD_POOL = [
     "scenario": "A community blogger is asked by local officials to reveal an anonymous source who exposed alleged corruption.",
     "choices": [
       {
-        "text": "Delete the story to make the issue disappear.",
+        "text": "Delete the story quietly to make the whole issue disappear.",
         "pts": 0
       },
       {
-        "text": "Reveal the source immediately to avoid conflict with officials.",
+        "text": "Reveal the source right away to avoid conflict with officials.",
         "pts": 1
       },
       {
-        "text": "Politely decline, citing the ethical and, in relevant cases, legal protection of confidential sources.",
+        "text": "Decline, citing the ethical and legal protection of sources.",
         "pts": 2
       }
     ],
@@ -1054,15 +1054,15 @@ var CARD_POOL = [
     "scenario": "As a campus paper adviser, the school administration pressures you to censor a student article critical of the administration.",
     "choices": [
       {
-        "text": "Publish the article without reviewing it for factual accuracy at all.",
+        "text": "Publish the article without checking it for factual accuracy at all.",
         "pts": 0
       },
       {
-        "text": "Comply with the censorship request to avoid conflict with the administration.",
+        "text": "Comply with the censorship request to avoid conflict with the school.",
         "pts": 1
       },
       {
-        "text": "Support the students' right to publish factual, responsibly written criticism, consistent with campus press freedom protections.",
+        "text": "Support the students publishing factual, responsibly written criticism.",
         "pts": 2
       }
     ],
@@ -1115,15 +1115,15 @@ var CARD_POOL = [
     "scenario": "A woman wants to leave an abusive relationship but is afraid because her partner threatened to take the children.",
     "choices": [
       {
-        "text": "Leave immediately without seeking any legal protection.",
+        "text": "Leave the relationship at once without any legal protection in place.",
         "pts": 0
       },
       {
-        "text": "Stay in the relationship to avoid the threat being carried out.",
+        "text": "Stay in the relationship so the threat doesn't get carried out.",
         "pts": 1
       },
       {
-        "text": "Seek a Barangay Protection Order or Temporary Protection Order and coordinate with DSWD or a women's desk for safety planning.",
+        "text": "Seek a protection order and coordinate with DSWD for safety planning.",
         "pts": 2
       }
     ],
@@ -1138,15 +1138,15 @@ var CARD_POOL = [
     "scenario": "A pregnant employee is demoted and later dismissed shortly after informing her employer of her pregnancy.",
     "choices": [
       {
-        "text": "Resign quietly without filing any complaint.",
+        "text": "Resign quietly and skip filing any complaint about it at all.",
         "pts": 0
       },
       {
-        "text": "Accept the demotion since the employer 'has the right to decide.'",
+        "text": "Accept the demotion since the employer can decide as they wish.",
         "pts": 1
       },
       {
-        "text": "File a complaint with DOLE, since dismissal or discrimination due to pregnancy is illegal.",
+        "text": "File a complaint with DOLE — pregnancy-based dismissal is illegal.",
         "pts": 2
       }
     ],
@@ -1161,15 +1161,15 @@ var CARD_POOL = [
     "scenario": "As a barangay VAWC desk officer, a woman reports abuse but says she's scared to file formally because her partner is a local official.",
     "choices": [
       {
-        "text": "Tell her to handle it privately with the official instead.",
+        "text": "Tell her to handle the abuse privately with the official.",
         "pts": 0
       },
       {
-        "text": "Suggest she reconsider filing since the abuser holds a position of influence.",
+        "text": "Suggest she drop it since the abuser holds real local influence.",
         "pts": 1
       },
       {
-        "text": "Assure confidentiality, explain protection order options, and connect her with DSWD or a women's crisis center regardless of the abuser's status.",
+        "text": "Assure confidentiality and connect her with DSWD regardless of his status.",
         "pts": 2
       }
     ],
@@ -1222,15 +1222,15 @@ var CARD_POOL = [
     "scenario": "An employee receives repeated unwanted comments about their appearance from a coworker despite asking them to stop.",
     "choices": [
       {
-        "text": "Confront the coworker with threats of physical harm.",
+        "text": "Confront the coworker with threats of physical harm in return.",
         "pts": 0
       },
       {
-        "text": "Avoid the coworker quietly without reporting anything.",
+        "text": "Avoid the coworker quietly without reporting anything at all.",
         "pts": 1
       },
       {
-        "text": "Report the conduct in writing to HR, since employers are required to have a mechanism for handling such complaints.",
+        "text": "Report the conduct in writing to HR, who must have a complaint process.",
         "pts": 2
       }
     ],
@@ -1245,15 +1245,15 @@ var CARD_POOL = [
     "scenario": "A commuter is groped by a stranger on a crowded jeepney.",
     "choices": [
       {
-        "text": "Physically retaliate with excessive force beyond what's needed to get away safely.",
+        "text": "Retaliate with more force than needed just to get away.",
         "pts": 0
       },
       {
-        "text": "Stay silent and just move away quietly.",
+        "text": "Stay silent and quietly move somewhere else on the jeepney.",
         "pts": 1
       },
       {
-        "text": "Loudly call out the act to alert others, and report to the nearest authority or file a complaint, since evidence and witnesses help.",
+        "text": "Call out loudly, then report to authorities — witnesses help.",
         "pts": 2
       }
     ],
@@ -1268,15 +1268,15 @@ var CARD_POOL = [
     "scenario": "As an HR officer, you receive a harassment complaint against a senior manager who is well-liked and has strong performance numbers.",
     "choices": [
       {
-        "text": "Dismiss the complaint since the manager is a top performer.",
+        "text": "Dismiss the complaint since the manager performs so well.",
         "pts": 0
       },
       {
-        "text": "Quietly ask the manager to be more careful without a formal investigation.",
+        "text": "Ask the manager privately to be careful, skipping any process.",
         "pts": 1
       },
       {
-        "text": "Follow the same formal investigation process regardless of the accused's position or performance.",
+        "text": "Run the same formal investigation regardless of who is accused.",
         "pts": 2
       }
     ],
@@ -1329,15 +1329,15 @@ var CARD_POOL = [
     "scenario": "A qualified applicant with a disability is rejected for a job solely because of their disability, despite being able to perform the tasks.",
     "choices": [
       {
-        "text": "Give up on applying to any job again.",
+        "text": "Give up on applying to any job again after this rejection.",
         "pts": 0
       },
       {
-        "text": "Accept the rejection since some employers 'prefer' non-disabled applicants.",
+        "text": "Accept it since some employers prefer non-disabled applicants.",
         "pts": 1
       },
       {
-        "text": "Point out that disability-based rejection when the person is qualified is illegal discrimination, and file a complaint if needed.",
+        "text": "Flag it as illegal discrimination and file a complaint if needed.",
         "pts": 2
       }
     ],
@@ -1352,15 +1352,15 @@ var CARD_POOL = [
     "scenario": "A PWD cardholder is refused the mandated discount at a pharmacy because the cashier says it's 'against store policy.'",
     "choices": [
       {
-        "text": "Shout at the cashier and cause a scene.",
+        "text": "Shout at the cashier and make a scene over the refusal.",
         "pts": 0
       },
       {
-        "text": "Pay full price to avoid an argument.",
+        "text": "Pay the full price quietly to avoid an argument at the counter.",
         "pts": 1
       },
       {
-        "text": "Politely cite the PWD discount law and, if refused, report the establishment to the DTI or local government.",
+        "text": "Cite the PWD discount law, and report to DTI if still refused.",
         "pts": 2
       }
     ],
@@ -1375,15 +1375,15 @@ var CARD_POOL = [
     "scenario": "As a school administrator, a parent requests reasonable accommodations for their child with a learning disability, but some teachers resist changing routines.",
     "choices": [
       {
-        "text": "Approve accommodations on paper but don't ensure teachers actually follow them.",
+        "text": "Approve accommodations on paper without checking teachers follow them.",
         "pts": 0
       },
       {
-        "text": "Tell the parent the school cannot make any changes to routines.",
+        "text": "Tell the parent the school cannot change any of its routines.",
         "pts": 1
       },
       {
-        "text": "Coordinate an individualized learning plan with teachers and specialists, since reasonable accommodation is a legal obligation, not optional.",
+        "text": "Coordinate a learning plan — accommodation is a legal duty, not optional.",
         "pts": 2
       }
     ],
@@ -1436,15 +1436,15 @@ var CARD_POOL = [
     "scenario": "An indigenous community's traditional council decision is ignored by a local government unit planning a road project through their land.",
     "choices": [
       {
-        "text": "Block the road physically without pursuing any formal process.",
+        "text": "Block the road physically, skipping any formal process.",
         "pts": 0
       },
       {
-        "text": "Let the project proceed since it's for 'public benefit.'",
+        "text": "Let the project proceed since it serves the public benefit.",
         "pts": 1
       },
       {
-        "text": "Insist that FPIC processes be followed and involve the NCIP to mediate before construction proceeds.",
+        "text": "Insist on FPIC and involve the NCIP before construction starts.",
         "pts": 2
       }
     ],
@@ -1459,15 +1459,15 @@ var CARD_POOL = [
     "scenario": "A school refuses to accommodate an indigenous student's traditional dress and practices during a cultural event.",
     "choices": [
       {
-        "text": "Ignore the issue since it involves only one student.",
+        "text": "Set the issue aside since it involves just one student.",
         "pts": 0
       },
       {
-        "text": "Tell the student to just comply with the standard dress code.",
+        "text": "Tell the student to comply with the standard dress code anyway.",
         "pts": 1
       },
       {
-        "text": "Point out that cultural rights and expression of indigenous identity are protected and should be respected in school policy.",
+        "text": "Note that indigenous cultural expression is protected in school policy.",
         "pts": 2
       }
     ],
@@ -1482,15 +1482,15 @@ var CARD_POOL = [
     "scenario": "As an NCIP field officer, you find a logging permit was issued for ancestral land without proper community consultation.",
     "choices": [
       {
-        "text": "Ignore the issue since the permit was already issued by another agency.",
+        "text": "Set the issue aside since another agency issued the permit.",
         "pts": 0
       },
       {
-        "text": "Allow logging to continue while consultation is arranged later.",
+        "text": "Allow logging to continue while consultation happens later.",
         "pts": 1
       },
       {
-        "text": "Flag the permit for review and require a proper FPIC process before any logging operations continue.",
+        "text": "Flag the permit and require a proper FPIC process before logging.",
         "pts": 2
       }
     ],
@@ -1543,7 +1543,7 @@ var CARD_POOL = [
     "scenario": "A transgender student is barred from using either restroom aligned with their gender identity or a private option at school.",
     "choices": [
       {
-        "text": "Ignore the issue as not the school's concern.",
+        "text": "Treat the issue as not really the school's concern at all.",
         "pts": 0
       },
       {
@@ -1551,7 +1551,7 @@ var CARD_POOL = [
         "pts": 1
       },
       {
-        "text": "Raise the issue with school administration and advocate for a safe, dignified restroom option consistent with local policy or ordinance.",
+        "text": "Raise it with admin and push for a safe, dignified restroom option.",
         "pts": 2
       }
     ],
@@ -1566,15 +1566,15 @@ var CARD_POOL = [
     "scenario": "A same-sex couple is refused service at a restaurant that says it does not 'cater to their kind.'",
     "choices": [
       {
-        "text": "Argue loudly and threaten the staff.",
+        "text": "Argue loudly with staff and threaten the establishment.",
         "pts": 0
       },
       {
-        "text": "Leave quietly and avoid the establishment in the future.",
+        "text": "Leave quietly and just avoid the establishment going forward.",
         "pts": 1
       },
       {
-        "text": "Document the incident and file a complaint under a local anti-discrimination ordinance where one exists.",
+        "text": "Document it and file under a local anti-discrimination ordinance.",
         "pts": 2
       }
     ],
@@ -1589,7 +1589,7 @@ var CARD_POOL = [
     "scenario": "As an HR manager in a city with a SOGIE ordinance, you must decide on a dress code policy after an employee requests to dress consistent with their gender identity.",
     "choices": [
       {
-        "text": "Allow it informally without updating any written policy at all.",
+        "text": "Allow it informally without updating any written policy.",
         "pts": 0
       },
       {
@@ -1597,7 +1597,7 @@ var CARD_POOL = [
         "pts": 1
       },
       {
-        "text": "Update the policy to reasonably accommodate gender identity, consistent with the local ordinance and dignity of the employee.",
+        "text": "Update the policy to reasonably accommodate the local ordinance.",
         "pts": 2
       }
     ],
@@ -1650,15 +1650,15 @@ var CARD_POOL = [
     "scenario": "A PhilHealth member is told their claim was denied for a covered procedure with no clear explanation given.",
     "choices": [
       {
-        "text": "Give up on the claim entirely.",
+        "text": "Give up on the claim entirely without any further action.",
         "pts": 0
       },
       {
-        "text": "Just pay out of pocket without questioning the denial.",
+        "text": "Pay out of pocket quietly without questioning the denial at all.",
         "pts": 1
       },
       {
-        "text": "Request a written explanation and appeal the denial through PhilHealth's grievance process.",
+        "text": "Request a written reason and appeal through the grievance process.",
         "pts": 2
       }
     ],
@@ -1673,15 +1673,15 @@ var CARD_POOL = [
     "scenario": "A barangay health worker refuses to give a patient their own medical records when requested for a second opinion.",
     "choices": [
       {
-        "text": "Sneak into the records office to take the file without authorization.",
+        "text": "Sneak into the records office to take the file without permission.",
         "pts": 0
       },
       {
-        "text": "Accept the refusal and forgo the second opinion.",
+        "text": "Accept the refusal quietly and forgo the second opinion entirely.",
         "pts": 1
       },
       {
-        "text": "Cite the patient's right to access their own health records and request them formally in writing.",
+        "text": "Cite the right to access records and request them formally in writing.",
         "pts": 2
       }
     ],
@@ -1696,15 +1696,15 @@ var CARD_POOL = [
     "scenario": "As a rural health unit head, budget constraints tempt you to prioritize paying patients over indigent patients needing the same urgent care.",
     "choices": [
       {
-        "text": "Turn away indigent patients and refer them elsewhere without assistance.",
+        "text": "Turn away indigent patients and refer them elsewhere with no help.",
         "pts": 0
       },
       {
-        "text": "Prioritize paying patients to keep the health unit financially afloat.",
+        "text": "Prioritize paying patients to keep the health unit afloat financially.",
         "pts": 1
       },
       {
-        "text": "Provide care based on medical urgency, not ability to pay, and seek additional funding or referral support for indigent patients.",
+        "text": "Treat by medical urgency, not ability to pay, and seek extra funding.",
         "pts": 2
       }
     ],
@@ -1757,15 +1757,15 @@ var CARD_POOL = [
     "scenario": "A customer buys a defective appliance, and the store refuses a refund or repair, citing 'no return policy.'",
     "choices": [
       {
-        "text": "Damage store property in frustration.",
+        "text": "Damage store property out of frustration over the refusal.",
         "pts": 0
       },
       {
-        "text": "Accept the loss and never shop there again.",
+        "text": "Accept the loss quietly and avoid that store from now on.",
         "pts": 1
       },
       {
-        "text": "Cite the implied warranty against hidden defects and file a complaint with the DTI if the store still refuses.",
+        "text": "Cite the hidden-defect warranty and file with DTI if refused.",
         "pts": 2
       }
     ],
@@ -1780,15 +1780,15 @@ var CARD_POOL = [
     "scenario": "An online seller advertises one price but charges a higher amount at checkout without clear disclosure.",
     "choices": [
       {
-        "text": "Leave a single angry comment and take no further action.",
+        "text": "Leave one angry comment online and take no further action.",
         "pts": 0
       },
       {
-        "text": "Just pay the higher price to avoid hassle.",
+        "text": "Pay the higher price quietly just to avoid any hassle.",
         "pts": 1
       },
       {
-        "text": "Report the deceptive pricing to the e-commerce platform and the DTI, since misleading advertising is prohibited.",
+        "text": "Report the deceptive pricing to the platform and DTI directly.",
         "pts": 2
       }
     ],
@@ -1807,11 +1807,11 @@ var CARD_POOL = [
         "pts": 0
       },
       {
-        "text": "Tell the vendor that contracts, once signed, cannot be questioned at all.",
+        "text": "Tell the vendor signed contracts cannot be questioned at all.",
         "pts": 1
       },
       {
-        "text": "Review the contract terms for unconscionable provisions and facilitate a fair renegotiation between the parties.",
+        "text": "Review the terms for unfair provisions and push for fair renegotiation.",
         "pts": 2
       }
     ],
@@ -1864,15 +1864,15 @@ var CARD_POOL = [
     "scenario": "A person discovers a lending app has been texting their entire contact list to shame them over a missed payment.",
     "choices": [
       {
-        "text": "Ignore the messages and hope they stop on their own.",
+        "text": "Set the messages aside entirely and hope they stop on their own.",
         "pts": 0
       },
       {
-        "text": "Just pay immediately to make the messages stop.",
+        "text": "Pay right away just to make the shaming messages stop.",
         "pts": 1
       },
       {
-        "text": "File a complaint with the National Privacy Commission, since unauthorized use of contacts for shaming is a serious violation.",
+        "text": "File with the National Privacy Commission over the shaming tactic.",
         "pts": 2
       }
     ],
@@ -1914,11 +1914,11 @@ var CARD_POOL = [
         "pts": 0
       },
       {
-        "text": "Delay disclosure until the company decides it's a good time to announce it.",
+        "text": "Delay disclosure until the company finds a good time to announce it.",
         "pts": 1
       },
       {
-        "text": "Insist on timely notification to the National Privacy Commission and affected individuals, as required by law.",
+        "text": "Insist on timely notice to the NPC and affected individuals as required.",
         "pts": 2
       }
     ],
@@ -1971,15 +1971,15 @@ var CARD_POOL = [
     "scenario": "Residents notice thick smoke regularly coming from a nearby facility with no visible pollution controls.",
     "choices": [
       {
-        "text": "Confront the facility owners directly and demand they shut down immediately.",
+        "text": "Confront the facility owners directly and demand a shutdown.",
         "pts": 0
       },
       {
-        "text": "Just keep windows closed and say nothing.",
+        "text": "Keep windows closed and say nothing about it to anyone.",
         "pts": 1
       },
       {
-        "text": "Report the emissions to the local environment office or DENR for inspection and possible violation of air quality standards.",
+        "text": "Report the emissions to DENR for inspection and possible violation.",
         "pts": 2
       }
     ],
@@ -1994,15 +1994,15 @@ var CARD_POOL = [
     "scenario": "A community learns a proposed quarry project near their homes has no environmental impact assessment on record.",
     "choices": [
       {
-        "text": "Sabotage construction equipment to stop the project.",
+        "text": "Damage the construction equipment on-site to stop the project.",
         "pts": 0
       },
       {
-        "text": "Assume the project is fine since it hasn't started yet.",
+        "text": "Assume the project is fine since it has not started yet at all.",
         "pts": 1
       },
       {
-        "text": "Request the Environmental Compliance Certificate and formally raise concerns during public consultation before the project proceeds.",
+        "text": "Request the certificate and raise concerns during public consultation.",
         "pts": 2
       }
     ],
@@ -2017,15 +2017,15 @@ var CARD_POOL = [
     "scenario": "As a DENR field officer, you find a mining operation exceeding its permitted extraction area, affecting a nearby watershed.",
     "choices": [
       {
-        "text": "Ignore the excess since the company employs many local workers.",
+        "text": "Set the excess aside since the company employs many local workers.",
         "pts": 0
       },
       {
-        "text": "Give an informal warning and let the company self-correct without documentation.",
+        "text": "Give an informal warning and let the company self-correct quietly.",
         "pts": 1
       },
       {
-        "text": "Issue a formal violation notice, order corrective action, and escalate for permit review if the excess extraction continues.",
+        "text": "Issue a formal notice, order fixes, and escalate if excess continues.",
         "pts": 2
       }
     ],
@@ -2082,11 +2082,11 @@ var CARD_POOL = [
         "pts": 0
       },
       {
-        "text": "Let the employer keep it since 'it's common practice.'",
+        "text": "Let the employer keep it since it is described as common practice.",
         "pts": 1
       },
       {
-        "text": "Report the passport confiscation to the Philippine embassy or POLO, since this is illegal and restricts the worker's freedom.",
+        "text": "Report the confiscation to the embassy or POLO — it restricts freedom.",
         "pts": 2
       }
     ],
@@ -2101,15 +2101,15 @@ var CARD_POOL = [
     "scenario": "A departing OFW discovers their contract details differ from what was verbally promised by the recruiter.",
     "choices": [
       {
-        "text": "Cancel all plans without seeking clarification or assistance first.",
+        "text": "Cancel all plans without seeking any clarification or help first.",
         "pts": 0
       },
       {
-        "text": "Sign anyway and hope the verbal promises are honored.",
+        "text": "Sign anyway and hope the verbal promises get honored later.",
         "pts": 1
       },
       {
-        "text": "Insist on a copy of the POEA-verified contract and clarify discrepancies before departure.",
+        "text": "Insist on the POEA-verified contract and clarify gaps before leaving.",
         "pts": 2
       }
     ],
@@ -2124,15 +2124,15 @@ var CARD_POOL = [
     "scenario": "As a POLO welfare officer abroad, an OFW reports unpaid wages and unsafe housing conditions from their employer.",
     "choices": [
       {
-        "text": "Tell the worker to handle it directly with the employer without institutional support.",
+        "text": "Tell the worker to handle it directly with no institutional support.",
         "pts": 0
       },
       {
-        "text": "Advise the worker to endure it until the contract ends.",
+        "text": "Advise the worker to endure the conditions until the contract ends.",
         "pts": 1
       },
       {
-        "text": "Document the complaint, coordinate with local authorities, and pursue restitution and safer housing for the worker.",
+        "text": "Document the complaint and pursue restitution and safer housing.",
         "pts": 2
       }
     ],
