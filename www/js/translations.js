@@ -86,6 +86,8 @@ var translations = {
     localPlay: {
       title: "Local Play",
       subtitle: "Play with other phones over the same Wi-Fi network — no internet needed.",
+      playOptionsLabel: "Play Options",
+      continueBtn: "Continue to Local Play",
       hostCardTitle: "Host Game",
       hostCardSub: "Start a lobby on this phone",
       joinCardTitle: "Join Game",
@@ -242,6 +244,8 @@ var translations = {
     localPlay: {
       title: "Local Play",
       subtitle: "Maglaro kasama ang ibang telepono sa parehong Wi-Fi network — hindi kailangan ng internet.",
+      playOptionsLabel: "Mga Opsyon sa Paglalaro",
+      continueBtn: "Magpatuloy sa Local Play",
       hostCardTitle: "Mag-host ng Laro",
       hostCardSub: "Magsimula ng lobby sa telepong ito",
       joinCardTitle: "Sumali sa Laro",

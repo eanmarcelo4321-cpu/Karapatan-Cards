@@ -40,6 +40,7 @@ var LP = (function(){
   }
 
   let role = null;          // 'host' | 'client'
+  let lpSelectedMode = 'host'; // which card is selected on the Local Play setup screen, before Continue is pressed
   let hostSession = null;   // net-protocol.js HostSession (host only)
   let clientSession = null; // net-protocol.js ClientSession (client only)
   let transport = null;
@@ -103,29 +104,52 @@ var LP = (function(){
   }
 
   /* ================= MENU SCREEN ================= */
+  function selectLpMode(m){ lpSelectedMode = m; renderMenu(); }
+
+  function confirmLpSelection(){
+    if(lpSelectedMode === 'host') beginHost();
+    else beginJoin();
+  }
+
   function renderMenu(){
     const s = lp();
+    const t = T();
+    const h = t.home;
     screenEl.innerHTML = `
-      <div class="screen-body">
+      <button class="back-btn" onclick="LP.leaveToHome()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
+      <div class="screen-body" style="padding-top:30px;">
         <div class="section-title">${s.title}</div>
-        <div style="font-size:12px;color:#8a9a94;margin:-4px 0 14px;">
-          ${s.subtitle}
+        <div class="lp-intro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="var(--navy)"/></svg>
+          <div>${s.subtitle}</div>
         </div>
+
+        <div class="section-title" style="margin-top:18px;">${s.playOptionsLabel}</div>
         <div class="mode-grid">
-          <div class="mode-card" onclick="LP.beginHost()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+          <div class="mode-card ${lpSelectedMode==='host'?'active':''}" onclick="LP.selectLpMode('host')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5"/><path d="m9 10 5 5"/><path d="M7 12 12 7l5 5-5 5z"/><path d="m3 21 3-3"/><path d="M13 3 21 11"/></svg>
             <div class="mc-title">${s.hostCardTitle}</div>
             <div class="mc-sub">${s.hostCardSub}</div>
           </div>
-          <div class="mode-card" onclick="LP.beginJoin()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+          <div class="mode-card ${lpSelectedMode==='join'?'active':''}" onclick="LP.selectLpMode('join')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 6 7 8v3c0 2.5 1.8 4.3 3.5 5M12 6l5 2v3c0 2.5-1.8 4.3-3.5 5"/><path d="M7 8 4.5 13.5a2.4 2.4 0 0 0 5 0Z"/><path d="M17 8l-2.5 5.5a2.4 2.4 0 0 0 5 0Z"/><path d="M12 16.5V20"/><path d="M9 20h6"/></svg>
             <div class="mc-title">${s.joinCardTitle}</div>
             <div class="mc-sub">${s.joinCardSub}</div>
           </div>
         </div>
+
+        <div class="section-title">${h.lengthTitle}</div>
+        <div class="pill-row" style="margin-bottom:6px;">
+          <div class="pill ${homeSettings.length==='quick'?'active':''}" onclick="setLength('quick')">${h.quick}<span class="pill-sub">${h.quickSub}</span></div>
+          <div class="pill ${homeSettings.length==='standard'?'active':''}" onclick="setLength('standard')">${h.standard}<span class="pill-sub">${h.standardSub}</span></div>
+          <div class="pill ${homeSettings.length==='challenge'?'active':''}" onclick="setLength('challenge')">${h.challenge}<span class="pill-sub">${h.challengeSub}</span></div>
+        </div>
+
         ${!LP_NET.hasNativeHosting() ? `<div class="toast info">${s.noNativeToast}</div>` : ''}
         <div class="grow"></div>
-        <button class="btn btn-outline" onclick="LP.leaveToHome()">${s.backToHomeBtn}</button>
+        <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openHowTo()">${h.howToPlay}</button>
+        <button class="btn btn-primary" onclick="LP.confirmLpSelection()">${s.continueBtn}</button>
       </div>
     `;
     setControls('');
@@ -426,14 +450,14 @@ var LP = (function(){
       const chosen = card.choices[r.chosenIndex];
       screenEl.innerHTML = `
         <div class="screen-body">
-          <div class="choice-list flat ${twoCls}" style="margin-top:6px;margin-bottom:12px;">
+          <div class="choice-list flat ${twoCls}" style="margin-top:36px;margin-bottom:12px;">
             ${card.choices.map((c, i) => {
               let cls = 'dim';
               let mark = '';
               if(r.chosenIndex === i){ cls = c.pts===2?'correct':c.pts===1?'partial':'wrong'; mark = `<span class="choice-mark" style="background:${c.pts===2?'var(--sage)':c.pts===1?'var(--gold)':'var(--coral)'};">${c.pts===2?'✓':c.pts===1?'~':'✗'}</span>`; }
               else if(c.pts === 2){ cls = 'correct dim'; }
               return `<div class="choice-card ${cls}">
-                <span class="idx idx-tl">${LETTERS[i]}<i>♦</i></span><span class="idx idx-br">${LETTERS[i]}<i>♦</i></span>
+                <span class="choice-tab">${LETTERS[i]}<i>♦</i></span>
                 ${mark}<span class="choice-text">${c.text}</span></div>`;
             }).join('')}
           </div>
@@ -450,7 +474,7 @@ var LP = (function(){
     }
 
     screenEl.innerHTML = `
-      <div class="screen-body" style="border-top:4px solid ${activeTeam.dot};padding-top:10px;">
+      <div class="screen-body" style="border-top:4px solid ${activeTeam.dot};padding-top:32px;">
         <div class="card-topline">
           <div class="card-label"><span class="team-dot" style="background:${activeTeam.dot};"></span>${s.turnLabel(activeTeam.teamName)}</div>
           <div class="badge-row"><span class="badge diff-${card.difficulty}">${diffLabel(card.difficulty)}</span></div>
@@ -459,10 +483,10 @@ var LP = (function(){
         <div style="font-size:11px;color:#8a9a94;text-align:center;margin:6px 0;">${s.cardsLeftLabel(sync.cardsLeft)}</div>
         ${sync.stealActive ? `<div class="toast">${s.stealToast}</div>` : ''}
         ${isMyTurn && !answered ? `
-          <div class="choice-list ${twoCls}">
+          <div class="choice-list flat ${twoCls}">
             ${card.choices.map((c, i) => `
               <button class="choice-card" onclick="LP.submitAnswer(${i})">
-                <span class="idx idx-tl">${LETTERS[i]}<i>♦</i></span><span class="idx idx-br">${LETTERS[i]}<i>♦</i></span>
+                <span class="choice-tab">${LETTERS[i]}<i>♦</i></span>
                 <span class="choice-text">${c.text}</span></button>`).join('')}
           </div>
         ` : `
@@ -504,7 +528,7 @@ var LP = (function(){
   }
 
   return {
-    openMenu, renderMenu,
+    openMenu, renderMenu, selectLpMode, confirmLpSelection,
     beginHost, renderHost, enterHostLobby,
     beginJoin, renderJoin, submitManualIp, connectTo,
     renderLobby, submitTeamName, toggleReady, startHostGame,
