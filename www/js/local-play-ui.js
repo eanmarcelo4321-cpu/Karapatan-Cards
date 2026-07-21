@@ -100,7 +100,7 @@ var LP = (function(){
 
   function leaveToHome(){
     resetSession();
-    goto('multiplayerMenu'); // Local Play is now reached via the Multiplayer Menu, so back returns there
+    goto('home');
   }
 
   /* ================= MENU SCREEN ================= */
@@ -457,7 +457,7 @@ var LP = (function(){
               if(r.chosenIndex === i){ cls = c.pts===2?'correct':c.pts===1?'partial':'wrong'; mark = `<span class="choice-mark" style="background:${c.pts===2?'var(--sage)':c.pts===1?'var(--gold)':'var(--coral)'};">${c.pts===2?'✓':c.pts===1?'~':'✗'}</span>`; }
               else if(c.pts === 2){ cls = 'correct dim'; }
               return `<div class="choice-card ${cls}">
-                <span class="choice-tab">${LETTERS[i]}<i>♦</i></span>
+                <span class="idx">${LETTERS[i]}<i>♦</i></span>
                 ${mark}<span class="choice-text">${c.text}</span></div>`;
             }).join('')}
           </div>
@@ -486,7 +486,7 @@ var LP = (function(){
           <div class="choice-list flat ${twoCls}">
             ${card.choices.map((c, i) => `
               <button class="choice-card" onclick="LP.submitAnswer(${i})">
-                <span class="choice-tab">${LETTERS[i]}<i>♦</i></span>
+                <span class="idx">${LETTERS[i]}<i>♦</i></span>
                 <span class="choice-text">${c.text}</span></button>`).join('')}
           </div>
         ` : `
