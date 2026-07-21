@@ -389,7 +389,7 @@ function renderCard(){
       <div class="choice-list flat ${twoCls}">
         ${currentCard.choices.map((c, i) => `
           <button class="choice-card ${team.isAI ? 'disabled' : ''}" onclick="pickChoice(${i})">
-            <span class="idx">${letters[i]}<i>♦</i></span>
+            <span class="choice-tab">${letters[i]}<i>♦</i></span>
             <span class="choice-text">${c.text}</span>
           </button>`).join("")}
       </div>
@@ -477,7 +477,7 @@ function renderReveal(){
             cls = "correct dim";
           }
           return `<div class="choice-card ${cls}">
-                    <span class="idx">${letters[i]}<i>♦</i></span>
+                    <span class="choice-tab">${letters[i]}<i>♦</i></span>
                     ${mark}
                     <span class="choice-text">${c.text}</span>
                   </div>`;
