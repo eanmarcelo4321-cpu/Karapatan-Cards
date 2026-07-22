@@ -100,7 +100,7 @@ var LP = (function(){
 
   function leaveToHome(){
     resetSession();
-    goto('home');
+    goto('multiplayerMenu');
   }
 
   /* ================= MENU SCREEN ================= */

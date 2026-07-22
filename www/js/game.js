@@ -125,6 +125,9 @@ function render(){
   clearTimeout(aiTimeout);
   if(state === "splash") return;
   if(state === "home") renderHome();
+  else if(state === "multiplayerMenu") renderMultiplayerMenu();
+  else if(state === "passPlaySetup") renderPassPlaySetup();
+  else if(state === "soloSetup") renderSoloSetup();
   else if(state === "draw") renderDraw();
   else if(state === "handoff") renderHandoff();
   else if(state === "card") renderCard();
@@ -162,63 +165,67 @@ function renderHome(){
 
       <div class="section-title">${h.modeTitle}</div>
       <div class="mode-grid">
-        <div class="mode-card ${homeSettings.mode==='multiplayer'?'active':''}" onclick="setHomeMode('multiplayer')">
+        <div class="mode-card" onclick="goto('multiplayerMenu')">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           <div class="mc-title">${h.modeMultiplayer}</div>
           <div class="mc-sub">${h.modeMultiplayerSub}</div>
         </div>
-        <div class="mode-card ${homeSettings.mode==='solo'?'active':''}" onclick="setHomeMode('solo')">
+        <div class="mode-card" onclick="goto('soloSetup')">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><circle cx="9" cy="9" r="1.2" fill="var(--navy)"/><circle cx="15" cy="9" r="1.2" fill="var(--navy)"/></svg>
           <div class="mc-title">${h.modeSolo}</div>
           <div class="mc-sub">${h.modeSoloSub}</div>
         </div>
       </div>
 
-      ${homeSettings.mode === 'multiplayer' ? `
-        <div class="pill-row" style="margin-bottom:10px;">
-          <div class="pill ${homeSettings.mpMode==='passplay'?'active':''}" onclick="setMpMode('passplay')">${h.passPlayCardTitle}</div>
-          <div class="pill ${homeSettings.mpMode==='local'?'active':''}" onclick="setMpMode('local')">${h.localPlayTitle}</div>
+      <div class="grow"></div>
+      <button class="btn btn-outline" onclick="openHowTo()">${h.howToPlay}</button>
+    </div>
+  `;
+  setControls('');
+}
+
+/* ================= MULTIPLAYER MENU (Pass & Play / Local Play) ================= */
+function renderMultiplayerMenu(){
+  const t = T();
+  const h = t.home;
+  homeSettings.mode = 'multiplayer';
+  screenEl.innerHTML = `
+    <button class="back-btn" onclick="goto('home')" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m15 18-6-6 6-6"/></svg></button>
+    <div class="screen-body" style="padding-top:44px;">
+      <div class="section-title">${h.modeMultiplayer}</div>
+      <div class="mode-grid" style="flex-direction:column;">
+        <div class="mode-card" onclick="goto('passPlaySetup')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="2.5"/><circle cx="17" cy="8" r="2.5"/><path d="M4 18c0-2.5 1.5-4 3-4s3 1.5 3 4M14 18c0-2.5 1.5-4 3-4s3 1.5 3 4"/><path d="M9 14h6"/></svg>
+          <div class="mc-title">${h.passPlayCardTitle}</div>
+          <div class="mc-sub">${h.passPlayCardSub}</div>
         </div>
-        ${homeSettings.mpMode === 'local' ? `
-          <div class="local-play-card" onclick="LP.openMenu()" style="margin-top:2px;">
-            <div class="lpc-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-                <circle cx="12" cy="20" r="1" fill="var(--navy)"/>
-              </svg>
-            </div>
-            <div>
-              <div class="lpc-title">${h.localPlayTitle}</div>
-              <div class="lpc-sub">${h.localPlaySub}</div>
-            </div>
-            <svg class="lpc-arrow" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-        ` : `
-          <div class="section-title">${h.teamsTitle}</div>
-          <div class="stepper" style="margin-bottom:10px;">
-            <button onclick="stepTeamCount(-1)">−</button>
-            <span class="val">${homeSettings.teamCount}</span>
-            <button onclick="stepTeamCount(1)">+</button>
-          </div>
-          ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
-            <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
-          `).join('')}
-        `}
-      ` : `
-        <div class="section-title">${h.aiDifficultyTitle}</div>
-        <div class="pill-row" style="margin-bottom:10px;">
-          <div class="pill ${homeSettings.aiDifficulty==='easy'?'active':''}" onclick="setAiDifficulty('easy')">${h.easy}</div>
-          <div class="pill ${homeSettings.aiDifficulty==='medium'?'active':''}" onclick="setAiDifficulty('medium')">${h.medium}</div>
-          <div class="pill ${homeSettings.aiDifficulty==='hard'?'active':''}" onclick="setAiDifficulty('hard')">${h.hard}</div>
+        <div class="mode-card" style="margin-top:10px;" onclick="LP.openMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="var(--navy)"/></svg>
+          <div class="mc-title">${h.localPlayTitle}</div>
+          <div class="mc-sub">${h.localPlaySub}</div>
         </div>
-        <div class="team-row" style="cursor:pointer;" onclick="toggleLearningAids()">
-          <span>${h.learningToggleTitle}</span>
-          <span style="color:${homeSettings.learningAids?'var(--sage)':'#c2c2c2'};font-weight:800;">${homeSettings.learningAids ? '●  ON' : '○  OFF'}</span>
-        </div>
-        <div style="font-size:10.5px;color:#8a9a94;margin:2px 2px 10px;line-height:1.4;">${h.learningToggleSub}</div>
-      `}
+      </div>
+    </div>
+  `;
+  setControls('');
+}
+
+/* ================= PASS & PLAY SETUP (includes Match Length) ================= */
+function renderPassPlaySetup(){
+  const t = T();
+  const h = t.home;
+  screenEl.innerHTML = `
+    <button class="back-btn" onclick="goto('multiplayerMenu')" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m15 18-6-6 6-6"/></svg></button>
+    <div class="screen-body" style="padding-top:44px;">
+      <div class="section-title">${h.teamsTitle}</div>
+      <div class="stepper" style="margin-bottom:10px;">
+        <button onclick="stepTeamCount(-1)">−</button>
+        <span class="val">${homeSettings.teamCount}</span>
+        <button onclick="stepTeamCount(1)">+</button>
+      </div>
+      ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
+        <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
+      `).join('')}
 
       <div class="section-title">${h.lengthTitle}</div>
       <div class="pill-row" style="margin-bottom:6px;">
@@ -229,9 +236,41 @@ function renderHome(){
 
       <div class="grow"></div>
       <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openHowTo()">${h.howToPlay}</button>
-      ${homeSettings.mode === 'multiplayer' && homeSettings.mpMode === 'local'
-        ? `<button class="btn btn-primary" onclick="LP.openMenu()">${h.localPlayTitle}</button>`
-        : `<button class="btn btn-primary" onclick="startMatch()">${h.startGame}</button>`}
+      <button class="btn btn-primary" onclick="homeSettings.mode='multiplayer';startMatch()">${h.startGame}</button>
+    </div>
+  `;
+  setControls('');
+}
+
+/* ================= SOLO VS AI SETUP ================= */
+function renderSoloSetup(){
+  const t = T();
+  const h = t.home;
+  screenEl.innerHTML = `
+    <button class="back-btn" onclick="goto('home')" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="m15 18-6-6 6-6"/></svg></button>
+    <div class="screen-body" style="padding-top:44px;">
+      <div class="section-title">${h.aiDifficultyTitle}</div>
+      <div class="pill-row" style="margin-bottom:10px;">
+        <div class="pill ${homeSettings.aiDifficulty==='easy'?'active':''}" onclick="setAiDifficulty('easy')">${h.easy}</div>
+        <div class="pill ${homeSettings.aiDifficulty==='medium'?'active':''}" onclick="setAiDifficulty('medium')">${h.medium}</div>
+        <div class="pill ${homeSettings.aiDifficulty==='hard'?'active':''}" onclick="setAiDifficulty('hard')">${h.hard}</div>
+      </div>
+      <div class="team-row" style="cursor:pointer;" onclick="toggleLearningAids()">
+        <span>${h.learningToggleTitle}</span>
+        <span style="color:${homeSettings.learningAids?'var(--sage)':'#c2c2c2'};font-weight:800;">${homeSettings.learningAids ? '●  ON' : '○  OFF'}</span>
+      </div>
+      <div style="font-size:10.5px;color:#8a9a94;margin:2px 2px 10px;line-height:1.4;">${h.learningToggleSub}</div>
+
+      <div class="section-title">${h.lengthTitle}</div>
+      <div class="pill-row" style="margin-bottom:6px;">
+        <div class="pill ${homeSettings.length==='quick'?'active':''}" onclick="setLength('quick')">${h.quick}<span class="pill-sub">${h.quickSub}</span></div>
+        <div class="pill ${homeSettings.length==='standard'?'active':''}" onclick="setLength('standard')">${h.standard}<span class="pill-sub">${h.standardSub}</span></div>
+        <div class="pill ${homeSettings.length==='challenge'?'active':''}" onclick="setLength('challenge')">${h.challenge}<span class="pill-sub">${h.challengeSub}</span></div>
+      </div>
+
+      <div class="grow"></div>
+      <button class="btn btn-outline" style="margin-bottom:8px;" onclick="openHowTo()">${h.howToPlay}</button>
+      <button class="btn btn-primary" onclick="homeSettings.mode='solo';startMatch()">${h.startGame}</button>
     </div>
   `;
   setControls('');
@@ -240,8 +279,8 @@ function renderHome(){
 function setHomeMode(m){ homeSettings.mode = m; renderHome(); }
 function setMpMode(m){ homeSettings.mpMode = m; renderHome(); }
 function setLength(l){ homeSettings.length = l; render(); }
-function setAiDifficulty(d){ homeSettings.aiDifficulty = d; renderHome(); }
-function toggleLearningAids(){ homeSettings.learningAids = !homeSettings.learningAids; renderHome(); }
+function setAiDifficulty(d){ homeSettings.aiDifficulty = d; render(); }
+function toggleLearningAids(){ homeSettings.learningAids = !homeSettings.learningAids; render(); }
 function stepTeamCount(delta){
   homeSettings.teamCount = Math.max(2, Math.min(4, homeSettings.teamCount + delta));
   render();
