@@ -1,9 +1,7 @@
 package org.karapatan.cards.localmultiplayer;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -53,8 +51,13 @@ public class MiniWebSocketServer {
 
     /** Binds to the given port (0 = pick any free port) and returns the bound port. */
     public int start(int port) throws IOException {
+        // No explicit bind address passed -> binds to the wildcard address
+        // (0.0.0.0), i.e. all local interfaces, which is required for
+        // another phone to reach this server. Confirmed NOT bound to
+        // 127.0.0.1/localhost.
         serverSocket = new ServerSocket(port);
         running = true;
+        Log.d(TAG, "[LOCAL PLAY] Server listening successfully on 0.0.0.0:" + serverSocket.getLocalPort());
         pool.execute(this::acceptLoop);
         return serverSocket.getLocalPort();
     }
@@ -79,9 +82,10 @@ public class MiniWebSocketServer {
         while (running) {
             try {
                 Socket sock = serverSocket.accept();
+                Log.d(TAG, "[LOCAL PLAY] Incoming TCP connection from " + sock.getInetAddress().getHostAddress() + ":" + sock.getPort());
                 pool.execute(() -> handleClient(sock));
             } catch (IOException e) {
-                if (running) Log.w(TAG, "accept loop error", e);
+                if (running) Log.w(TAG, "[LOCAL PLAY] accept loop error", e);
                 break;
             }
         }
@@ -94,34 +98,58 @@ public class MiniWebSocketServer {
             InputStream in = sock.getInputStream();
             OutputStream out = sock.getOutputStream();
 
-            if (!performHandshake(in, out)) { sock.close(); return; }
+            if (!performHandshake(in, out)) {
+                Log.w(TAG, "[LOCAL PLAY] Handshake failed for " + sock.getInetAddress().getHostAddress() + ", closing socket");
+                sock.close();
+                return;
+            }
 
             ClientConn conn = new ClientConn(peerId, sock, out);
             clients.put(peerId, conn);
+            Log.d(TAG, "[LOCAL PLAY] Peer connected: " + peerId);
             listener.onOpen(peerId);
 
             readFrameLoop(peerId, in, conn);
         } catch (Exception e) {
-            Log.w(TAG, "client " + peerId + " error", e);
+            Log.w(TAG, "[LOCAL PLAY] client " + peerId + " error", e);
         } finally {
             clients.remove(peerId);
             try { sock.close(); } catch (IOException ignored) {}
+            Log.d(TAG, "[LOCAL PLAY] Peer disconnected: " + peerId);
             listener.onClose(peerId);
         }
     }
 
-    /** Reads the HTTP upgrade request headers and writes the 101 response. */
+    /** Reads the HTTP upgrade request headers and writes the 101 response.
+     *  Reads byte-by-byte (never via BufferedReader) specifically so the
+     *  underlying InputStream's position is left EXACTLY at the first byte
+     *  after the blank line terminating the headers. A BufferedReader would
+     *  perform a large bulk read() under the hood and could silently
+     *  swallow the client's first WebSocket frame into its own private
+     *  buffer if it arrived in the same read window as the handshake
+     *  request — those bytes would then be permanently invisible to
+     *  readFrameLoop()'s later raw in.read() calls, corrupting/losing the
+     *  first frame (often the JOIN_REQUEST) even though the TCP-level
+     *  handshake itself completed successfully. This was the actual cause
+     *  of "connects but never joins the lobby". */
     private boolean performHandshake(InputStream in, OutputStream out) throws IOException, NoSuchAlgorithmException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.US_ASCII));
+        String requestLine = readHttpLine(in);
+        Log.d(TAG, "[LOCAL PLAY] Handshake request line: " + requestLine);
+        if (requestLine == null || !requestLine.startsWith("GET")) {
+            Log.w(TAG, "[LOCAL PLAY] Handshake rejected: not a GET request");
+            return false;
+        }
         Map<String, String> headers = new HashMap<>();
-        String line = reader.readLine();
-        if (line == null || !line.startsWith("GET")) return false;
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+        String line;
+        while ((line = readHttpLine(in)) != null && !line.isEmpty()) {
             int idx = line.indexOf(':');
             if (idx > 0) headers.put(line.substring(0, idx).trim().toLowerCase(), line.substring(idx + 1).trim());
         }
         String key = headers.get("sec-websocket-key");
-        if (key == null) return false;
+        if (key == null) {
+            Log.w(TAG, "[LOCAL PLAY] Handshake rejected: missing Sec-WebSocket-Key header");
+            return false;
+        }
 
         MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
         String accept = Base64.encodeToString(sha1.digest((key + WS_GUID).getBytes(StandardCharsets.US_ASCII)), Base64.NO_WRAP);
@@ -132,7 +160,28 @@ public class MiniWebSocketServer {
                 "Sec-WebSocket-Accept: " + accept + "\r\n\r\n";
         out.write(response.getBytes(StandardCharsets.US_ASCII));
         out.flush();
+        Log.d(TAG, "[LOCAL PLAY] Handshake successful, 101 response sent");
         return true;
+    }
+
+    /** Reads a single CRLF- or LF-terminated line directly from the raw
+     *  stream, one byte at a time, with no internal read-ahead buffer —
+     *  guarantees the stream position after this call is exactly the first
+     *  byte following the line terminator, so nothing belonging to a
+     *  subsequent WebSocket frame can ever be consumed by mistake. */
+    private String readHttpLine(InputStream in) throws IOException {
+        java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
+        int prev = -1;
+        int b;
+        while ((b = in.read()) != -1) {
+            if (prev == '\r' && b == '\n') {
+                byte[] bytes = buf.toByteArray();
+                return new String(bytes, 0, bytes.length - 1, StandardCharsets.US_ASCII);
+            }
+            buf.write(b);
+            prev = b;
+        }
+        return buf.size() > 0 ? buf.toString("US-ASCII") : null;
     }
 
     /** Reads client->server frames (always masked per RFC 6455) until close/EOF. */
@@ -171,6 +220,7 @@ public class MiniWebSocketServer {
                 conn.sendFrame((byte) 0x8A, payload);
             } else if (opcode == 0x1) { // text
                 String text = new String(payload, StandardCharsets.UTF_8);
+                Log.d(TAG, "[LOCAL PLAY] Message received from " + peerId + ": " + text);
                 listener.onMessage(peerId, text);
             }
             // binary/continuation frames are not used by this protocol; ignored.

@@ -286,6 +286,7 @@ var LP = (function(){
     renderJoin();
     role = 'client';
     transport = LP_NET.createClientTransport();
+    console.log('[LOCAL PLAY] Join button pressed. Host IP:', ip, 'Host port:', port);
     try {
       await transport.connect(ip, port);
       hostIp = ip; hostPort = port;
@@ -298,9 +299,12 @@ var LP = (function(){
           goto('localMenu');
         }
       });
+      console.log('[LOCAL PLAY] Sending JOIN_REQUEST as team:', defaultTeamName());
       clientSession.join(defaultTeamName());
+      console.log('[LOCAL PLAY] Joined lobby, navigating to lobby screen');
       goto('localLobby');
     } catch(e){
+      console.log('[LOCAL PLAY] CONNECTION FAILED — connectTo() caught:', e && e.message, e);
       joinError = lp().errConnectFailed;
       connecting = false;
       role = null; transport = null;

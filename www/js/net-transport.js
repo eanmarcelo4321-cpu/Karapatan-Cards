@@ -120,20 +120,46 @@ var LP_NET = (function(){
     function connect(ip, port){
       return new Promise((resolve, reject) => {
         let settled = false;
+        const url = `ws://${ip}:${port || DEFAULT_PORT}`;
+        console.log('[LOCAL PLAY] Attempting connection... Host IP:', ip, ' Host port:', port || DEFAULT_PORT);
+        console.log('[LOCAL PLAY] Socket/WebSocket opening...', url);
         try {
-          ws = new WebSocket(`ws://${ip}:${port || DEFAULT_PORT}`);
-        } catch(e){ reject(e); return; }
+          ws = new WebSocket(url);
+        } catch(e){ console.log('[LOCAL PLAY] CONNECTION FAILED — WebSocket constructor threw. Host:', ip, 'Port:', port, 'Error:', e && e.message, e); reject(e); return; }
 
         const connectTimeout = setTimeout(() => {
-          if(!settled){ settled = true; try{ ws.close(); }catch(e){} reject(new Error('timeout')); }
+          if(!settled){
+            settled = true;
+            console.log('[LOCAL PLAY] CONNECTION FAILED — timed out after 8s. Host:', ip, 'Port:', port, 'This means the TCP handshake itself never completed (server unreachable, wrong IP, or blocked by network config) rather than a protocol-level error.');
+            try{ ws.close(); }catch(e){}
+            reject(new Error('timeout'));
+          }
         }, 8000);
 
-        ws.onopen = () => { if(!settled){ settled = true; clearTimeout(connectTimeout); resolve(); } };
-        ws.onerror = () => { if(!settled){ settled = true; clearTimeout(connectTimeout); reject(new Error('connection_failed')); } };
-        ws.onclose = () => { leaveListeners.forEach(fn => fn('host')); };
+        ws.onopen = () => {
+          if(!settled){
+            settled = true;
+            clearTimeout(connectTimeout);
+            console.log('[LOCAL PLAY] Connection successful (WebSocket open) to', url);
+            resolve();
+          }
+        };
+        ws.onerror = (ev) => {
+          if(!settled){
+            settled = true;
+            clearTimeout(connectTimeout);
+            console.log('[LOCAL PLAY] CONNECTION FAILED — onerror fired. Host:', ip, 'Port:', port, 'Error type:', ev && ev.type, ev);
+            reject(new Error('connection_failed'));
+          }
+        };
+        ws.onclose = (ev) => {
+          console.log('[LOCAL PLAY] Socket closed. code:', ev && ev.code, 'reason:', ev && ev.reason, 'wasClean:', ev && ev.wasClean);
+          leaveListeners.forEach(fn => fn('host'));
+        };
         ws.onmessage = (ev) => {
           let msg;
-          try { msg = JSON.parse(ev.data); } catch(e){ return; }
+          try { msg = JSON.parse(ev.data); } catch(e){ console.log('[LOCAL PLAY] Received a message that failed to JSON.parse:', ev.data, e); return; }
+          console.log('[LOCAL PLAY] Message received:', msg.type);
           messageListeners.forEach(fn => fn('host', msg));
         };
       });

@@ -51,17 +51,19 @@ public class LocalMultiplayerPlugin extends Plugin implements MiniWebSocketServe
     @PluginMethod
     public void startServer(PluginCall call) {
         int port = call.getInt("port", 8787);
+        Log.d(TAG, "[LOCAL PLAY] Starting host...");
         try {
             if (server != null) server.stop();
             server = new MiniWebSocketServer(this);
             int boundPort = server.start(port);
             String ip = getLocalIpAddress();
+            Log.d(TAG, "[LOCAL PLAY] Selected host IP: " + ip + "  Server port: " + boundPort);
             JSObject ret = new JSObject();
             ret.put("ip", ip != null ? ip : "0.0.0.0");
             ret.put("port", boundPort);
             call.resolve(ret);
         } catch (Exception e) {
-            Log.e(TAG, "startServer failed", e);
+            Log.e(TAG, "[LOCAL PLAY] startServer failed", e);
             call.reject("Failed to start server: " + e.getMessage(), e);
         }
     }
@@ -121,22 +123,70 @@ public class LocalMultiplayerPlugin extends Plugin implements MiniWebSocketServe
         call.resolve(ret);
     }
 
+    /** Picks the local IPv4 address most likely to be reachable by another
+     *  phone on the same Wi-Fi/hotspot. A phone commonly has SEVERAL active
+     *  network interfaces simultaneously (Wi-Fi, mobile data, and the
+     *  hotspot AP interface can all be "up" at once) — iterating
+     *  NetworkInterface.getNetworkInterfaces() and returning the FIRST
+     *  non-loopback IPv4 address found (the previous behavior) has no
+     *  guaranteed order and can easily return a mobile-data IP instead of
+     *  the actual LAN-reachable one, silently breaking the manual game
+     *  code (which encodes whatever this function returns) even while NSD
+     *  discovery still works fine (it resolves independently at the OS
+     *  level). This now explicitly prefers known Wi-Fi/hotspot interface
+     *  name prefixes first, and only falls back to "first available" if
+     *  none of those are found. */
     private String getLocalIpAddress() {
         try {
+            java.util.List<String> preferredPrefixes = java.util.Arrays.asList("wlan", "ap", "swlan", "softap");
             Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+            java.util.List<NetworkInterface> candidates = new java.util.ArrayList<>();
             while (ifaces != null && ifaces.hasMoreElements()) {
                 NetworkInterface iface = ifaces.nextElement();
-                if (!iface.isUp() || iface.isLoopback()) continue;
-                Enumeration<InetAddress> addrs = iface.getInetAddresses();
-                while (addrs.hasMoreElements()) {
-                    InetAddress addr = addrs.nextElement();
-                    if (!addr.isLoopbackAddress() && addr instanceof Inet4Address) {
-                        return addr.getHostAddress();
+                if (!iface.isUp() || iface.isLoopback() || iface.isVirtual()) continue;
+                candidates.add(iface);
+            }
+
+            Log.d(TAG, "[LOCAL PLAY] Network interfaces detected: " + candidates.size());
+            for (NetworkInterface iface : candidates) {
+                Log.d(TAG, "[LOCAL PLAY]   interface: " + iface.getName());
+            }
+
+            // Pass 1: known Wi-Fi/hotspot interface name prefixes
+            for (NetworkInterface iface : candidates) {
+                String name = iface.getName().toLowerCase();
+                for (String prefix : preferredPrefixes) {
+                    if (name.startsWith(prefix)) {
+                        String ip = firstIPv4(iface);
+                        if (ip != null) {
+                            Log.d(TAG, "[LOCAL PLAY] Selected host IP (preferred Wi-Fi/hotspot interface " + iface.getName() + "): " + ip);
+                            return ip;
+                        }
                     }
                 }
             }
+            // Pass 2: fall back to the first non-loopback IPv4 address on any interface
+            for (NetworkInterface iface : candidates) {
+                String ip = firstIPv4(iface);
+                if (ip != null) {
+                    Log.d(TAG, "[LOCAL PLAY] Selected host IP (fallback, interface " + iface.getName() + "): " + ip);
+                    return ip;
+                }
+            }
         } catch (Exception e) {
-            Log.w(TAG, "getLocalIpAddress failed", e);
+            Log.w(TAG, "[LOCAL PLAY] getLocalIpAddress failed", e);
+        }
+        Log.w(TAG, "[LOCAL PLAY] No usable local IP address found");
+        return null;
+    }
+
+    private String firstIPv4(NetworkInterface iface) {
+        Enumeration<InetAddress> addrs = iface.getInetAddresses();
+        while (addrs.hasMoreElements()) {
+            InetAddress addr = addrs.nextElement();
+            if (!addr.isLoopbackAddress() && addr instanceof Inet4Address) {
+                return addr.getHostAddress();
+            }
         }
         return null;
     }
@@ -203,13 +253,18 @@ public class LocalMultiplayerPlugin extends Plugin implements MiniWebSocketServe
 
                 @Override
                 public void onServiceFound(NsdServiceInfo service) {
+                    Log.d(TAG, "[LOCAL PLAY] Nearby game discovered (resolving): " + service.getServiceName());
                     nsdManager.resolveService(service, new NsdManager.ResolveListener() {
-                        @Override public void onResolveFailed(NsdServiceInfo info, int errorCode) { }
+                        @Override public void onResolveFailed(NsdServiceInfo info, int errorCode) {
+                            Log.w(TAG, "[LOCAL PLAY] Resolve failed for " + info.getServiceName() + ", error code " + errorCode);
+                        }
                         @Override public void onServiceResolved(NsdServiceInfo info) {
                             discoveredRaw.put(info.getServiceName(), info);
+                            String resolvedIp = info.getHost() != null ? info.getHost().getHostAddress() : "";
+                            Log.d(TAG, "[LOCAL PLAY] Game code: " + info.getServiceName() + "  Host IP: " + resolvedIp + "  Host port: " + info.getPort());
                             JSObject data = new JSObject();
                             data.put("name", info.getServiceName());
-                            data.put("ip", info.getHost() != null ? info.getHost().getHostAddress() : "");
+                            data.put("ip", resolvedIp);
                             data.put("port", info.getPort());
                             notifyListeners("hostFound", data);
                         }
