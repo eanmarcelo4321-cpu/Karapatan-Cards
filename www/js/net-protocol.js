@@ -63,7 +63,7 @@ const NetProtocol = (function(){
       pendingAnswers: {},       // peerId -> { choiceIndex, timestamp } for this round
       stealActive: false
     };
-    const TEAM_DOTS = ["#D2574B", "#7FA684", "#D9A441", "#4E8FA6"];
+    const TEAM_DOTS = ["#D2574B", "#7FA684", "#7B4FE0", "#4E8FA6"];
     const listeners = {};
 
     function emit(evt, payload){ (listeners[evt]||[]).forEach(fn => fn(payload)); }

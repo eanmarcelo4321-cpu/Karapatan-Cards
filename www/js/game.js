@@ -13,7 +13,7 @@ var homeSettings = {
 var TEAM_POOL = [
   { name: "Team Mabini",    dot: "#D2574B" },
   { name: "Team Bonifacio", dot: "#7FA684" },
-  { name: "Team Rizal",     dot: "#D9A441" },
+  { name: "Team Rizal",     dot: "#7B4FE0" },
   { name: "Team Silang",    dot: "#4E8FA6" }
 ];
 
@@ -224,7 +224,7 @@ function renderPassPlaySetup(){
         <button onclick="stepTeamCount(1)">+</button>
       </div>
       ${TEAM_POOL.slice(0, homeSettings.teamCount).map(tm => `
-        <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8a9a94;font-size:12px;">${t.ready}</span></div>
+        <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.name}</span><span style="color:#8A8FA8;font-size:12px;">${t.ready}</span></div>
       `).join('')}
 
       <div class="section-title">${h.lengthTitle}</div>
@@ -257,9 +257,9 @@ function renderSoloSetup(){
       </div>
       <div class="team-row" style="cursor:pointer;" onclick="toggleLearningAids()">
         <span>${h.learningToggleTitle}</span>
-        <span style="color:${homeSettings.learningAids?'var(--sage)':'#c2c2c2'};font-weight:800;">${homeSettings.learningAids ? '●  ON' : '○  OFF'}</span>
+        <span style="color:${homeSettings.learningAids?'var(--sage)':'#C4C6D6'};font-weight:800;">${homeSettings.learningAids ? '●  ON' : '○  OFF'}</span>
       </div>
-      <div style="font-size:10.5px;color:#8a9a94;margin:2px 2px 10px;line-height:1.4;">${h.learningToggleSub}</div>
+      <div style="font-size:10.5px;color:#8A8FA8;margin:2px 2px 10px;line-height:1.4;">${h.learningToggleSub}</div>
 
       <div class="section-title">${h.lengthTitle}</div>
       <div class="pill-row" style="margin-bottom:6px;">
@@ -344,9 +344,9 @@ function renderHandoff(){
   screenEl.innerHTML = `
     <div class="screen-body" style="justify-content:center;align-items:center;text-align:center;">
       <div class="handoff-dot" style="background:${team.dot};width:64px;height:64px;border-radius:50%;margin-bottom:18px;"></div>
-      <div style="font-size:13px;color:#8a9a94;margin-bottom:4px;">${t.handoffTitle}</div>
+      <div style="font-size:13px;color:#8A8FA8;margin-bottom:4px;">${t.handoffTitle}</div>
       <div style="font-size:26px;font-weight:800;color:var(--navy);margin-bottom:10px;">${team.name}</div>
-      <div style="font-size:12px;color:#8a9a94;max-width:220px;margin-bottom:26px;">${t.handoffSub}</div>
+      <div style="font-size:12px;color:#8A8FA8;max-width:220px;margin-bottom:26px;">${t.handoffSub}</div>
       <button class="btn btn-primary" onclick="goto('draw')">${t.handoffBtn}</button>
     </div>
   `;
@@ -527,7 +527,7 @@ function renderReveal(){
         <div class="answer-text">${currentCard.answer}</div>
         <div class="legal-basis"><strong>${t.legalBasisLabel}</strong> ${currentCard.legal}</div>
       </div>
-      <div style="font-size:11.5px;color:#5b6f68;text-align:center;margin:10px 0 2px;">${t.earnsText(team.name, match.pendingScore)}</div>
+      <div style="font-size:11.5px;color:#5B6280;text-align:center;margin:10px 0 2px;">${t.earnsText(team.name, match.pendingScore)}</div>
       ${match.stealActive ? `<div class="toast">${t.stealToast}</div>` : ''}
       ${retryMode ? `<div class="toast info">Practice attempt — your original score for this turn stays the same.</div>` : ''}
       <div class="sticky-cta">
@@ -565,7 +565,7 @@ function continueAfterReveal(){
 function burstConfetti(){
   const phone = document.querySelector('.phone');
   if(!phone) return;
-  const colors = ['#D9A441', '#7FA684', '#F7F1E1', '#D2574B', '#EFC978'];
+  const colors = ['#7B4FE0', '#7FA684', '#FFFFFF', '#D2574B', '#C9AEFA'];
   for(let i = 0; i < 18; i++){
     const p = document.createElement('div');
     p.className = 'confetti-piece';
@@ -664,7 +664,7 @@ function renderScore(){
           <span class="name">${i===0 && topScore>0 && !tied ? '<svg class="menu-icon crown" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1" stroke-linejoin="round"><path d="M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8z"/></svg>' : ''}<span class="team-dot" style="background:${tm.dot}"></span>${tm.name}${tm.isAI ? ' 🤖' : ''}</span>
           <span class="pts" id="pts-${tm.name.replace(/\s+/g,'')}">${prevScores[tm.name] || 0} pts</span>
         </div>`).join("")}
-      <div style="font-size:11.5px;color:#5b6f68;text-align:center;margin-top:4px;">${t.upNext(match.teams[match.currentTeam].name)}</div>
+      <div style="font-size:11.5px;color:#5B6280;text-align:center;margin-top:4px;">${t.upNext(match.teams[match.currentTeam].name)}</div>
       <div class="grow"></div>
       <button class="btn btn-primary" onclick="backFromScoreboard()">${t.backToGameBtn}</button>
     </div>

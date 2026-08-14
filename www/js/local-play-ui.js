@@ -205,15 +205,15 @@ var LP = (function(){
         <div class="section-title">${s.hostingTitle}</div>
         <div class="answer-card" style="text-align:center;">
           <div class="handoff-dot" style="background:var(--gold);width:14px;height:14px;margin:0 auto 10px;"></div>
-          <div style="font-size:11px;color:#8a9a94;">${s.yourGameLabel}</div>
+          <div style="font-size:11px;color:#8A8FA8;">${s.yourGameLabel}</div>
           <div style="font-size:20px;font-weight:800;color:var(--navy);margin:4px 0 10px;">${hostGameName || ''}</div>
-          <div style="font-size:11px;color:#8a9a94;">${s.hostCodeLabel}</div>
+          <div style="font-size:11px;color:#8A8FA8;">${s.hostCodeLabel}</div>
           <div style="font-size:20px;font-weight:800;color:var(--navy);letter-spacing:2px;margin:6px 0;font-family:monospace;">${hostCode || '…'}</div>
-          <div style="font-size:11px;color:#8a9a94;">${LP_NET.hasNativeHosting() ? s.hostWifiNoteDiscovery : s.hostWifiNote}</div>
+          <div style="font-size:11px;color:#8A8FA8;">${LP_NET.hasNativeHosting() ? s.hostWifiNoteDiscovery : s.hostWifiNote}</div>
         </div>
         <div class="section-title" style="margin-top:14px;">${s.playersLabel(teams.length)}</div>
         ${teams.length === 0 ? `<div class="toast info">${s.waitingForPlayers}</div>` : teams.map(tm => `
-          <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.teamName}${!tm.connected ? s.disconnectedTag : ''}</span><span style="color:${tm.ready?'var(--sage)':'#c2c2c2'};font-weight:800;">${tm.ready?s.readyTag:s.waitingTag}</span></div>
+          <div class="team-row"><span><span class="team-dot" style="background:${tm.dot}"></span>${tm.teamName}${!tm.connected ? s.disconnectedTag : ''}</span><span style="color:${tm.ready?'var(--sage)':'#C4C6D6'};font-weight:800;">${tm.ready?s.readyTag:s.waitingTag}</span></div>
         `).join('')}
         <div class="grow"></div>
         <button class="btn btn-outline" style="margin-bottom:8px;" onclick="LP.openMenu()">${s.cancelHostingBtn}</button>
@@ -244,14 +244,14 @@ var LP = (function(){
       <div class="screen-body">
         <div class="section-title">${s.joinTitle}</div>
         ${discoveredHosts.length ? `
-          <div style="font-size:11px;color:#8a9a94;margin-bottom:6px;">${s.foundNearbyLabel}</div>
+          <div style="font-size:11px;color:#8A8FA8;margin-bottom:6px;">${s.foundNearbyLabel}</div>
           ${discoveredHosts.map(h => `
             <div class="team-row" style="cursor:pointer;" onclick="LP.connectTo('${h.ip}', ${h.port})">
               <span>${h.name || s.defaultHostName}</span>
               <span style="color:var(--sage);font-weight:800;">${s.joinTag}</span>
             </div>`).join('')}
-          <div style="font-size:11px;color:#8a9a94;margin:12px 0 6px;">${s.manualEntryLabel}</div>
-        ` : `<div style="font-size:12px;color:#8a9a94;margin-bottom:10px;">${s.manualEntryHelp}</div>`}
+          <div style="font-size:11px;color:#8A8FA8;margin:12px 0 6px;">${s.manualEntryLabel}</div>
+        ` : `<div style="font-size:12px;color:#8A8FA8;margin-bottom:10px;">${s.manualEntryHelp}</div>`}
         <input class="lp-input" id="lpIpInput" placeholder="${s.ipPlaceholder}" value="${lastManualIp||''}" autocapitalize="characters" autocorrect="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:1px;">
         ${joinError ? `<div class="toast" style="margin-top:10px;">${joinError}</div>` : ''}
         <div class="grow"></div>
@@ -349,11 +349,11 @@ var LP = (function(){
     screenEl.innerHTML = `
       <div class="screen-body">
         <div class="section-title">${s.lobbyTitle}</div>
-        <div style="font-size:11px;color:#8a9a94;margin:-4px 0 10px;">${s.lobbySettingsLine(settings.rounds, settings.targetScore, settings.timerSeconds)}</div>
+        <div style="font-size:11px;color:#8A8FA8;margin:-4px 0 10px;">${s.lobbySettingsLine(settings.rounds, settings.targetScore, settings.timerSeconds)}</div>
         ${teams.map(tm => `
           <div class="team-row">
             <span><span class="team-dot" style="background:${tm.dot}"></span>${tm.teamName}${!tm.connected ? s.disconnectedTag : ''}</span>
-            <span style="color:${tm.ready?'var(--sage)':'#c2c2c2'};font-weight:800;">${tm.ready?s.readyTag:s.waitingTag}</span>
+            <span style="color:${tm.ready?'var(--sage)':'#C4C6D6'};font-weight:800;">${tm.ready?s.readyTag:s.waitingTag}</span>
           </div>
         `).join('') || `<div class="toast info">${s.waitingForPlayers}</div>`}
 
@@ -365,7 +365,7 @@ var LP = (function(){
         ` : ''}
 
         ${role === 'host' ? `
-          <div style="font-size:11px;color:#8a9a94;margin-top:12px;">${teams.length < 2 ? s.needTwoTeams : canStart ? s.allTeamsReady : s.waitingAllReady}</div>
+          <div style="font-size:11px;color:#8A8FA8;margin-top:12px;">${teams.length < 2 ? s.needTwoTeams : canStart ? s.allTeamsReady : s.waitingAllReady}</div>
         ` : ''}
 
         <div class="grow"></div>
@@ -470,7 +470,7 @@ var LP = (function(){
             <div class="answer-text">${card.answer}</div>
             <div class="legal-basis"><strong>${t.legalBasisLabel}</strong> ${card.legal}</div>
           </div>
-          <div style="font-size:11px;color:#8a9a94;text-align:center;margin-top:10px;">${s.nextCardSoon}</div>
+          <div style="font-size:11px;color:#8A8FA8;text-align:center;margin-top:10px;">${s.nextCardSoon}</div>
         </div>
       `;
       setControls('');
@@ -484,7 +484,7 @@ var LP = (function(){
           <div class="badge-row"><span class="badge diff-${card.difficulty}">${diffLabel(card.difficulty)}</span></div>
         </div>
         <div class="situation-card"><div class="scenario">${card.scenario}</div></div>
-        <div style="font-size:11px;color:#8a9a94;text-align:center;margin:6px 0;">${s.cardsLeftLabel(sync.cardsLeft)}</div>
+        <div style="font-size:11px;color:#8A8FA8;text-align:center;margin:6px 0;">${s.cardsLeftLabel(sync.cardsLeft)}</div>
         ${sync.stealActive ? `<div class="toast">${s.stealToast}</div>` : ''}
         ${isMyTurn && !answered ? `
           <div class="choice-list flat ${twoCls}">
