@@ -8,6 +8,7 @@
   --sage:#7FA684;
   --sky:#4E8FA6;
   --ink:#1E2340;
+  --font-legal:Georgia, 'Times New Roman', 'Noto Serif', serif;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none;}
 html,body{margin:0;padding:0; height:100%; overscroll-behavior:none;}
@@ -101,12 +102,19 @@ body{
 @keyframes dotBounce{ 0%,60%,100%{transform:translateY(0); opacity:0.5;} 30%{transform:translateY(-6px); opacity:1;} }
 
 /* HOME SCREEN */
+.home-title-font{ font-family:var(--font-legal); }
 .home-logo{
-  font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
-  font-weight:800; font-size:24px; color:var(--navy);
-  text-align:center; margin-top:14px;
+  font-weight:700; font-size:26px; color:var(--navy);
+  text-align:center; margin-top:14px; letter-spacing:0.01em;
 }
-.home-tagline{ text-align:center; font-size:12px; color:#5B6280; margin-top:4px; margin-bottom:18px; }
+.home-maxim{
+  font-weight:700; font-style:italic; font-size:15px; color:var(--navy);
+  text-align:center; margin-top:10px;
+}
+.home-maxim-sub{
+  font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
+  text-align:center; font-size:11px; color:#5B6280; margin-top:3px; margin-bottom:18px;
+}
 .section-title{
   font-family:-apple-system, ui-rounded, 'Segoe UI', Verdana, sans-serif;
   font-weight:700; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
@@ -124,11 +132,13 @@ body{
 .mode-card.active{ border-color:var(--gold); background:#F1EBFC; box-shadow:0 0 0 2px rgba(217,164,65,0.25); }
 .mode-card:active{ transform:scale(0.97); }
 
-/* Home screen v2 — centered layout, larger cards, background silhouette */
+/* Home screen v2 — centered layout, larger cards, external background asset.
+   background.png is a real file at assets/customizable/ — replacing that
+   file (same filename) changes the artwork with no code edits needed. */
 .home-body{ position:relative; overflow:hidden; }
-.home-bg-statue{
-  position:absolute; left:50%; bottom:0; transform:translateX(-50%);
-  width:260px; height:auto; opacity:0.07; pointer-events:none; z-index:0;
+.home-bg{
+  background-image:url('assets/customizable/background.png');
+  background-repeat:no-repeat; background-position:center bottom; background-size:cover;
 }
 .home-hero{ position:relative; z-index:1; }
 .home-section-title{ text-align:center; margin:6px 0 12px; opacity:0.75; }
@@ -143,6 +153,11 @@ body{
 .mode-card-lg .mc-title{ font-size:16px; font-weight:800; }
 .mode-card-lg .mc-sub{ font-size:12px; margin-top:4px; line-height:1.4; }
 .home-howto-btn{ margin-bottom:6px; }
+
+/* How to Play — chibi guide character, external asset at
+   assets/customizable/lady-liberty-guide.png */
+.howto-menu{ align-items:center; }
+.howto-guide-img{ width:120px; height:auto; margin:-6px auto 4px; display:block; }
 
 .lp-intro{
   display:flex; align-items:flex-start; gap:10px;

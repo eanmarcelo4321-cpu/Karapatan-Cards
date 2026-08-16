@@ -159,12 +159,12 @@ function renderHome(){
   screenEl.innerHTML = `
     <button class="sound-chip" onclick="toggleSound()">${soundIcon}</button>
     <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
-    <div class="screen-body home-body">
-      ${homeBackgroundSVG()}
+    <div class="screen-body home-body home-bg">
       <div class="grow" style="flex:0.8;"></div>
       <div class="home-hero">
-        <div class="home-logo rounded">Karapatan Cards</div>
-        <div class="home-tagline">${t.tagline}</div>
+        <div class="home-logo home-title-font">Karapatan Cards</div>
+        <div class="home-maxim home-title-font">Ignorantia legis non excusat</div>
+        <div class="home-maxim-sub">Ignorance of the law excuses no one</div>
 
         <div class="section-title home-section-title">${h.modeTitle}</div>
         <div class="mode-grid mode-grid-lg">
@@ -185,34 +185,6 @@ function renderHome(){
     </div>
   `;
   setControls('');
-}
-
-/* A subtle, elegant silhouette of the Statue of Liberty used as a
-   low-opacity background watermark on the home screen — deliberately
-   NOT the chibi mascot (that's reserved for the How to Play tutorial). */
-function homeBackgroundSVG(){
-  return `
-  <svg class="home-bg-statue" viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    <g fill="var(--navy)">
-      <rect x="65" y="378" width="70" height="14"/>
-      <path d="M75 378 C68 300 66 240 78 190 L122 190 C134 240 132 300 125 378 Z"/>
-      <path d="M92 210 C86 270 86 330 90 376" stroke="var(--cream)" stroke-width="3" fill="none" opacity="0.35"/>
-      <path d="M108 210 C114 270 114 330 110 376" stroke="var(--cream)" stroke-width="3" fill="none" opacity="0.35"/>
-      <path d="M100 205 C98 270 98 330 100 376" stroke="var(--cream)" stroke-width="3" fill="none" opacity="0.35"/>
-      <rect x="86" y="172" width="28" height="22" rx="4"/>
-      <circle cx="100" cy="152" r="20"/>
-      <path d="M100 108 L104 130 L96 130 Z"/>
-      <path d="M78 116 L92 134 L82 138 Z"/>
-      <path d="M122 116 L108 134 L118 138 Z"/>
-      <path d="M62 132 L82 144 L74 150 Z"/>
-      <path d="M138 132 L118 144 L126 150 Z"/>
-      <path d="M86 182 C68 186 56 196 50 212 L64 220 C70 206 78 198 90 194 Z"/>
-      <rect x="38" y="206" width="20" height="32" rx="2"/>
-      <path d="M114 180 C140 172 158 148 164 112 L150 106 C144 138 130 158 108 168 Z"/>
-      <rect x="158" y="70" width="10" height="38"/>
-      <path d="M150 50 C150 36 176 36 176 50 C176 64 163 76 163 76 C163 76 150 64 150 50 Z"/>
-    </g>
-  </svg>`;
 }
 
 /* ================= MULTIPLAYER MENU (Pass & Play / Local Play) ================= */
