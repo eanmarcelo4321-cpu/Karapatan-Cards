@@ -1,93 +1,68 @@
 # Karapatan Cards — Customizable Visual Assets
 
-All files below are real PNG files living in the app's actual project
-folder — not embedded in CSS, JS, or base64. Replace any file with your own
-edited version using the exact same filename, and it takes effect
-immediately with no code changes.
+**Status: your designer's real artwork is now installed and live** — this
+is no longer the placeholder version. Both `background.png` and
+`lady-liberty-guide.png` below are the actual illustrated assets you sent
+back, wired into the app with zero code changes required (exactly the
+workflow this was built for).
+
+All files are real PNGs living in the app's actual project folder — not
+embedded in CSS, JS, or base64. Replace any file with an edited version
+using the exact same filename, and it takes effect immediately.
 
 **Location in the project:** `www/assets/customizable/`
 
 ---
 
-## 1. `background.png`
+## 1. `background.png` — ✅ now your real artwork
 - **Path:** `www/assets/customizable/background.png`
-- **Dimensions:** 1080 × 1920px (portrait)
-- **What it controls:** The home screen's background artwork — currently a
-  very faint (~10% opacity) Statue of Liberty silhouette positioned
-  lower-center, with an even fainter scales-of-justice motif in the upper
-  right.
-- **How it's referenced:** `www/css/style.css`, via `.home-bg` — a plain
-  CSS `background-image` pointing at this exact file path. The subtlety is
-  **baked directly into the PNG's own pixels** (not applied via a separate
-  CSS opacity trick), so what you see when you open this file in an image
-  editor is exactly what appears in the app — no hidden transparency
-  surprises.
-- **To replace:** Edit or redraw this file, export as PNG at the same
-  filename, done. Keep the artwork subtle enough to sit behind white cards
-  and navy text without hurting readability (see note below).
+- **Dimensions:** 375 × 666px, transparent PNG
+- **What it controls:** The home screen background — your illustrated
+  Lady Justice (scales, blindfold, sword) on a soft purple gradient with
+  subtle wave shapes and sparkle accents.
+- **Note:** one small fix on my end — the file you sent was named
+  `backround.png` (missing a "k"); I saved it into the project as
+  `background.png` since that's the exact filename the code references.
+  If you send future updates, either filename spelling arriving from you
+  is fine — I'll always place it at the correct path.
 
-## 2. `statue-of-liberty.png`
+## 2. `lady-liberty-guide.png` — ✅ now your real artwork (with one fix)
+- **Path:** `www/assets/customizable/lady-liberty-guide.png`
+- **Dimensions:** 862 × 991px, transparent PNG
+- **What it controls:** The chibi character shown at the top of the
+  "How to Play" popup.
+- **A real technical issue I fixed:** the file you sent had a **solid
+  opaque black background baked into the image** (no transparency
+  channel at all) — as delivered, it would have shown as an ugly black
+  rectangle behind the character inside the light-colored tutorial popup.
+  I extracted the character from the black background using a feathered
+  chroma-key (verified visually — clean edges, no color fringing) and
+  saved the transparent result under the same filename. **If your
+  designer re-exports this in the future, please export with a
+  transparent background directly** (in most design tools: "Export as
+  PNG" with the background layer hidden/deleted, not filled black) —
+  that avoids this extraction step being needed at all and preserves
+  more of the original edge quality.
+
+## 3. `statue-of-liberty.png` — still my placeholder
 - **Path:** `www/assets/customizable/statue-of-liberty.png`
 - **Dimensions:** 600 × 1200px
-- **What it is:** The Statue of Liberty element alone, transparent
-  background, full opacity/full color — the "raw" source art. This exact
-  artwork is what's embedded (faded down) inside `background.png`.
-- **Status:** Provided as a standalone, reusable asset in case you want to
-  reposition, resize, recolor, or recompose it differently than the current
-  `background.png` layout. It isn't independently referenced by any code
-  right now — it exists so you have the clean source art to work from.
+- Not yet replaced. This is the standalone raw statue art (same simple
+  vector style as my first `background.png` attempt) — not currently
+  referenced by any code, provided as reusable source material only.
 
-## 3. `law-decoration.png`
+## 4. `law-decoration.png` — still my placeholder
 - **Path:** `www/assets/customizable/law-decoration.png`
 - **Dimensions:** 400 × 400px
-- **What it is:** A simple scales-of-justice motif, transparent background.
-  Same status as above — this is the clean source art for the faint motif
-  already baked into the top-right of `background.png`. Not independently
-  referenced by code yet, provided as reusable raw material.
-
-## 4. `lady-liberty-guide.png`
-- **Path:** `www/assets/customizable/lady-liberty-guide.png`
-- **Dimensions:** 600 × 680px, transparent background
-- **What it controls:** The friendly chibi character shown at the top of
-  the "How to Play" popup — big head, simple smiling face, torch and
-  tablet, full color (not faded like the background art, since this one is
-  meant to be clearly visible in the foreground).
-- **How it's referenced:** `www/index.html`, inside the `howtoOverlay`
-  block, as a plain `<img src="assets/customizable/lady-liberty-guide.png">`.
-- **To replace:** Same as above — edit, export as PNG, same filename.
-- **Animation:** How to Play is currently a static popup with no video/motion
-  — so no `lady-liberty-guide.mp4` was needed. If you want an animated
-  version later, add `lady-liberty-guide.mp4` to this same folder and tell
-  me — wiring in a `<video>` element is a small, separate code change.
+- Same status as above — a simple scales-of-justice motif, not
+  independently referenced by code, provided as reusable source material.
 
 ---
 
-## Honest limitations, stated plainly
+## Typography note (unchanged from before)
+Still using the system-font fallback stack (`Georgia, 'Times New Roman',
+'Noto Serif', serif`) for the title and Latin maxim — I have no internet
+access in this environment to download a custom font file. Send me an
+actual `.ttf`/`.woff2` file whenever you have one and I'll wire it in via
+`@font-face`.
 
-1. **These illustrations are placeholder-quality**, hand-built from simple
-   vector shapes in this environment (no access to real illustration
-   software or a professional artist). They're clean, recognizable, and
-   functional — but a real designer will produce noticeably better art.
-   This asset structure is specifically designed to make swapping in that
-   better art a pure drag-and-drop replacement.
-
-2. **Typography:** section 13 of your brief asked for a distinctive
-   classical/legal display font. I don't have internet access in this
-   environment, so I could not download and bundle an actual custom font
-   file (e.g. a Google Font like Cinzel or Playfair Display). What's
-   implemented instead is a **system font fallback stack**
-   (`Georgia, 'Times New Roman', 'Noto Serif', serif`) applied to the title
-   and the Latin maxim — every phone already has one of these installed, so
-   it works fully offline with zero extra files, and does read as more
-   classical/serif than the previous rounded sans-serif title. If you want
-   a specific downloaded custom font instead, send me the actual font file
-   (`.ttf` or `.woff2`) and I'll wire it in via `@font-face` — that's a
-   quick follow-up once you have the file.
-
-## Readability safeguard already in place
-`background.png`'s artwork sits at very low opacity specifically so it
-never competes with text or buttons — and since the mode cards have a
-solid white background, the artwork is fully hidden anywhere a card
-overlaps it, only showing in empty margin space. If you redraw this file
-with bolder/darker artwork, keep that same principle in mind (or lower the
-opacity of your new art directly in your image editor before exporting).
