@@ -137,8 +137,8 @@ body{
    file (same filename) changes the artwork with no code edits needed. */
 .home-body{ position:relative; overflow:hidden; }
 .home-bg{
-  background-image:url('assets/customizable/background.png');
-  background-repeat:no-repeat; background-position:center bottom; background-size:cover;
+  background-image:url('../assets/customizable/background.png');
+  background-repeat:no-repeat; background-position:center center; background-size:contain;
 }
 .home-hero{ position:relative; z-index:1; }
 .home-section-title{ text-align:center; margin:6px 0 12px; opacity:0.75; }
@@ -153,6 +153,11 @@ body{
 .mode-card-lg .mc-title{ font-size:16px; font-weight:800; }
 .mode-card-lg .mc-sub{ font-size:12px; margin-top:4px; line-height:1.4; }
 .home-howto-btn{ margin-bottom:6px; }
+.home-howto-btn-solid{ background:rgba(255,255,255,0.88); backdrop-filter:blur(2px); }
+.home-title-block{
+  background:rgba(255,255,255,0.72); backdrop-filter:blur(2px);
+  border-radius:16px; padding:10px 16px 14px; margin:0 4px;
+}
 
 /* How to Play — chibi guide character, external asset at
    assets/customizable/lady-liberty-guide.png */

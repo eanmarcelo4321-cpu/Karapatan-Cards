@@ -162,9 +162,11 @@ function renderHome(){
     <div class="screen-body home-body home-bg">
       <div class="grow" style="flex:0.8;"></div>
       <div class="home-hero">
-        <div class="home-logo home-title-font">Karapatan Cards</div>
-        <div class="home-maxim home-title-font">Ignorantia legis non excusat</div>
-        <div class="home-maxim-sub">Ignorance of the law excuses no one</div>
+        <div class="home-title-block">
+          <div class="home-logo home-title-font">Karapatan Cards</div>
+          <div class="home-maxim home-title-font">Ignorantia legis non excusat</div>
+          <div class="home-maxim-sub">Ignorance of the law excuses no one</div>
+        </div>
 
         <div class="section-title home-section-title">${h.modeTitle}</div>
         <div class="mode-grid mode-grid-lg">
@@ -181,7 +183,7 @@ function renderHome(){
         </div>
       </div>
       <div class="grow" style="flex:1.1;"></div>
-      <button class="btn btn-outline home-howto-btn" onclick="openHowTo()">${h.howToPlay}</button>
+      <button class="btn btn-outline home-howto-btn home-howto-btn-solid" onclick="openHowTo()">${h.howToPlay}</button>
     </div>
   `;
   setControls('');
