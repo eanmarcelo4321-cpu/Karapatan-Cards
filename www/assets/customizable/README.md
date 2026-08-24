@@ -9,61 +9,43 @@ immediately with no code changes required.
 
 ---
 
-## 1. `background.png` — ✅ your real artwork, current version
+## 1. `background.png` — ✅ current version, full-screen cover
 - **Path:** `www/assets/customizable/background.png`
-- **Dimensions:** 592 × 1824px, tall "poster" format with its own
-  decorative border already built into the art (art-deco corner brackets,
-  full frame)
-- **What it controls:** The home screen background — the Philippine
-  sun-and-stars motif, Lady Justice with sword and scales, the Philippine
-  map, clouds, an open book on an ionic column, and a "Constitutional
-  Placement" scroll, all in the app's purple/lavender palette.
-- **How it's displayed:** `background-size: contain` (shows the *entire*
-  illustration, no cropping) rather than `cover`. This matters because the
-  image is unusually tall/narrow — `cover` would have cropped roughly 39%
-  off the top, cutting off the sun/stars motif entirely. Since this
-  artwork is a complete, self-framed poster, `contain` (with some empty
-  margin on the left/right) is the correct fit.
+- **Dimensions:** 704 × 1520px (aspect ratio ≈ 1:2.16 — close to a real
+  phone screen shape, designed for edge-to-edge coverage)
+- **What it controls:** The home screen background — sun/stars/clouds
+  header, an ornate light-purple banner (designed as the title zone),
+  Lady Justice with scales, florals, Philippine map, an open book on an
+  ionic column, and the "Constitutional Parchment" scroll.
+- **Display mode:** `background-size: cover` (fills the entire screen,
+  no letterboxing) with `background-position: center top` — this crops
+  only 0–7% off the very bottom on most phones, keeping the distinctive
+  sun/stars header fully intact. This is a genuine improvement over the
+  previous version: that one needed `contain` (with visible side margins)
+  because its aspect ratio was much taller/narrower; this one is properly
+  proportioned for true full-bleed coverage.
 
-### Two bugs fixed along the way, worth knowing about
-1. **Relative path bug:** the CSS file lives at `www/css/style.css`, and
-   `url()` paths inside a CSS file resolve relative to the *CSS file's own
-   location*, not `index.html`. The path had to be
-   `../assets/customizable/background.png` (stepping up out of `css/`
-   first), not `assets/customizable/background.png`. If you ever add more
-   background-referencing CSS rules yourself, remember this — it's an easy
-   mistake to repeat.
-2. **Legibility over a busy image:** this artwork is much more detailed
-   than a typical subtle background wash, so plain text sitting directly
-   on top of it (especially over the sun-rays area, and over the
-   scroll/scales area near the bottom) was genuinely harder to read. Fix:
-   the title/maxim text now sits on a semi-transparent frosted-white
-   backdrop (`.home-title-block`), and the "How to Play" button — which
-   used to be fully transparent/outline-only — now has a mostly-solid
-   white fill (`.home-howto-btn-solid`) so the artwork doesn't show
-   distractingly through its text. Both were verified with an actual
-   rendered mockup before shipping, not just assumed.
+### Layout alignment
+The designer's artwork includes a light banner zone (~20% down) clearly
+intended for the title, and mocked-up "Multiplayer"/"Solo vs AI" labels
+(~45–50% down) showing where the mode-select cards should sit. I adjusted
+the app's internal spacing (`game.js`, the flex spacer above the title
+block) so the real title and the real interactive cards now land in those
+same zones — verified with an actual rendered composite before shipping,
+not just eyeballed. If future artwork changes those zones' position, this
+spacer value (currently `flex:0.4` on the top spacer) is the one number to
+retune to match.
 
 ## 2. `lady-liberty-guide.png` — ✅ your real artwork
 - **Path:** `www/assets/customizable/lady-liberty-guide.png`
-- **Dimensions:** 862 × 991px, transparent PNG
-- **What it controls:** The chibi character at the top of the "How to
-  Play" popup.
-- Note: the file as originally sent had a solid opaque black background
-  (no alpha channel) — I extracted the character via a feathered
-  chroma-key and installed the transparent result under this filename.
-  For future re-exports, export directly with a transparent background if
-  your tool supports it — cleaner than needing this extraction step.
+- 862 × 991px, transparent PNG. The chibi character in the "How to Play"
+  popup. (Note: originally sent with an opaque black background — I
+  extracted the transparent version via chroma-key. Future exports:
+  export directly with transparency if your tool supports it.)
 
-## 3. `statue-of-liberty.png` — still my rough placeholder
-- **Path:** `www/assets/customizable/statue-of-liberty.png`
-- 600 × 1200px. Not referenced by any code — raw standalone source art
-  only, left over from the first placeholder version.
-
-## 4. `law-decoration.png` — still my rough placeholder
-- **Path:** `www/assets/customizable/law-decoration.png`
-- 400 × 400px. Same status as above — unused placeholder, safe to ignore
-  or delete if you don't need it.
+## 3. `statue-of-liberty.png` / `law-decoration.png` — unused placeholders
+Still my original rough placeholder art, not referenced by any code.
+Safe to ignore or delete.
 
 ---
 
