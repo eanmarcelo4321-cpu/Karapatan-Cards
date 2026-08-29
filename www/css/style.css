@@ -154,9 +154,9 @@ body{
 .mode-card-lg .mc-sub{ font-size:12px; margin-top:4px; line-height:1.4; }
 .home-howto-btn{ margin-bottom:6px; }
 .home-howto-btn-solid{ background:rgba(255,255,255,0.88); backdrop-filter:blur(2px); }
-.home-title-block{
-  background:rgba(255,255,255,0.72); backdrop-filter:blur(2px);
-  border-radius:16px; padding:10px 16px 14px; margin:0 4px;
+.home-title-block{ margin:0 4px; }
+.home-logo, .home-maxim, .home-maxim-sub{
+  text-shadow: 0 0 6px rgba(255,255,255,0.85), 0 0 12px rgba(255,255,255,0.6);
 }
 
 /* How to Play — chibi guide character, external asset at
