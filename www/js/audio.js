@@ -1,11 +1,14 @@
 /* ===== Karapatan Cards — Audio Engine =====
-   All sound is synthesized with the Web Audio API (no external audio
-   files to fetch/bundle). Provides short SFX (correct/wrong/click/win)
-   plus a soft ambient pad loop, with a persisted on/off toggle. */
+   SFX are synthesized with the Web Audio API (no external files needed
+   for those). Background music is a real looping audio file, run as a
+   separate system with its own enabled/volume state so the player can
+   control music and sound effects independently. */
 var AudioEngine = (function(){
   let ctx = null;
-  let ambientNodes = null;
+  let masterGain = null;
   let enabled = localStorage.getItem('karapatan_sound') !== 'off';
+  let sfxVolume = parseFloat(localStorage.getItem('karapatan_sfx_volume'));
+  if(isNaN(sfxVolume)) sfxVolume = 1.0;
   let unlocked = false;
 
   function ensureCtx(){
@@ -13,6 +16,9 @@ var AudioEngine = (function(){
       const AC = window.AudioContext || window.webkitAudioContext;
       if(!AC) return null;
       ctx = new AC();
+      masterGain = ctx.createGain();
+      masterGain.gain.value = sfxVolume;
+      masterGain.connect(ctx.destination);
     }
     if(ctx.state === 'suspended') ctx.resume();
     return ctx;
@@ -23,10 +29,16 @@ var AudioEngine = (function(){
   function setEnabled(v){
     enabled = v;
     localStorage.setItem('karapatan_sound', v ? 'on' : 'off');
-    if(v) startAmbient(); else stopAmbient();
   }
 
   function toggle(){ setEnabled(!enabled); return enabled; }
+
+  function getSfxVolume(){ return sfxVolume; }
+  function setSfxVolume(v){
+    sfxVolume = Math.max(0, Math.min(1, v));
+    localStorage.setItem('karapatan_sfx_volume', String(sfxVolume));
+    if(masterGain) masterGain.gain.value = sfxVolume;
+  }
 
   // Unlock audio on first user gesture (required on iOS/Android webviews)
   function unlock(){
@@ -34,7 +46,7 @@ var AudioEngine = (function(){
     const c = ensureCtx();
     if(!c) return;
     unlocked = true;
-    if(enabled) startAmbient();
+    Music.unlock();
   }
 
   function tone(freq, start, dur, type, gainPeak, glideTo){
@@ -48,7 +60,7 @@ var AudioEngine = (function(){
     gain.gain.setValueAtTime(0.0001, c.currentTime + start);
     gain.gain.exponentialRampToValueAtTime(gainPeak || 0.18, c.currentTime + start + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + start + dur);
-    osc.connect(gain).connect(c.destination);
+    osc.connect(gain).connect(masterGain);
     osc.start(c.currentTime + start);
     osc.stop(c.currentTime + start + dur + 0.05);
   }
@@ -82,47 +94,61 @@ var AudioEngine = (function(){
   function playDraw(){ tone(392, 0, 0.1, 'sine', 0.08); }
   function playTick(){ tone(880, 0, 0.03, 'square', 0.03); }
 
-  let ambientTimer = null;
-  function startAmbient(){
-    const c = ensureCtx();
-    if(!c || !enabled || ambientNodes) return;
-    const master = c.createGain();
-    master.gain.value = 0.05;
-    master.connect(c.destination);
+  /* ===== Background Music — real looping track, independent of SFX ===== */
+  const Music = (function(){
+    let el = null;
+    let musicEnabled = localStorage.getItem('karapatan_music') !== 'off';
+    let musicVolume = parseFloat(localStorage.getItem('karapatan_music_volume'));
+    if(isNaN(musicVolume)) musicVolume = 0.5;
 
-    const o1 = c.createOscillator();
-    const o2 = c.createOscillator();
-    o1.type = 'sine'; o2.type = 'sine';
-    o1.frequency.value = 130.81; // C3
-    o2.frequency.value = 196.00; // G3
-    const g1 = c.createGain(), g2 = c.createGain();
-    g1.gain.value = 0.5; g2.gain.value = 0.35;
-    o1.connect(g1).connect(master);
-    o2.connect(g2).connect(master);
+    function ensureEl(){
+      if(!el){
+        el = new Audio('assets/audio/background-music.mp3');
+        el.loop = true;
+        el.volume = musicVolume;
+      }
+      return el;
+    }
 
-    // slow filter-less LFO via gain wobble for a "breathing" pad feel
-    const lfo = c.createOscillator();
-    lfo.frequency.value = 0.08;
-    const lfoGain = c.createGain();
-    lfoGain.gain.value = 0.02;
-    lfo.connect(lfoGain).connect(master.gain);
-    lfo.start();
+    function isOn(){ return musicEnabled; }
 
-    o1.start(); o2.start();
-    ambientNodes = { master, o1, o2, lfo };
-  }
+    function setEnabled(v){
+      musicEnabled = v;
+      localStorage.setItem('karapatan_music', v ? 'on' : 'off');
+      if(v) play(); else pause();
+    }
 
-  function stopAmbient(){
-    if(!ambientNodes) return;
-    try{
-      ambientNodes.o1.stop(); ambientNodes.o2.stop(); ambientNodes.lfo.stop();
-    }catch(e){}
-    ambientNodes = null;
-  }
+    function toggle(){ setEnabled(!musicEnabled); return musicEnabled; }
+
+    function getVolume(){ return musicVolume; }
+    function setVolume(v){
+      musicVolume = Math.max(0, Math.min(1, v));
+      localStorage.setItem('karapatan_music_volume', String(musicVolume));
+      if(el) el.volume = musicVolume;
+    }
+
+    function play(){
+      const a = ensureEl();
+      if(musicEnabled){
+        a.play().catch(() => { /* blocked until a user gesture; unlock() retries */ });
+      }
+    }
+
+    function pause(){
+      if(el) el.pause();
+    }
+
+    // Called from AudioEngine.unlock() on the first user tap anywhere in the app
+    function unlock(){
+      if(musicEnabled) play();
+    }
+
+    return { isOn, setEnabled, toggle, getVolume, setVolume, play, pause, unlock };
+  })();
 
   return {
-    unlock, isOn, setEnabled, toggle,
+    unlock, isOn, setEnabled, toggle, getSfxVolume, setSfxVolume,
     playClick, playCorrect, playPartial, playWrong, playWin, playDraw, playTick,
-    startAmbient, stopAmbient
+    Music
   };
 })();

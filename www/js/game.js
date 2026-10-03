@@ -56,7 +56,8 @@ function withinInputGuard(source){
 /* ---------- DOM refs (bound after DOMContentLoaded) ---------- */
 var screenEl, controlsEl, pauseBtnEl, pauseOverlayEl, pauseSubEl,
     langOverlayEl, langListEl, langPickerTitleEl, langPickerSubEl,
-    howtoOverlayEl, splashEl;
+    howtoOverlayEl, splashEl,
+    sfxToggleBtnEl, sfxVolumeSliderEl, musicToggleBtnEl, musicVolumeSliderEl;
 
 document.addEventListener('DOMContentLoaded', () => {
   screenEl = document.getElementById('screen');
@@ -64,6 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
   pauseBtnEl = document.getElementById('pauseBtn');
   pauseOverlayEl = document.getElementById('pauseOverlay');
   pauseSubEl = document.getElementById('pauseSub');
+  sfxToggleBtnEl = document.getElementById('sfxToggleBtn');
+  sfxVolumeSliderEl = document.getElementById('sfxVolumeSlider');
+  musicToggleBtnEl = document.getElementById('musicToggleBtn');
+  musicVolumeSliderEl = document.getElementById('musicVolumeSlider');
   langOverlayEl = document.getElementById('langOverlay');
   langListEl = document.getElementById('langList');
   langPickerTitleEl = document.getElementById('langPickerTitle');
@@ -155,9 +160,13 @@ function renderHome(){
   const soundIcon = AudioEngine.isOn()
     ? `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>`
     : `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m17 9 4 4M21 9l-4 4"/></svg>`;
+  const musicIcon = AudioEngine.Music.isOn()
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M3 3l18 18" stroke-width="2"/></svg>`;
 
   screenEl.innerHTML = `
     <button class="sound-chip" onclick="toggleSound()">${soundIcon}</button>
+    <button class="sound-chip music-chip" onclick="toggleMusic()">${musicIcon}</button>
     <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
     <div class="screen-body home-body home-bg">
       <div class="grow" style="flex:0.4;"></div>
@@ -292,6 +301,10 @@ function stepTeamCount(delta){
 }
 function toggleSound(){
   AudioEngine.toggle();
+  if(state === 'home') renderHome();
+}
+function toggleMusic(){
+  AudioEngine.Music.toggle();
   if(state === 'home') renderHome();
 }
 
@@ -755,7 +768,26 @@ function openPause(){
   const subText = state === "card" ? t.timerOnHold(timerVal) : t.turnOnHold(team.name);
   pauseSubEl.textContent = subText;
   pauseOverlayEl.classList.add('open');
+  syncPauseAudioUI();
 }
+
+function syncPauseAudioUI(){
+  if(sfxToggleBtnEl){
+    sfxToggleBtnEl.textContent = AudioEngine.isOn() ? 'ON' : 'OFF';
+    sfxToggleBtnEl.classList.toggle('is-off', !AudioEngine.isOn());
+  }
+  if(sfxVolumeSliderEl) sfxVolumeSliderEl.value = Math.round(AudioEngine.getSfxVolume() * 100);
+  if(musicToggleBtnEl){
+    musicToggleBtnEl.textContent = AudioEngine.Music.isOn() ? 'ON' : 'OFF';
+    musicToggleBtnEl.classList.toggle('is-off', !AudioEngine.Music.isOn());
+  }
+  if(musicVolumeSliderEl) musicVolumeSliderEl.value = Math.round(AudioEngine.Music.getVolume() * 100);
+}
+
+function toggleSfxFromPause(){ AudioEngine.toggle(); syncPauseAudioUI(); }
+function toggleMusicFromPause(){ AudioEngine.Music.toggle(); syncPauseAudioUI(); }
+function onSfxVolumeInput(v){ AudioEngine.setSfxVolume(v/100); }
+function onMusicVolumeInput(v){ AudioEngine.Music.setVolume(v/100); }
 
 function closePause(){
   paused = false;

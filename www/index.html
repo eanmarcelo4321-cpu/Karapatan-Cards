@@ -43,7 +43,18 @@
         <div class="pause-sub" id="pauseSub"></div>
         <button class="btn btn-primary" onclick="closePause()"><span class="play-tri"></span> Resume</button>
         <button class="btn btn-outline pause-item" onclick="pauseGoScoreboard()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"/></svg> View Scoreboard</button>
-        <button class="btn btn-outline pause-item" onclick="toggleSound(); openPause();"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg> Toggle Sound</button>
+        <div class="audio-settings">
+          <div class="audio-row">
+            <span class="audio-label">Sound Effects</span>
+            <button class="audio-toggle-btn" id="sfxToggleBtn" onclick="toggleSfxFromPause()"></button>
+          </div>
+          <input type="range" class="audio-slider" id="sfxVolumeSlider" min="0" max="100" oninput="onSfxVolumeInput(this.value)">
+          <div class="audio-row">
+            <span class="audio-label">Music</span>
+            <button class="audio-toggle-btn" id="musicToggleBtn" onclick="toggleMusicFromPause()"></button>
+          </div>
+          <input type="range" class="audio-slider" id="musicVolumeSlider" min="0" max="100" oninput="onMusicVolumeInput(this.value)">
+        </div>
         <button class="btn btn-outline pause-item danger" onclick="pauseQuit()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg> Quit to Menu</button>
       </div>
     </div>
