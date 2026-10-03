@@ -122,7 +122,9 @@ body{
 }
 .mode-grid{ display:flex; gap:8px; }
 .mode-card{
-  flex:1; background:#fff; border:1.5px solid #DDD9EC; border-radius:14px;
+  flex:1; background:rgba(255,255,255,0.84); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  border:1.5px solid rgba(221,217,236,0.7); border-radius:14px;
+  box-shadow:0 4px 14px rgba(27,42,107,0.12);
   padding:12px 10px; text-align:center; cursor:pointer;
   transition:transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
 }
@@ -138,7 +140,17 @@ body{
 .home-body{ position:relative; overflow:hidden; }
 .home-bg{
   background-image:url('../assets/customizable/background.png');
-  background-repeat:no-repeat; background-position:center top; background-size:cover;
+  background-repeat:no-repeat; background-position:center center; background-size:cover;
+  /* .screen (the parent) has its own padding (18px/18px/14px) and its own
+     cream background-color — without this, the image would only fill the
+     inset content box, leaving a visible cream/white strip of .screen's
+     own background showing around all four edges. This negative-margin +
+     compensating-size technique breaks the image out to truly cover the
+     full device edge-to-edge, not just the padded inner area. Scoped to
+     .home-bg specifically so no other screen is affected. */
+  margin:-18px -18px -14px -18px;
+  width:calc(100% + 36px);
+  height:calc(100% + 32px);
 }
 .home-hero{ position:relative; z-index:1; }
 .home-section-title{ text-align:center; margin:6px 0 12px; opacity:0.75; }
@@ -153,10 +165,18 @@ body{
 .mode-card-lg .mc-title{ font-size:16px; font-weight:800; }
 .mode-card-lg .mc-sub{ font-size:12px; margin-top:4px; line-height:1.4; }
 .home-howto-btn{ margin-bottom:6px; }
-.home-howto-btn-solid{ background:rgba(255,255,255,0.88); backdrop-filter:blur(2px); }
-.home-title-block{ margin:0 4px; }
+.home-howto-btn-solid{
+  background:rgba(255,255,255,0.86); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  box-shadow:0 4px 14px rgba(27,42,107,0.12);
+}
+.home-title-block{
+  margin:0 4px; background:rgba(255,255,255,0.84); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  border:1.5px solid rgba(221,217,236,0.7); border-radius:18px;
+  box-shadow:0 4px 14px rgba(27,42,107,0.12);
+  padding:14px 16px 16px;
+}
 .home-logo, .home-maxim, .home-maxim-sub{
-  text-shadow: 0 0 6px rgba(255,255,255,0.85), 0 0 12px rgba(255,255,255,0.6);
+  text-shadow: 0 0 6px rgba(255,255,255,0.5);
 }
 
 /* How to Play — chibi guide character, external asset at
