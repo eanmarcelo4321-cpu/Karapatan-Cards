@@ -169,7 +169,7 @@ function renderHome(){
     <button class="sound-chip music-chip" onclick="toggleMusic()">${musicIcon}</button>
     <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
     <div class="screen-body home-body home-bg">
-      <div class="grow" style="flex:0.4;"></div>
+      <div class="grow" style="flex:0.6;"></div>
       <div class="home-hero">
         <div class="home-title-block">
           <div class="home-logo home-title-font">Karapatan Cards</div>

@@ -122,7 +122,7 @@ body{
 }
 .mode-grid{ display:flex; gap:8px; }
 .mode-card{
-  flex:1; background:rgba(255,255,255,0.84); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  flex:1; background:rgba(255,255,255,0.60); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
   border:1.5px solid rgba(221,217,236,0.7); border-radius:14px;
   box-shadow:0 4px 14px rgba(27,42,107,0.12);
   padding:12px 10px; text-align:center; cursor:pointer;
@@ -153,7 +153,10 @@ body{
   height:calc(100% + 32px);
 }
 .home-hero{ position:relative; z-index:1; }
-.home-section-title{ text-align:center; margin:6px 0 12px; opacity:0.75; }
+.home-section-title{
+  text-align:center; margin:6px 0 12px; opacity:0.95;
+  text-shadow: 0 0 6px rgba(255,255,255,0.8), 0 0 10px rgba(255,255,255,0.5);
+}
 .mode-grid-lg{ gap:12px; }
 .mode-card-lg{
   padding:26px 14px; border-radius:18px;
@@ -166,11 +169,11 @@ body{
 .mode-card-lg .mc-sub{ font-size:12px; margin-top:4px; line-height:1.4; }
 .home-howto-btn{ margin-bottom:6px; }
 .home-howto-btn-solid{
-  background:rgba(255,255,255,0.86); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  background:rgba(255,255,255,0.60); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
   box-shadow:0 4px 14px rgba(27,42,107,0.12);
 }
 .home-title-block{
-  margin:0 4px; background:rgba(255,255,255,0.84); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  margin:0 4px; background:rgba(255,255,255,0.60); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
   border:1.5px solid rgba(221,217,236,0.7); border-radius:18px;
   box-shadow:0 4px 14px rgba(27,42,107,0.12);
   padding:14px 16px 16px;
