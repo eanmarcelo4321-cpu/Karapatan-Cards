@@ -371,34 +371,155 @@ function renderHandoff(){
   setControls('');
 }
 
-/* ================= DRAW SCREEN ================= */
+/* ================= HAND / DRAW SCREEN =================
+   The player's "hand" is simply a peek at the next HAND_SIZE cards still
+   sitting in match.deck, starting at match.cardIndex — nothing is drawn or
+   consumed by viewing it. Playing a card swaps it into the active draw
+   slot (see playHandCard) and hands off to the existing, unmodified
+   drawCard(). This keeps every scoring/difficulty/sudden-death rule
+   exactly as it was; only the order cards come up in can change. */
 function renderDraw(){
   const t = T();
   const team = match.teams[match.currentTeam];
   const total = match.deck.length;
   const left = total - match.cardIndex;
-  const pct = Math.max(0, Math.min(100, (match.cardIndex / total) * 100));
+  const hand = peekHand();
+  const opponents = match.teams.filter((tm, i) => i !== match.currentTeam);
+
+  const previewCard = handPreviewOffset != null ? hand[handPreviewOffset] : null;
 
   screenEl.innerHTML = `
-    <div class="screen-body" style="justify-content:center;align-items:center;text-align:center;">
-      ${match.suddenDeath ? `<div class="toast danger" style="margin-bottom:14px;">${t.suddenDeathToast}</div>` : ''}
-      ${match.stealActive ? `<div class="toast" style="margin-bottom:14px;">${t.stealToast}</div>` : ''}
-      <div class="rounded" style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:6px;">
-        <span class="team-dot" style="background:${team.dot};"></span>${team.isAI ? t.aiTurnLabel(team.name) : t.turnLabel(team.name)}
+    <div class="screen-body hand-screen">
+      ${match.suddenDeath ? `<div class="toast danger" style="margin-bottom:8px;">${t.suddenDeathToast}</div>` : ''}
+      ${match.stealActive ? `<div class="toast" style="margin-bottom:8px;">${t.stealToast}</div>` : ''}
+
+      <div class="game-header-bar">
+        <div class="turn-pill"><span class="team-dot" style="background:${team.dot};"></span>${team.isAI ? t.aiTurnLabel(team.name) : t.turnLabel(team.name)}</div>
+        <div class="deck-count-chip">${left}/${total}</div>
       </div>
-      <div class="cards-remaining">${t.cardsLeft(left, total)}</div>
-      <div class="deck-progress"><div class="deck-progress-fill" style="width:${pct}%;"></div></div>
-      <div class="deck-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="52" height="52"><rect x="4" y="3" width="12" height="17" rx="2" transform="rotate(-8 10 11.5)"/><rect x="8" y="4" width="12" height="17" rx="2" fill="var(--cream)"/><path d="M14 8v6M11 11h6" stroke="var(--coral)"/></svg></div>
-      ${team.isAI
-        ? `<div class="ai-indicator"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div>`
-        : `<button class="btn btn-primary" onclick="drawCard()">${t.drawBtn}</button>`}
+
+      <div class="game-table">
+        <div class="table-pile">
+          <div class="pile-card back"><span class="pile-card-k">K</span></div>
+          <div class="pile-label">${t.drawPileLabel || 'DRAW PILE'}</div>
+        </div>
+        <div class="table-pile">
+          ${match.lastDiscarded
+            ? `<div class="pile-card played"><span class="mini-badge diff-${match.lastDiscarded.difficulty}"></span></div>`
+            : `<div class="pile-card empty"></div>`}
+          <div class="pile-label">${t.playedPileLabel || 'PLAYED'}</div>
+        </div>
+      </div>
+
+      ${opponents.length ? `
+        <div class="opponents-row">
+          ${opponents.map(tm => `
+            <div class="opp-group">
+              <div class="opp-name"><span class="team-dot" style="background:${tm.dot};"></span>${tm.name}</div>
+              <div class="opp-tiles"><span class="opp-tile"></span><span class="opp-tile"></span><span class="opp-tile"></span></div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div class="grow"></div>
+
+      ${team.isAI ? `
+        <div class="hand-area ai-waiting">
+          <div class="ai-indicator"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span></div>
+          <div class="hand-toggle-label">${t.aiTurnLabel(team.name)}</div>
+        </div>
+      ` : `
+        <div class="hand-area ${handExpanded ? 'expanded' : ''}">
+          <div class="hand-toggle" onclick="toggleHandExpanded()">
+            <span class="hand-toggle-bar"></span>
+            <span class="hand-toggle-label">${handExpanded ? (t.handCollapseLabel || 'TAP TO COLLAPSE') : (t.handViewLabel || 'YOUR HAND — TAP TO VIEW')}</span>
+          </div>
+          <div class="hand-fan-row">
+            ${hand.map((c, i) => `
+              <div class="hand-card" style="--i:${i};--n:${hand.length};" onclick="openHandPreview(${i})">
+                <span class="hc-badge diff-${c.difficulty}"></span>
+                <span class="hc-cat">${c.category}</span>
+                <span class="hc-title">${t.cardNumLabel ? t.cardNumLabel(i+1) : 'Card ' + (i+1)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `}
+
+      ${previewCard ? `
+        <div class="hand-preview-backdrop" onclick="closeHandPreview()"></div>
+        <div class="hand-preview-sheet">
+          <div class="card-topline">
+            <span class="card-label">${t.situationCardLabel || 'SITUATION CARD'}</span>
+            <span class="badge diff-${previewCard.difficulty}">${previewCard.difficulty}</span>
+            <span class="badge cat">${previewCard.category}</span>
+          </div>
+          <div class="preview-scenario">${previewCard.scenario}</div>
+          <div class="preview-actions">
+            <button class="btn btn-outline" onclick="closeHandPreview()">${t.closeBtn || 'Close'}</button>
+            <button class="btn btn-primary" onclick="playHandCard(${handPreviewOffset})">${t.playCardBtn || 'Play Card'}</button>
+          </div>
+        </div>
+      ` : ''}
     </div>
   `;
   setControls(`<button class="btn btn-outline" style="width:auto;padding:10px 18px;" onclick="goto('score')">${t.viewScoreboardBtn}</button>`);
 
   if(team.isAI){
-    aiTimeout = setTimeout(() => { if(state === 'draw') drawCard(); }, 900 + Math.random() * 600);
+    aiTimeout = setTimeout(() => {
+      if(state === 'draw'){
+        const h = peekHand();
+        playHandCard(Math.floor(Math.random() * h.length));
+      }
+    }, 900 + Math.random() * 600);
   }
+}
+
+var handExpanded = false;
+var handPreviewOffset = null;
+const HAND_SIZE = 5;
+
+/* Returns up to HAND_SIZE upcoming cards (not yet drawn) for display as
+   the player's hand. Purely a read — does not consume or alter the deck. */
+function peekHand(){
+  const end = Math.min(match.deck.length, match.cardIndex + HAND_SIZE);
+  return match.deck.slice(match.cardIndex, end);
+}
+
+function toggleHandExpanded(){
+  if(withinInputGuard('toggleHand')) return;
+  handExpanded = !handExpanded;
+  handPreviewOffset = null;
+  render();
+}
+
+function openHandPreview(offset){
+  if(withinInputGuard('openHandPreview')) return;
+  handPreviewOffset = offset;
+  render();
+}
+
+function closeHandPreview(){
+  handPreviewOffset = null;
+  render();
+}
+
+/* Plays the card at the given offset within the current hand window.
+   Swaps it into the active draw position, then hands off to the existing,
+   completely unmodified drawCard() to actually consume it. */
+function playHandCard(offset){
+  if(withinInputGuard('playHandCard')) return;
+  const drawPos = match.cardIndex;
+  const chosenPos = match.cardIndex + offset;
+  if(chosenPos !== drawPos && chosenPos < match.deck.length){
+    const tmp = match.deck[drawPos];
+    match.deck[drawPos] = match.deck[chosenPos];
+    match.deck[chosenPos] = tmp;
+  }
+  handExpanded = false;
+  handPreviewOffset = null;
+  drawCard();
 }
 
 function drawCard(){
@@ -577,6 +698,7 @@ function retryCard(){
 function continueAfterReveal(){
   if(withinInputGuard('continueAfterReveal')) return;
   clearTimeout(aiTimeout);
+  match.lastDiscarded = currentCard;
   applyScore(match.pendingScore);
 }
 
