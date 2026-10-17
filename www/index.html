@@ -55,7 +55,20 @@
           </div>
           <input type="range" class="audio-slider" id="musicVolumeSlider" min="0" max="100" oninput="onMusicVolumeInput(this.value)">
         </div>
+        <button class="btn btn-outline pause-item" id="pauseCommunityBtn" onclick="openCommunityPanel()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span id="pauseCommunityLabel">Join Our Community</span></button>
         <button class="btn btn-outline pause-item danger" onclick="pauseQuit()"><svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg> Quit to Menu</button>
+      </div>
+    </div>
+
+
+    <!-- Community invitation -->
+    <div class="pause-overlay community-overlay" id="communityOverlay">
+      <div class="pause-menu community-menu">
+        <div class="community-icon"><svg  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="pause-title" id="communityTitle"></div>
+        <div class="pause-sub community-body" id="communityBody"></div>
+        <button class="btn btn-primary" onclick="joinDiscord()"><span id="communityJoinLabel"></span></button>
+        <button class="btn btn-outline pause-item" id="communityCloseBtn" onclick="closeCommunityPanel()"></button>
       </div>
     </div>
 
@@ -80,6 +93,7 @@
     </div>
   </div>
 
+<script src="js/config.js"></script>
 <script src="js/data.js"></script>
 <script src="js/translations.js"></script>
 <script src="js/audio.js"></script>
@@ -87,6 +101,8 @@
 <script src="js/net-protocol.js"></script>
 <script src="js/net-transport.js"></script>
 <script src="js/local-play-ui.js"></script>
+<script src="js/community.js"></script>
+<script src="js/card-inspect.js"></script>
 <script src="js/game.js"></script>
 </body>
 </html>

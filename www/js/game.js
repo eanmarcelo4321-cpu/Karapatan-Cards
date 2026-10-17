@@ -191,6 +191,7 @@ function renderHome(){
         </div>
       </div>
       <div class="grow" style="flex:1.1;"></div>
+      <button class="home-community-btn" onclick="openCommunityPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>${(t.community||{}).homeBtn||'Join Our Community'}</button>
       <button class="btn btn-outline home-howto-btn home-howto-btn-solid" onclick="openHowTo()">${h.howToPlay}</button>
     </div>
   `;
@@ -399,6 +400,7 @@ function renderCard(){
   const twoCls = currentCard.choices.length === 2 ? 'two' : '';
   const opponents = match.teams.filter((tm, i) => i !== match.currentTeam);
 
+  selectedChoice = null;
   screenEl.innerHTML = `
     <div class="screen-body" style="border-top:4px solid ${team.dot};padding-top:32px;">
       ${match.suddenDeath ? `<div class="toast danger" style="margin-bottom:8px;">${t.suddenDeathToast}</div>` : ''}
@@ -419,16 +421,19 @@ function renderCard(){
           <span class="badge cat">${currentCard.category}</span>
         </div>
       </div>
-      <div class="situation-card">
+      <div class="situation-card portrait">
+        <div class="sc-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><line x1="5" y1="6" x2="19" y2="6"/><path d="M5 6 2 13a3 3 0 0 0 6 0Z"/><path d="M19 6l-3 7a3 3 0 0 0 6 0Z"/></svg><span>${t.situationCardLabel}</span></div>
         <div class="scenario">${currentCard.scenario}</div>
+        <div class="sc-foot"><span class="sc-rule"></span><i>♦</i><span class="sc-rule"></span></div>
       </div>
       <div class="timer-wrap"><span class="timer" id="timerNum">${timerVal}s</span></div>
       <div class="timer-track"><div class="timer-fill" id="timerFill" style="width:100%;"></div></div>
       ${team.isAI ? `<div class="ai-indicator"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>&nbsp;${t.aiTurnLabel(team.name)}</div>` : ''}
+      ${team.isAI ? '' : `<div class="hand-action"><div class="hand-hint" id="handHint">${t.inspectHint||''}</div><button class="btn btn-primary hand-confirm" id="handConfirm" onclick="confirmChoice()">${t.submitAnswer||'Submit this answer'}</button></div>`}
       <div class="choice-list hand-fan ${twoCls}">
         ${currentCard.choices.map((c, i) => `
-          <button class="choice-card ${team.isAI ? 'disabled' : ''}" onclick="pickChoice(${i})">
-            <span class="choice-tab">${letters[i]}<i>♦</i></span>
+          <button class="choice-card ${team.isAI ? 'disabled' : ''}" onclick="selectChoice(${i})">
+            <span class="choice-tab">${letters[i]}<i>♦</i><span class="choice-expand" role="button" aria-label="Expand" data-i="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></span></span>
             <span class="choice-text">${c.text}</span>
           </button>`).join("")}
       </div>
@@ -442,6 +447,28 @@ function renderCard(){
     const delay = Math.min(AIOpponent.thinkTime(team.aiDifficulty), (timerVal - 1) * 1000);
     aiTimeout = setTimeout(() => { if(state === 'card') pickChoice(idx); }, Math.max(600, delay));
   }
+}
+
+/* Tap an answer card -> it lifts and enlarges (readable); tap it again,
+   or press Submit, to lock it in. Submission itself is unchanged. */
+var selectedChoice = null;
+function selectChoice(i){
+  if(answerLocked) return;
+  if(selectedChoice === i) return;
+  selectedChoice = i;
+  document.querySelectorAll('.choice-list .choice-card').forEach(function(el, idx){
+    el.classList.toggle('lifted', idx === i);
+  });
+  var list = document.querySelector('.choice-list'); if(list) list.classList.add('has-lift');
+  var h = document.getElementById('handHint'), b = document.getElementById('handConfirm');
+  if(h) h.style.display = 'none';
+  if(b) b.classList.add('show');
+}
+function confirmChoice(){
+  if(selectedChoice === null) return;
+  var i = selectedChoice;
+  selectedChoice = null;
+  pickChoice(i);
 }
 
 function startTimer(){
@@ -759,6 +786,8 @@ function openPause(){
   const subText = state === "card" ? t.timerOnHold(timerVal) : t.turnOnHold(team.name);
   pauseSubEl.textContent = subText;
   pauseOverlayEl.classList.add('open');
+  var pcl = document.getElementById('pauseCommunityLabel');
+  if(pcl) pcl.textContent = (t.community||{}).pauseBtn || 'Join Our Community';
   syncPauseAudioUI();
 }
 

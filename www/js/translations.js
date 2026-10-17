@@ -5,6 +5,19 @@ var langNames = { en: "English", fil: "Filipino" };
 
 var translations = {
   en: {
+    inspectHint: "Tap a card to select · Tap ⤢ to read it in full",
+    previewSelect: "Select this answer",
+    previewClose: "Close",
+    submitAnswer: "Submit this answer",
+    inspectRelease: "Release to close",
+    community: {
+      homeBtn: "Join Our Community",
+      pauseBtn: "Join Our Community",
+      title: "Join the Karapatan Cards Community!",
+      body: "Connect with other players, discuss human rights and Philippine laws, share your thoughts about the game, and stay updated on Karapatan Cards.",
+      join: "Join Discord",
+      close: "Close"
+    },
     tagline: "\"Alamin ang karapatan, tara laro na!\"",
     ready: "Ready",
     diffEasy: "Easy", diffMedium: "Medium", diffHard: "Hard", diffMixed: "Mixed",
@@ -170,6 +183,19 @@ var translations = {
     }
   },
   fil: {
+    inspectHint: "I-tap ang card para piliin · I-tap ang ⤢ para basahin",
+    previewSelect: "Piliin ang sagot na ito",
+    previewClose: "Isara",
+    submitAnswer: "Isumite ang sagot",
+    inspectRelease: "Bitawan para isara",
+    community: {
+      homeBtn: "Sumali sa Aming Komunidad",
+      pauseBtn: "Sumali sa Komunidad",
+      title: "Sumali sa Komunidad ng Karapatan Cards!",
+      body: "Makipag-ugnayan sa ibang manlalaro, talakayin ang karapatang pantao at mga batas ng Pilipinas, ibahagi ang iyong saloobin sa laro, at manatiling updated sa Karapatan Cards.",
+      join: "Sumali sa Discord",
+      close: "Isara"
+    },
     tagline: "\"Alamin ang karapatan, tara laro na!\"",
     ready: "Handa",
     diffEasy: "Madali", diffMedium: "Katamtaman", diffHard: "Mahirap", diffMixed: "Halo-halo",
