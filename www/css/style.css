@@ -381,16 +381,16 @@ body{
 /* Fanned hand of cards (UNO-inspired) — used only on the active Card
    screen while choosing an answer. The Reveal screen keeps the flat list
    since clarity matters more than game-feel once results are shown. */
-.hand-fan{
-  position:relative; margin-top:28px; padding:0 10px; min-height:118px; overflow:visible;
-}
-.hand-fan .choice-card{ position:absolute; left:10px; right:10px; width:auto; transform-origin:bottom center; }
-.hand-fan .choice-card:nth-child(1){ top:0px; transform:rotate(-4deg); z-index:1; }
-.hand-fan .choice-card:nth-child(2){ top:16px; transform:rotate(0deg); z-index:2; }
-.hand-fan .choice-card:nth-child(3){ top:32px; transform:rotate(4deg); z-index:1; }
-.hand-fan .choice-card:active{ transform:translateY(-12px) scale(1.03) rotate(0deg); z-index:5; box-shadow:0 10px 20px rgba(27,42,107,0.22); }
-.hand-fan.two .choice-card:nth-child(1){ top:0px; transform:rotate(-3deg); }
-.hand-fan.two .choice-card:nth-child(2){ top:18px; transform:rotate(3deg); }
+/* A light "held cards" treatment: slight alternating rotation gives a
+   card-game feel without any overlap, since full-sentence answer text
+   must stay completely readable (verified — a true heavy-overlap fan
+   made 2 of 3 answers unreadable, so this deliberately stays subtle). */
+.hand-fan{ display:flex; flex-direction:column; gap:10px; margin-top:24px; padding:0 6px; }
+.hand-fan .choice-card{ transform-origin:center center; }
+.hand-fan .choice-card:nth-child(1){ transform:rotate(-1.2deg); }
+.hand-fan .choice-card:nth-child(2){ transform:rotate(0.6deg); }
+.hand-fan .choice-card:nth-child(3){ transform:rotate(-0.6deg); }
+.hand-fan .choice-card:active{ transform:translateY(-6px) scale(1.02) rotate(0deg); z-index:5; box-shadow:0 10px 20px rgba(27,42,107,0.22); }
 .choice-card{
   position:relative; display:flex; align-items:stretch;
   background:#FFFDF8; border:1.5px solid #DDD9EC; border-radius:14px; overflow:hidden;
@@ -427,6 +427,13 @@ body{
 .choice-card.wrong .choice-tab{ background:var(--coral); color:#fff; }
 .choice-card.wrong .choice-text{ color:#9c3327; }
 .choice-card.dim{ opacity:0.75; }
+.choice-card.selected{
+  transform:translateY(-10px) scale(1.04) rotate(0deg) !important;
+  box-shadow:0 14px 26px rgba(123,79,224,0.32) !important;
+  border-color:var(--gold) !important; z-index:10 !important;
+  transition:transform 0.22s cubic-bezier(.2,.8,.2,1), box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.choice-card.dim{ transition:opacity 0.22s ease; }
 
 /* SCOREBOARD */
 .scoreboard-row{
@@ -472,87 +479,17 @@ body{
 .crown{width:15px;height:15px;margin-right:4px; display:inline-block; animation:crownBounce 1.1s ease-in-out infinite;}
 .deck-icon{display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
 
-/* ================= HAND SCREEN ================= */
-.hand-screen{ padding-top:4px; }
-
-.game-header-bar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+/* ================= GAMEPLAY HEADER (Card screen) ================= */
+.game-header-bar{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
 .turn-pill{
-  display:flex; align-items:center; gap:7px; font-weight:700; font-size:13px; color:var(--navy);
-  background:#FFFDF8; border:1.5px solid var(--navy); border-radius:999px; padding:6px 14px;
+  display:flex; align-items:center; gap:7px; font-weight:700; font-size:12.5px; color:var(--navy);
+  background:#FFFDF8; border:1.5px solid var(--navy); border-radius:999px; padding:5px 13px;
 }
-.deck-count-chip{
-  font-size:11px; font-weight:700; color:var(--navy); background:rgba(123,79,224,0.12);
-  border-radius:999px; padding:5px 11px;
+.opponents-row.compact{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.opp-chip{
+  display:flex; align-items:center; gap:4px; font-size:10px; font-weight:600; color:var(--navy); opacity:0.75;
+  background:rgba(123,79,224,0.08); border-radius:999px; padding:4px 9px;
 }
-
-.game-table{ display:flex; justify-content:center; gap:28px; margin:6px 0 18px; }
-.table-pile{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-.pile-card{
-  width:58px; height:80px; border-radius:10px; position:relative;
-  box-shadow:0 4px 10px rgba(27,42,107,0.14);
-}
-.pile-card.back{
-  background:linear-gradient(155deg,#16215C,#0B1440); border:1.5px solid var(--gold);
-  display:flex; align-items:center; justify-content:center;
-}
-.pile-card-k{ font-family:var(--font-legal); font-size:22px; font-weight:700; color:var(--gold-soft); }
-.pile-card.played{ background:#FFFDF8; border:1.5px solid var(--navy); display:flex; align-items:center; justify-content:center; }
-.pile-card.empty{ background:transparent; border:1.5px dashed #DDD9EC; box-shadow:none; }
-.mini-badge{ width:14px; height:14px; border-radius:50%; }
-.mini-badge.diff-easy{ background:var(--sage); }
-.mini-badge.diff-medium{ background:var(--gold); }
-.mini-badge.diff-hard{ background:var(--coral); }
-.pile-label{ font-size:9.5px; font-weight:700; letter-spacing:0.06em; color:var(--navy); opacity:0.6; text-transform:uppercase; }
-
-.opponents-row{ display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin-bottom:10px; }
-.opp-group{ display:flex; flex-direction:column; align-items:center; gap:4px; }
-.opp-name{ display:flex; align-items:center; gap:4px; font-size:10.5px; font-weight:600; color:var(--navy); opacity:0.75; }
-.opp-tiles{ display:flex; gap:2px; }
-.opp-tile{ width:10px; height:14px; border-radius:2px; background:linear-gradient(155deg,#16215C,#0B1440); border:1px solid var(--gold-soft); }
-
-.hand-area{ position:relative; padding-bottom:6px; }
-.hand-toggle{ display:flex; flex-direction:column; align-items:center; gap:5px; padding:6px 0 10px; cursor:pointer; }
-.hand-toggle-bar{ width:36px; height:4px; border-radius:3px; background:#DDD9EC; }
-.hand-toggle-label{ font-size:10px; font-weight:700; letter-spacing:0.05em; color:var(--navy); opacity:0.7; text-transform:uppercase; }
-
-.hand-fan-row{ position:relative; height:130px; }
-.hand-area.expanded .hand-fan-row{ height:auto; display:flex; flex-direction:column; gap:10px; padding-bottom:10px; }
-
-.hand-card{
-  position:absolute; left:50%; top:10px; width:92px; height:118px;
-  background:#FFFDF8; border:1.5px solid var(--navy); border-radius:12px;
-  box-shadow:0 6px 14px rgba(27,42,107,0.16);
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:8px;
-  transform:translateX(-50%) translateX(calc((var(--i) - (var(--n) - 1) / 2) * 50px)) rotate(calc((var(--i) - (var(--n) - 1) / 2) * 7deg));
-  transition:transform 0.16s ease, box-shadow 0.16s ease;
-  cursor:pointer; z-index:calc(var(--i) + 1);
-}
-.hand-card:active{ transform:translateX(-50%) translateY(-14px) scale(1.05) rotate(0deg); box-shadow:0 12px 22px rgba(27,42,107,0.26); z-index:20; }
-.hand-area.expanded .hand-card{
-  position:relative; left:auto; top:auto; width:100%; height:auto; min-height:56px;
-  flex-direction:row; justify-content:flex-start; padding:12px 14px;
-  transform:none !important; z-index:1 !important;
-}
-.hc-badge{ width:16px; height:16px; border-radius:50%; flex-shrink:0; }
-.hc-badge.diff-easy{ background:var(--sage); }
-.hc-badge.diff-medium{ background:var(--gold); }
-.hc-badge.diff-hard{ background:var(--coral); }
-.hc-cat{ font-size:9px; font-weight:700; letter-spacing:0.04em; color:var(--navy); opacity:0.6; text-transform:uppercase; }
-.hc-title{ font-family:var(--font-legal); font-size:12px; font-weight:700; color:var(--navy); }
-.hand-area.expanded .hc-cat{ margin-left:10px; }
-.hand-area.expanded .hc-title{ margin-left:auto; font-size:11px; opacity:0.6; font-family:inherit; font-weight:600; }
-
-.hand-preview-backdrop{ position:fixed; inset:0; background:rgba(11,20,64,0.45); z-index:40; }
-.hand-preview-sheet{
-  position:fixed; left:14px; right:14px; bottom:24px; z-index:41;
-  background:#FFFDF8; border:1.5px solid var(--navy); border-radius:18px; padding:18px 18px 16px;
-  box-shadow:0 14px 30px rgba(11,20,64,0.35);
-  animation:popIn 0.22s cubic-bezier(.2,.8,.2,1) both;
-}
-.preview-scenario{ font-size:13.5px; line-height:1.6; color:var(--ink); margin:12px 0 16px; }
-.preview-actions{ display:flex; gap:10px; }
-.preview-actions .btn{ flex:1; }
-.hand-area.ai-waiting{ display:flex; flex-direction:column; align-items:center; gap:10px; padding:24px 0; }
 
 .confetti-piece{ position:absolute; width:6px; height:11px; border-radius:2px; pointer-events:none; animation:confettiFall 1000ms ease-in forwards; z-index:60; }
 

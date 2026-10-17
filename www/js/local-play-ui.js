@@ -487,7 +487,7 @@ var LP = (function(){
         <div style="font-size:11px;color:#8A8FA8;text-align:center;margin:6px 0;">${s.cardsLeftLabel(sync.cardsLeft)}</div>
         ${sync.stealActive ? `<div class="toast">${s.stealToast}</div>` : ''}
         ${isMyTurn && !answered ? `
-          <div class="choice-list flat ${twoCls}">
+          <div class="choice-list hand-fan ${twoCls}">
             ${card.choices.map((c, i) => `
               <button class="choice-card" onclick="LP.submitAnswer(${i})">
                 <span class="choice-tab">${LETTERS[i]}<i>♦</i></span>
