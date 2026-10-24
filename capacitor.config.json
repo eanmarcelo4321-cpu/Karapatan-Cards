@@ -2,16 +2,16 @@
   "appId": "org.karapatan.cards",
   "appName": "Karapatan Cards",
   "webDir": "www",
-  "backgroundColor": "#0B1440",
+  "backgroundColor": "#3E235A",
   "ios": {
     "contentInset": "always"
   },
   "android": {
-    "backgroundColor": "#0B1440"
+    "backgroundColor": "#3E235A"
   },
   "plugins": {
     "SplashScreen": {
-      "backgroundColor": "#0B1440",
+      "backgroundColor": "#3E235A",
       "launchAutoHide": true,
       "launchShowDuration": 800
     }

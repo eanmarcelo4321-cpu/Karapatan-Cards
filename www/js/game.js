@@ -13,7 +13,7 @@ var homeSettings = {
 var TEAM_POOL = [
   { name: "Team Mabini",    dot: "#D2574B" },
   { name: "Team Bonifacio", dot: "#7FA684" },
-  { name: "Team Rizal",     dot: "#7B4FE0" },
+  { name: "Team Rizal",     dot: "#8855D8" },
   { name: "Team Silang",    dot: "#4E8FA6" }
 ];
 
@@ -597,7 +597,7 @@ function renderReveal(){
         <div class="answer-text">${currentCard.answer}</div>
         <div class="legal-basis"><strong>${t.legalBasisLabel}</strong> ${currentCard.legal}</div>
       </div>
-      <div style="font-size:11.5px;color:#5B6280;text-align:center;margin:10px 0 2px;">${t.earnsText(team.name, match.pendingScore)}</div>
+      <div style="font-size:11.5px;color:#6B5A80;text-align:center;margin:10px 0 2px;">${t.earnsText(team.name, match.pendingScore)}</div>
       ${match.stealActive ? `<div class="toast">${t.stealToast}</div>` : ''}
       ${retryMode ? `<div class="toast info">Practice attempt — your original score for this turn stays the same.</div>` : ''}
       <div class="sticky-cta">
@@ -636,7 +636,7 @@ function continueAfterReveal(){
 function burstConfetti(){
   const phone = document.querySelector('.phone');
   if(!phone) return;
-  const colors = ['#7B4FE0', '#7FA684', '#FFFFFF', '#D2574B', '#C9AEFA'];
+  const colors = ['#8855D8', '#7FA684', '#FFFFFF', '#D2574B', '#C9AEFA'];
   for(let i = 0; i < 18; i++){
     const p = document.createElement('div');
     p.className = 'confetti-piece';
@@ -735,7 +735,7 @@ function renderScore(){
           <span class="name">${i===0 && topScore>0 && !tied ? '<svg class="menu-icon crown" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1" stroke-linejoin="round"><path d="M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8z"/></svg>' : ''}<span class="team-dot" style="background:${tm.dot}"></span>${tm.name}${tm.isAI ? ' 🤖' : ''}</span>
           <span class="pts" id="pts-${tm.name.replace(/\s+/g,'')}">${prevScores[tm.name] || 0} pts</span>
         </div>`).join("")}
-      <div style="font-size:11.5px;color:#5B6280;text-align:center;margin-top:4px;">${t.upNext(match.teams[match.currentTeam].name)}</div>
+      <div style="font-size:11.5px;color:#6B5A80;text-align:center;margin-top:4px;">${t.upNext(match.teams[match.currentTeam].name)}</div>
       <div class="grow"></div>
       <button class="btn btn-primary" onclick="backFromScoreboard()">${t.backToGameBtn}</button>
     </div>
