@@ -11,7 +11,7 @@ var translations = {
     submitAnswer: "Submit this answer",
     inspectRelease: "Release to close",
     community: {
-      homeBtn: "Join Our Community",
+      homeBtn: "Join our Community",
       pauseBtn: "Join Our Community",
       title: "Join the Karapatan Cards Community!",
       body: "Connect with other players, discuss human rights and Philippine laws, share your thoughts about the game, and stay updated on Karapatan Cards.",
@@ -24,7 +24,7 @@ var translations = {
     home: {
       modeTitle: "Game Mode",
       modeMultiplayer: "Multiplayer",
-      modeMultiplayerSub: "Pass & play, 2–4 teams",
+      modeMultiplayerSub: "Pass&Play, 2-4 teams",
       modeSolo: "Solo vs AI",
       modeSoloSub: "Learning Mode",
       lengthTitle: "Match Length",

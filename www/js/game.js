@@ -156,43 +156,78 @@ function setControls(html){ controlsEl.innerHTML = html; }
 function renderHome(){
   const t = T();
   const h = t.home;
+  // Last word of a string gets italic emphasis, as in the design reference
+  const emLast = (str) => { const i = str.lastIndexOf(' '); return i < 0 ? str : `${str.slice(0, i)} <em>${str.slice(i + 1)}</em>`; };
+  const ico = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const soundIcon = AudioEngine.isOn()
-    ? `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>`
-    : `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="m17 9 4 4M21 9l-4 4"/></svg>`;
+    ? ico(`<path d="M11 5 6 9H3v6h3l5 4V5Z" fill="#fff"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6a8 8 0 0 1 0 12"/>`)
+    : ico(`<path d="M11 5 6 9H3v6h3l5 4V5Z" fill="#fff"/><path d="m16 9 5 6M21 9l-5 6"/>`);
   const musicIcon = AudioEngine.Music.isOn()
-    ? `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`
-    : `<svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M3 3l18 18" stroke-width="2"/></svg>`;
+    ? ico(`<path d="M9 18V5l11-2v13" /><circle cx="6.5" cy="18" r="3" fill="#fff"/><circle cx="17.5" cy="16" r="3" fill="#fff"/>`)
+    : ico(`<path d="M9 18V5l11-2v13" /><circle cx="6.5" cy="18" r="3" fill="#fff"/><circle cx="17.5" cy="16" r="3" fill="#fff"/><path d="M3 3l18 18"/>`);
+  const helpIcon = ico(`<circle cx="12" cy="12" r="9.5"/><path d="M9.5 9.2a2.7 2.7 0 0 1 5.2 1c0 1.8-2.7 2.3-2.7 4"/><circle cx="12" cy="17.6" r="0.6" fill="#fff"/>`);
+  const communityLabel = (t.community && t.community.homeBtn) || 'Join our Community';
+
+  const peopleArt = `
+    <svg class="hm-art" viewBox="0 0 70 56" aria-hidden="true">
+      <g stroke="#fff" stroke-width="3" stroke-linejoin="round" paint-order="stroke">
+        <circle cx="16" cy="12" r="7.5" fill="#FD7718"/>
+        <path d="M3 38c0-10 6-15 13-15s13 5 13 15Z" fill="#FD7718"/>
+        <circle cx="54" cy="12" r="7.5" fill="#8855D8"/>
+        <path d="M41 38c0-10 6-15 13-15s13 5 13 15Z" fill="#8855D8"/>
+        <circle cx="35" cy="26" r="8" fill="#05B3B4"/>
+        <path d="M20 52c0-11 7-16 15-16s15 5 15 16Z" fill="#05B3B4"/>
+      </g>
+    </svg>`;
+  const aiArt = `
+    <svg class="hm-art" viewBox="0 0 70 56" aria-hidden="true">
+      <rect x="3" y="3" width="36" height="36" rx="6" fill="#05B3B4" stroke="#fff" stroke-width="2.5"/>
+      <g stroke="#FD7718" stroke-width="2" stroke-linecap="round"><path d="M10 3V0M18 3V0M26 3V0M3 11H0M3 19H0M3 27H0"/></g>
+      <rect x="22" y="18" width="40" height="36" rx="6" fill="#8855D8" stroke="#fff" stroke-width="2.5"/>
+      <g stroke="#FD7718" stroke-width="2" stroke-linecap="round"><path d="M30 54v-3M38 54v-3M46 54v-3M54 54v-3M62 28h3M62 36h3M62 44h3M30 18v3M38 18v3M46 18v3M54 18v3"/></g>
+      <rect x="29" y="25" width="26" height="22" rx="3" fill="none" stroke="#FD7718" stroke-width="1.8"/>
+      <text x="42" y="42" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="15" fill="#FD7718">AI</text>
+    </svg>`;
+  const handshake = `<svg class="hm-hs" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg>`;
 
   screenEl.innerHTML = `
-    <button class="sound-chip" onclick="toggleSound()">${soundIcon}</button>
-    <button class="sound-chip music-chip" onclick="toggleMusic()">${musicIcon}</button>
-    <button class="lang-chip" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
-    <div class="screen-body home-body home-bg">
-      <div class="grow" style="flex:0.6;"></div>
-      <div class="home-hero">
-        <div class="home-title-block">
-          <div class="home-logo home-title-font">Karapatan Cards</div>
-          <div class="home-maxim home-title-font">Ignorantia legis non excusat</div>
-          <div class="home-maxim-sub">Ignorance of the law excuses no one</div>
-        </div>
+    <div class="screen-body home-body home-bg hm-root">
+      <div class="hm-top">
+        <button class="hm-circle" onclick="toggleSound()" aria-label="Sound effects">${soundIcon}</button>
+        <button class="hm-circle" onclick="toggleMusic()" aria-label="Music">${musicIcon}</button>
+        <button class="hm-circle" onclick="openHowTo()" aria-label="${h.howToPlay}">${helpIcon}</button>
+        <span class="grow"></span>
+        <button class="hm-lang" onclick="openLangPicker()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${langNames[currentLang]}</button>
+      </div>
 
-        <div class="section-title home-section-title">${h.modeTitle}</div>
-        <div class="mode-grid mode-grid-lg">
-          <div class="mode-card mode-card-lg" onclick="goto('multiplayerMenu')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <div class="mc-title">${h.modeMultiplayer}</div>
-            <div class="mc-sub">${h.modeMultiplayerSub}</div>
-          </div>
-          <div class="mode-card mode-card-lg" onclick="goto('soloSetup')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><circle cx="9" cy="9" r="1.2" fill="var(--navy)"/><circle cx="15" cy="9" r="1.2" fill="var(--navy)"/></svg>
-            <div class="mc-title">${h.modeSolo}</div>
-            <div class="mc-sub">${h.modeSoloSub}</div>
-          </div>
+      <div class="grow hm-gap-top"></div>
+
+      <div class="hm-title">
+        <div class="hm-dots"><i style="background:#05B3B4"></i><i style="background:#8855D8"></i><i style="background:#FD7718"></i></div>
+        <div class="hm-logo">${emLast('Karapatan Cards')}</div>
+        <div class="hm-latin">Ignorantia legis non excusat</div>
+        <div class="hm-eng">Ignorance of the law excuses no one</div>
+      </div>
+
+      <div class="hm-label">${emLast(h.modeTitle)}</div>
+
+      <div class="hm-cards">
+        <div class="hm-card" onclick="goto('multiplayerMenu')">
+          ${peopleArt}
+          <div class="hm-card-title">${h.modeMultiplayer}</div>
+          <div class="hm-card-sub">${h.modeMultiplayerSub}</div>
+        </div>
+        <div class="hm-card" onclick="goto('soloSetup')">
+          ${aiArt}
+          <div class="hm-card-title">${h.modeSolo}</div>
+          <div class="hm-card-sub">${h.modeSoloSub}</div>
         </div>
       </div>
-      <div class="grow" style="flex:1.1;"></div>
-      <button class="home-community-btn" onclick="openCommunityPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>${(t.community||{}).homeBtn||'Join Our Community'}</button>
-      <button class="btn btn-outline home-howto-btn home-howto-btn-solid" onclick="openHowTo()">${h.howToPlay}</button>
+
+      <div class="grow hm-gap-bottom"></div>
+
+      <button class="hm-community" onclick="openCommunityPanel()">${handshake}<span>${communityLabel}</span></button>
+      <div class="hm-strip"></div>
     </div>
   `;
   setControls('');
